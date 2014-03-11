@@ -1,6 +1,6 @@
 import socket
 from threading import Thread
-from StateMachineV2_0 import *
+from StateMachine import *
 import thread
 
 class ThreadedTCPNetworkAgent(Thread):
@@ -37,6 +37,9 @@ class ThreadedTCPNetworkAgent(Thread):
             elif "#STATUS" == data.rstrip(): 
                 for x in self.CurLogger.getFormatedLog():
                     clientsock.send(x)
+            elif "#ALIVE" == data.rstrip():
+                pass
+
 
         #close the damn thing from this side
         clientsock.close()
