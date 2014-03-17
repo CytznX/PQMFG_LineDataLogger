@@ -38,7 +38,7 @@ class ThreadedTCPNetworkAgent(Thread):
 
 				elif command[0] == "#DOWN" and len(command) == 3:
 					#current possible reasons: 1)Maitenance, 2) Inventory, 3) Quality_Control
-					self.CurLogger.changeState(command[1], command[0])
+					self.CurLogger.changeState(command[2], command[1])
 					clientsock.send("AKN\n")
 
 				elif command[0] == "#ADD":
@@ -73,18 +73,16 @@ class ThreadedTCPNetworkAgent(Thread):
 					break
 				elif "#STATUS" == data.rstrip(): 
 					for x in self.CurLogger.getFormatedLog():
-						clientsock.send(x)
+						clientsock.send(x+"\n")
 				elif "#ALIVE" == data.rstrip():
-					pass
+					clientsock.send(str(self.CurLogger.getCurrentState()))
 				elif "#COMPLETE" == data.rstrip():
 					self.CurLogger.finishCurrentWO()
-					clientsock.send("AKN")
+					clientsock.send("AKN\n")
 				else:
-					clientsock.send("INVALID COMMAND")
+					clientsock.send("INVALID COMMAND\n")
 
-
-
-		#close the damn thing from this side
+		#close the damn pipe from this side
 		clientsock.close()
 
 	def stop(self):

@@ -1,0 +1,3 @@
+#/home/pi/scripts/./SB_sync
+cd /home/pi/pqmfg/
+sudo python LoggerGui.py
