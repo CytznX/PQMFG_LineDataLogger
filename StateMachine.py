@@ -4,7 +4,7 @@ This is Version 2.0 of the PQMFG state machine feature improved as well as simpl
 Created By: Maxwell Seifert
 
 '''
-rpi = True 
+rpi = False 
 
 #Import the needed moduals
 import time, datetime, string, socket
