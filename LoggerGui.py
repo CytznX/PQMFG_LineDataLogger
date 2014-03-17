@@ -18,7 +18,7 @@ from StateMachine import *
 from ScannerReader import BCscanner
 
 #Denotes whats the current FPS that you want the machine to run AT
-FPS = 5
+FPS = 20
 
 #used to calculate the spacing between all the gui objects
 BRD_SPACER = 10
