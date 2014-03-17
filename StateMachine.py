@@ -4,7 +4,7 @@ This is Version 2.0 of the PQMFG state machine feature improved as well as simpl
 Created By: Maxwell Seifert
 
 '''
-rpi = True
+rpi = True 
 
 #Import the needed moduals
 import time, datetime, string, socket
@@ -50,6 +50,8 @@ class ActivityLogger:
 		self.failCount = None
 		self.boxCount = None
 		self.peacesPerBox = None
+		self.modCounter = None
+		self.modBoxCounter = None
 		
 		#Arraylist of what count adjustments took place and when
 		self.adjustments = []
@@ -75,12 +77,12 @@ class ActivityLogger:
 
 			# when a falling edge is detected on port 24, regardless of whatever 
 			# else is happening in the program, the function my_callback will be run
-			GPIO.add_event_detect(24, GPIO.FALLING, callback=self.inc_CurTotalCount, bouncetime=300)
+			GPIO.add_event_detect(24, GPIO.FALLING, callback=self.modCount, bouncetime=300)
 
 			# when a falling edge is detected on port 23, regardless of whatever 
 			# else is happening in the program, the function my_callback2 will be run
 			# 'bouncetime=300' includes the bounce control written into interrupts2a.py
-			GPIO.add_event_detect(23, GPIO.FALLING, callback=self.inc_CurBoxCount, bouncetime=300)
+			GPIO.add_event_detect(23, GPIO.FALLING, callback=self.modBoxCount, bouncetime=300)
 	
 	def release(self):
 		if rpi:
@@ -89,7 +91,7 @@ class ActivityLogger:
 		self.CurrentTCPServer.join()
 
 	def getCounts(self):
-		return self.totalCount, self.failCount, self.boxCount, self.peacesPerBox
+		return self.totalCount, self.failCount, self.boxCount, self.peacesPerBox  
 
 	def getMachineID(self):
 		return self.MachineID
@@ -310,6 +312,8 @@ class ActivityLogger:
 		self.hourdecrement = datetime.datetime.now()
 
 		#Keeps Track Of Pass/Fail Count
+		self.modCounter = 0
+		self.modBoxCounter = 0
 		self.totalCount = [0]
 		self.failCount = [0]		
 		self.boxCount = [0]
@@ -355,6 +359,8 @@ class ActivityLogger:
 			self.hourdecrement = None
 
 			#Keeps Track Of Pass/Fail Count
+			self.modCounter = None
+			self.modBoxCounter = None
 			self.totalCount = None
 			self.failCount = None
 			self.boxCount = None
@@ -448,6 +454,18 @@ class ActivityLogger:
 	'''
 	Used to Increment the current pass count on running work order
 	'''
+	def modCount(self, event = None):
+		if not self.modCounter == None:
+			self.modCounter+=1
+			if self.modCounter%2 == 0:
+				self.inc_CurTotalCount(event = event)
+
+	def modBoxCount(self, event = None):
+		if not self.modBoxCounter == None:
+			self.modBoxCounter+=1
+			if self.modBoxCounter%2 == 0:
+				self.inc_CurBoxCount(event = event)
+	
 	def inc_CurTotalCount(self, event = None, amount = 1, force = False, ID = None):
 
 		incrementSucssful = False
@@ -530,7 +548,7 @@ class ActivityLogger:
 				else:
 					self.boxCount[-1] += amount
 
-			elif not amount == 1 and not ID == None:
+			elif not (not amount == 1) or (not ID == None):
 				self.adjustments.append((ID ,'Box', amount, datetime.datetime.now()))
 				decrementSucssful = True
 
@@ -693,40 +711,55 @@ class ActivityLogger:
 			#heres the methodolagy for itterating over employee dictionary 
 			for key in empKeys:
 				if(self.EmpWorkingDic[key][0]=="Line_Leader"):
-					EmployOutputString = key+": "
+					EmployOutputString = "" #key+": "
+					WasActive = False
 					for x,y in self.EmpWorkingDic[key][1]:
 						if y == None:
 							y =  now
 
 						if y > self.WO_StartTime:
+							
+							if not WasActive:
+								EmployOutputString = key+": "
+								WasActive = True
 							EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
 
-					lineleaders.append(EmployOutputString)
+					if WasActive:
+						lineleaders.append(EmployOutputString)
 
 				elif(self.EmpWorkingDic[key][0]=="Line_Worker"):
-					EmployOutputString = key+": "
+					EmployOutputString = "" #key+": "
+					WasActive = False
 					for x,y in self.EmpWorkingDic[key][1]:
 						if y == None:
 							y =  now
 
 						if y > self.WO_StartTime:
+							if not WasActive:
+								EmployOutputString = key+": "
+								WasActive = True
 							EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
 
-					lineworkers.append(EmployOutputString)
+					if WasActive:
+						lineworkers.append(EmployOutputString)
 
 				elif(self.EmpWorkingDic[key][0]=="Mechanic"):
-					EmployOutputString = key+": "
+					EmployOutputString = "" #key+": "
+					WasActive = False
 					for x,y in self.EmpWorkingDic[key][1]:
 						if y == None:
 							y =  now
 
 						if y > self.WO_StartTime:
+							if not WasActive:
+								EmployOutputString = key+": "
+								WasActive = True
 							EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
-
-					lineMechanics.append(EmployOutputString)
+					if WasActive:
+						lineMechanics.append(EmployOutputString)
 
 			#add the newly created lis together and append them to the current log file
-			log+= lineleaders+lineworkers+lineMechanics
+			log+= lineleaders+[""]+lineworkers+[""]+lineMechanics+[""]
 
 			dwntime = self.getDwnTimesTotals()
 
