@@ -382,8 +382,8 @@ def main():
 					
 					print 'Linelogger State Machine has been destroyed...'
 					print 'killing Everything!!!'				
-					#shutdownPI() #used to kill pi
-					sys.exit() #used to return to comandLine
+					shutdownPI() #used to kill pi
+					#sys.exit() #used to return to comandLine
 
 			#if any other key is press we add it to our Barcode Reader objecect
 			if event.type == KEYDOWN:    
