@@ -66,6 +66,14 @@ class ThreadedTCPNetworkAgent(Thread):
 					self.CurLogger.changeCurrentWO(command[1], False)
 					clientsock.send("AKN\n")
 
+				elif command[0] == "#MSG" and self.isInt(command[-1]):
+					msg = ''
+					for y in range(1, len(command)-1):
+						msg += command[y]+" "
+
+					self.CurLogger.pushMessage(msg, command[-1])
+					clientsock.send("AKN\n")
+
 			else:
 				if not data: 
 					break
@@ -94,6 +102,13 @@ class ThreadedTCPNetworkAgent(Thread):
 
 		#Kill the pipe
 		self.serversock.close()
+
+	def isInt(self,x):
+		try:
+			int(x)
+			return True
+		except ValueError,e:
+			return False
 
 	def run(self):
 

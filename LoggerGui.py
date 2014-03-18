@@ -6,7 +6,7 @@ Created By: Maxwell Seifert
 
 '''
 
-import pygame, pygbutton, sys, os
+import pygame, pygbutton, sys, os, time
 import socket, platform
 import random, time, math
 import subprocess
@@ -135,12 +135,14 @@ def main():
 
 	#Determines what screen is shown
 	GUI_STATE = 0
+	PREV_GUI_STATE = 0
 
 	#Keeps track of what display text should be wrote on screen
 	displayText = []
 	propID = ''
 	addRemove = []
 	dwnReason = None
+	currentMsgDisp = None
 
 	#Sets screen resolution and title
 	DISPLAYSURFACE = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -357,383 +359,393 @@ def main():
 		Here is our event handler, captures all button/key/scanner actions
 		----------------------------------------------------------------------------------------------------
 		'''
-		for event in pygame.event.get(): # event handling loop
-			
-			#Captures events and exicutes code relating to SHUTDOWN BUTTON
-			buttonShutDownEvent = buttonShutdown.handleEvent(event)
-			if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE) or ('click' in buttonShutDownEvent and cur_AL.getCurrentState()[0]==None):
-				print 'Quiting...'
+		if not currentMsgDisp == None:
+			if (time.time() - currentMsgDisp[1]) > int(currentMsgDisp[2]):
+				GUI_STATE = PREV_GUI_STATE
+				PREV_GUI_STATE = 0
+				currentMsgDisp = None
+		else:
+
+			msg = cur_AL.getMessage()
+			if not msg == None:
+				currentMsgDisp = (msg[0],time.time(), msg[1])
+				PREV_GUI_STATE = GUI_STATE
+				GUI_STATE = 8
+
+			for event in pygame.event.get(): # event handling loop
 				
-				try:
-					pygame.quit()
-					print 'Quiting Pygame... 3...'
-					time.sleep(1)
-					print '2..'
-					time.sleep(1)
-					print '1...'
-					time.sleep(1)
-
-				finally:
-					pygame.quit()
-
-					cur_AL.release()
-					del(cur_AL)		
-
+				#Captures events and exicutes code relating to SHUTDOWN BUTTON
+				buttonShutDownEvent = buttonShutdown.handleEvent(event)
+				if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE) or ('click' in buttonShutDownEvent and cur_AL.getCurrentState()[0]==None):
+					print 'Quiting...'
 					
-					print 'Linelogger State Machine has been destroyed...'
-					print 'killing Everything!!!'				
-					#shutdownPI() #used to kill pi
-					sys.exit() #used to return to comandLine
+					try:
+						pygame.quit()
+						print 'Quiting Pygame... 3...'
+						time.sleep(1)
+						print '2..'
+						time.sleep(1)
+						print '1...'
+						time.sleep(1)
 
-			#if any other key is press we add it to our Barcode Reader objecect
-			if event.type == KEYDOWN:    
-				BCreader.add(event.key)
+					finally:
+						pygame.quit()
 
-			#check to see if we have any availible strings collected
-			scanVal = BCreader.getAvalibleMessage()
-			if not scanVal == '':
-				print scanVal 
-			
-			if not scanVal == '' and not scanVal.startswith('#'):
+						cur_AL.release()
+						del(cur_AL)		
 
-				if GUI_STATE == 2:
-					if displayText == []:
-						displayText.append(scanVal)
-					else:
-						displayText[0] = scanVal
+						
+						print 'Linelogger State Machine has been destroyed...'
+						print 'killing Everything!!!'				
+						#shutdownPI() #used to kill pi
+						sys.exit() #used to return to comandLine
 
-				elif GUI_STATE == 3:
-					if not displayText == [] and displayText[-1] == '':
-						displayText[-1] = scanVal
-						displayText+=['&','']
-					else:
-						displayText.append(scanVal)
-						displayText+=['&','']
+				#if any other key is press we add it to our Barcode Reader objecect
+				if event.type == KEYDOWN:    
+					BCreader.add(event.key)
 
-				elif GUI_STATE == 4:
-					tmp = cur_AL.getName(scanVal)
-					if tmp in stillLoggedIn.keys():
-						if stillLoggedIn[tmp].bgcolor == DEFAULT_BG:
-							stillLoggedIn[tmp].bgcolor = GREEN
-							addRemove.append(tmp)
+				#check to see if we have any availible strings collected
+				scanVal = BCreader.getAvalibleMessage()
+				if not scanVal == '' and not scanVal.startswith('#'):
+
+					if GUI_STATE == 2:
+						if displayText == []:
+							displayText.append(scanVal)
 						else:
-							stillLoggedIn[tmp].bgcolor = DEFAULT_BG
+							displayText[0] = scanVal
 
-							if tmp in addRemove: 
-								addRemove.remove(tmp)
-				elif GUI_STATE == 6 or GUI_STATE == 5.5:
-					displayText = [scanVal]
+					elif GUI_STATE == 3:
+						if not displayText == [] and displayText[-1] == '':
+							displayText[-1] = scanVal
+							displayText+=['&','']
+						else:
+							displayText.append(scanVal)
+							displayText+=['&','']
+
+					elif GUI_STATE == 4:
+						tmp = cur_AL.getName(scanVal)
+						if tmp in stillLoggedIn.keys():
+							if stillLoggedIn[tmp].bgcolor == DEFAULT_BG:
+								stillLoggedIn[tmp].bgcolor = GREEN
+								addRemove.append(tmp)
+							else:
+								stillLoggedIn[tmp].bgcolor = DEFAULT_BG
+
+								if tmp in addRemove: 
+									addRemove.remove(tmp)
+					elif GUI_STATE == 6 or GUI_STATE == 5.5:
+						displayText = [scanVal]
+						scanVal = ''
+
+							 
+				elif GUI_STATE ==5 and not scanVal == '':
+					if scanVal == '#MAINTENANCE':
+						dwnReason = 'Maitenance'
+						GUI_STATE = 5.5
+					elif scanVal == '#INVENTORY':
+						dwnReason = 'Inventory'
+						GUI_STATE = 5.5
+					elif scanVal == '#QUALITY_CONTROL':
+						dwnReason = 'Quality_Control'
+						GUI_STATE = 5.5
+					elif scanVal == '#CANCEL': 
+						GUI_STATE = 0
+
 					scanVal = ''
 
-						 
-			elif GUI_STATE ==5 and not scanVal == '':
-				if scanVal == '#MAINTENANCE':
-					dwnReason = 'Maitenance'
-					GUI_STATE = 5.5
-				elif scanVal == '#INVENTORY':
-					dwnReason = 'Inventory'
-					GUI_STATE = 5.5
-				elif scanVal == '#QUALITY_CONTROL':
-					dwnReason = 'Quality_Control'
-					GUI_STATE = 5.5
-				elif scanVal == '#CANCEL': 
-					GUI_STATE = 0
 
-				scanVal = ''
-
-
-			#Captures events and exicutes code relating to REMOVE PAIN BUTTONS
-			#only visible when removing employees
-			for key in stillLoggedIn.keys():
-				if 'click' in stillLoggedIn[key].handleEvent(event):
-					if stillLoggedIn[key].bgcolor == DEFAULT_BG:
-						stillLoggedIn[key].bgcolor = GREEN
-						addRemove.append(key)
-					else:
-						stillLoggedIn[key].bgcolor = DEFAULT_BG
-
-						if key in addRemove: 
-							addRemove.remove(key)
-
-			#Captures events and exicutes code relating to NUMPAD BUTTONS
-			for key in numPadDic.keys():
-				if 'click' in numPadDic[key].handleEvent(event):
-					
-					#If its not a special key append to the display text is empty start new entry
-					if displayText == [] and not key == '&' and not key == 'DEL' and not key == '+/-' and not GUI_STATE ==7.1:
-						displayText.append(key)
-
-					elif GUI_STATE == 7.1 and key == 'DEL':
-						propID= propID[:-1]
-					elif GUI_STATE == 7.1:
-						propID += key
-
-					#If it is special perform corisponding functions
-					elif key == '+/-':
-						if numPadDic['+/-'].bgcolor == GREEN:
-							numPadDic['+/-'].bgcolor = RED
+				#Captures events and exicutes code relating to REMOVE PAIN BUTTONS
+				#only visible when removing employees
+				for key in stillLoggedIn.keys():
+					if 'click' in stillLoggedIn[key].handleEvent(event):
+						if stillLoggedIn[key].bgcolor == DEFAULT_BG:
+							stillLoggedIn[key].bgcolor = GREEN
+							addRemove.append(key)
 						else:
-							numPadDic['+/-'].bgcolor = GREEN
-					elif key == '&' and not displayText == []:
-						displayText+=[key,'']
-					elif key == 'DEL' and not displayText == []:
-						displayText[-1]=displayText[-1][:-1]
-					
-					#just append current displaytext word
-					else:
-						displayText[-1] += key
+							stillLoggedIn[key].bgcolor = DEFAULT_BG
 
-			#Captures events and exicutes code relating to DWNTIME BUTTONS
-			for key in dwnTimeButtons.keys():
-				if 'click' in dwnTimeButtons[key].handleEvent(event):
-					if key == 'Mid_Cancle':
+							if key in addRemove: 
+								addRemove.remove(key)
+
+				#Captures events and exicutes code relating to NUMPAD BUTTONS
+				for key in numPadDic.keys():
+					if 'click' in numPadDic[key].handleEvent(event):
+						
+						#If its not a special key append to the display text is empty start new entry
+						if displayText == [] and not key == '&' and not key == 'DEL' and not key == '+/-' and not GUI_STATE ==7.1:
+							displayText.append(key)
+
+						elif GUI_STATE == 7.1 and key == 'DEL':
+							propID= propID[:-1]
+						elif GUI_STATE == 7.1:
+							propID += key
+
+						#If it is special perform corisponding functions
+						elif key == '+/-':
+							if numPadDic['+/-'].bgcolor == GREEN:
+								numPadDic['+/-'].bgcolor = RED
+							else:
+								numPadDic['+/-'].bgcolor = GREEN
+						elif key == '&' and not displayText == []:
+							displayText+=[key,'']
+						elif key == 'DEL' and not displayText == []:
+							displayText[-1]=displayText[-1][:-1]
+						
+						#just append current displaytext word
+						else:
+							displayText[-1] += key
+
+				#Captures events and exicutes code relating to DWNTIME BUTTONS
+				for key in dwnTimeButtons.keys():
+					if 'click' in dwnTimeButtons[key].handleEvent(event):
+						if key == 'Mid_Cancle':
+							GUI_STATE = 0
+						else:
+							dwnReason = key
+							GUI_STATE = 5.5
+
+
+				buttonTotalCountEvent = buttonTotalCount.handleEvent(event)
+				buttonBoxCountEvent = buttonBoxCount.handleEvent(event)
+				if 'click' in buttonBoxCountEvent or 'click' in buttonTotalCountEvent:
+					tmp1 = buttonTotalCount.bgcolor
+					tmp2 = buttonBoxCount.bgcolor 
+					buttonTotalCount.bgcolor = tmp2
+					buttonBoxCount.bgcolor = tmp1
+
+				#Captures events and exicutes code relating to COMPLETE WORK ORDER BUTTONS
+				buttonCompleteEvent = buttonCompleteWO.handleEvent(event)
+				if ('click' in buttonCompleteEvent or scanVal == '#COMPLETE_WO') and not cur_AL.getCurrentState()[0]==None:
+					GUI_STATE = 1
+
+				#Captures events and exicutes code relating to CHANGE WORK ORDER BUTTONS
+				buttonChangeEvent = buttonChangeWO.handleEvent(event)
+				if 'click' in buttonChangeEvent or scanVal == '#CHANGE_WO':
+					GUI_STATE = 2
+					displayText = []
+
+				buttonBoxEvent = buttonSetBoxCount.handleEvent(event)
+				if ('click' in buttonBoxEvent or scanVal == '#CHANGE_PPB') and not cur_AL.getCurrentState()[0] == None:
+					GUI_STATE = 2.5
+					displayText = []
+
+				#Captures events and exicutes code relating to ADD EMPLOYEE BUTTONS
+				buttonAddEmployeeEvent = buttonAddEmployee.handleEvent(event)
+				if 'click' in buttonAddEmployeeEvent or scanVal == '#ADD_EMPLOYEE':
+					GUI_STATE = 3
+					displayText = []
+
+				#Captures events and exicutes code relating to REMOVE EMPLOYEE BUTTONS
+				buttonRemoveEmployeeEvent = buttonRemoveEmployee.handleEvent(event)
+				if 'click' in buttonRemoveEmployeeEvent or scanVal == '#REMOVE_EMPLOYEE':
+
+					#Heres where i set height and width of mini buttons for remove screen
+					MiniWidth = BUTTON_HEIGHT*2
+					MiniHeight = BUTTON_HEIGHT/2
+
+					#gets and calculates some basic displya variables
+					whosLoggedIn = cur_AL.stillLoggedOn()
+					count = len(whosLoggedIn)
+					pannelWidth = math.ceil(math.sqrt(count))
+					rowCount = math.floor((WINDOWHEIGHT-(4*BRD_SPACER)-BUTTON_HEIGHT- 150+BRD_SPACER)/(MiniHeight+BRD_SPACER))
+					colCount = math.ceil(count/rowCount)
+
+					#Calculate initial x and y POS
+					xpos = WINDOWWIDTH/2 - ((colCount/2)*MiniWidth)-((math.floor(colCount/2))*BRD_SPACER)
+					ypos = 150+BRD_SPACER
+
+					#Reset Button dictionary
+					stillLoggedIn = dict()
+
+					#Loop that populates buttong dictionary
+					for emp in whosLoggedIn:
+						stillLoggedIn[emp[0]] = pygbutton.PygButton((xpos , ypos, MiniWidth, MiniHeight), emp[0])
+						ypos += MiniHeight+BRD_SPACER
+
+						if ypos > WINDOWHEIGHT-(4*BRD_SPACER)-BUTTON_HEIGHT:
+							xpos += MiniWidth+BRD_SPACER
+							ypos = 150+BRD_SPACER
+
+					#onto the next one!!! (one == state) ... =)
+					GUI_STATE = 4
+
+				#Captures events and exicutes code relating to MACHINE DOWN BUTTON
+				buttonMachineDownEvent = buttonMachineDown.handleEvent(event)
+				if ('click' in buttonMachineDownEvent or scanVal == '#MACHINE_DOWN') and cur_AL.getCurrentState()[1] == True:
+					GUI_STATE = 5
+	 
+				#Captures events and exicutes code relating to MACHINE UP BUTTON
+				buttonMachineUpEvent = buttonMachineUp.handleEvent(event)
+				if ('click' in buttonMachineUpEvent or scanVal == '#MACHINE_UP') and cur_AL.getCurrentState()[1] == False:
+					GUI_STATE = 6
+
+				#Captures events and exicutes code relating to ADJUST COUNT BUTTON
+				buttonAdjustCountEvent = buttonAdjustCount.handleEvent(event)
+				if 'click' in buttonAdjustCountEvent and not cur_AL.getCurrentState()[0] == None:
+					GUI_STATE = 7
+					numPadDic['+/-'].bgcolor = GREEN
+					displayText =[]
+
+				#Captures events and exicutes code relating to CONFIRM BUTTON
+				buttonConfirmEvent = buttonConfirm.handleEvent(event)
+				if 'click' in buttonConfirmEvent or scanVal == '#CONFIRM':
+
+					#Figure out what state the GUI is currently in and perform the corrisponding opperations
+					if GUI_STATE  ==2 and not displayText==[] and not cur_AL.getCurrentState()[0]==displayText[0]:
+						
+						#IF this goto that... =P
+						if cur_AL.getCurrentState()[0] == None:
+							cur_AL.changeCurrentWO(displayText[0])
+							displayText=[]
+							GUI_STATE = 0
+						else:
+							GUI_STATE = 2.1
+
+						scanVal = ''
+
+					elif GUI_STATE ==2.5 and not displayText==[]:
+							cur_AL.changePeacesPerBox(int(displayText[0]))
+							cur_AL.refreshFailCount()
+							displayText=[]
+							GUI_STATE = 0
+
+					elif GUI_STATE  ==3 and not displayText==[]:
+
+						for inputs in displayText:
+							if not (inputs == '&' or inputs == ''):
+								addRemove.append(inputs)
+
+						displayText=[]
+						GUI_STATE = 3.1
+						scanVal = ''
+
+					elif GUI_STATE  ==4 and not addRemove==[]:
+
+						displayText=[]
+						GUI_STATE = 4.1
+						scanVal = ''
+
+					elif GUI_STATE == 7 and not displayText==[]:
+
+						GUI_STATE = 7.1
+						scanVal = ''
+
+					elif GUI_STATE == 7.1:
+
+						truth = False
+
+						if not propID == '':
+							if buttonTotalCount.bgcolor == GREEN:
+								if numPadDic['+/-'].bgcolor == GREEN:
+									truth = cur_AL.inc_CurTotalCount(amount = int(displayText[0]), force = True, ID = propID)
+									#print "1" , truth, displayText[0], int(displayText[0]), propID
+								else:
+									truth = cur_AL.inc_CurTotalCount(amount = -1*int(displayText[0]), force = True, ID = propID)
+									#print "2" , truth
+							else:
+								if numPadDic['+/-'].bgcolor == GREEN:
+									truth = cur_AL.inc_CurBoxCount(amount = int(displayText[0]), force = True, ID = propID)
+									#print "3" , truth
+								else:
+									truth = cur_AL.inc_CurBoxCount(amount = -1*int(displayText[0]), force = True, ID = propID)
+									#print "4" , truth
+
+
+
+
+
+						if truth:
+							GUI_STATE = 0
+							propID = ''
+							displayText=[]
+
+						else:
+							propID=''
+
+
+					elif not scanVal == '#CONFIRM':
 						GUI_STATE = 0
-					else:
-						dwnReason = key
-						GUI_STATE = 5.5
+						displayText=[]
 
+		
+				#Captures events and exicutes code relating to CANCLE BUTTON
+				buttonCancleEvent = buttonCancle.handleEvent(event)
+				if 'click' in buttonCancleEvent or (scanVal == '#CANCEL' and not GUI_STATE ==2.1):
+					GUI_STATE = 0
+					displayText = []
+					scanVal = ''
 
-			buttonTotalCountEvent = buttonTotalCount.handleEvent(event)
-			buttonBoxCountEvent = buttonBoxCount.handleEvent(event)
-			if 'click' in buttonBoxCountEvent or 'click' in buttonTotalCountEvent:
-				tmp1 = buttonTotalCount.bgcolor
-				tmp2 = buttonBoxCount.bgcolor 
-				buttonTotalCount.bgcolor = tmp2
-				buttonBoxCount.bgcolor = tmp1
-
-			#Captures events and exicutes code relating to COMPLETE WORK ORDER BUTTONS
-			buttonCompleteEvent = buttonCompleteWO.handleEvent(event)
-			if ('click' in buttonCompleteEvent or scanVal == '#COMPLETE_WO') and not cur_AL.getCurrentState()[0]==None:
-				GUI_STATE = 1
-
-			#Captures events and exicutes code relating to CHANGE WORK ORDER BUTTONS
-			buttonChangeEvent = buttonChangeWO.handleEvent(event)
-			if 'click' in buttonChangeEvent or scanVal == '#CHANGE_WO':
-				GUI_STATE = 2
-				displayText = []
-
-			buttonBoxEvent = buttonSetBoxCount.handleEvent(event)
-			if ('click' in buttonBoxEvent or scanVal == '#CHANGE_PPB') and not cur_AL.getCurrentState()[0] == None:
-				GUI_STATE = 2.5
-				displayText = []
-
-			#Captures events and exicutes code relating to ADD EMPLOYEE BUTTONS
-			buttonAddEmployeeEvent = buttonAddEmployee.handleEvent(event)
-			if 'click' in buttonAddEmployeeEvent or scanVal == '#ADD_EMPLOYEE':
-				GUI_STATE = 3
-				displayText = []
-
-			#Captures events and exicutes code relating to REMOVE EMPLOYEE BUTTONS
-			buttonRemoveEmployeeEvent = buttonRemoveEmployee.handleEvent(event)
-			if 'click' in buttonRemoveEmployeeEvent or scanVal == '#REMOVE_EMPLOYEE':
-
-				#Heres where i set height and width of mini buttons for remove screen
-				MiniWidth = BUTTON_HEIGHT*2
-				MiniHeight = BUTTON_HEIGHT/2
-
-				#gets and calculates some basic displya variables
-				whosLoggedIn = cur_AL.stillLoggedOn()
-				count = len(whosLoggedIn)
-				pannelWidth = math.ceil(math.sqrt(count))
-				rowCount = math.floor((WINDOWHEIGHT-(4*BRD_SPACER)-BUTTON_HEIGHT- 150+BRD_SPACER)/(MiniHeight+BRD_SPACER))
-				colCount = math.ceil(count/rowCount)
-
-				#Calculate initial x and y POS
-				xpos = WINDOWWIDTH/2 - ((colCount/2)*MiniWidth)-((math.floor(colCount/2))*BRD_SPACER)
-				ypos = 150+BRD_SPACER
-
-				#Reset Button dictionary
-				stillLoggedIn = dict()
-
-				#Loop that populates buttong dictionary
-				for emp in whosLoggedIn:
-					stillLoggedIn[emp[0]] = pygbutton.PygButton((xpos , ypos, MiniWidth, MiniHeight), emp[0])
-					ypos += MiniHeight+BRD_SPACER
-
-					if ypos > WINDOWHEIGHT-(4*BRD_SPACER)-BUTTON_HEIGHT:
-						xpos += MiniWidth+BRD_SPACER
-						ypos = 150+BRD_SPACER
-
-				#onto the next one!!! (one == state) ... =)
-				GUI_STATE = 4
-
-			#Captures events and exicutes code relating to MACHINE DOWN BUTTON
-			buttonMachineDownEvent = buttonMachineDown.handleEvent(event)
-			if ('click' in buttonMachineDownEvent or scanVal == '#MACHINE_DOWN') and cur_AL.getCurrentState()[1] == True:
-				GUI_STATE = 5
- 
-			#Captures events and exicutes code relating to MACHINE UP BUTTON
-			buttonMachineUpEvent = buttonMachineUp.handleEvent(event)
-			if ('click' in buttonMachineUpEvent or scanVal == '#MACHINE_UP') and cur_AL.getCurrentState()[1] == False:
-				GUI_STATE = 6
-
-			#Captures events and exicutes code relating to ADJUST COUNT BUTTON
-			buttonAdjustCountEvent = buttonAdjustCount.handleEvent(event)
-			if 'click' in buttonAdjustCountEvent and not cur_AL.getCurrentState()[0] == None:
-				GUI_STATE = 7
-				numPadDic['+/-'].bgcolor = GREEN
-				displayText =[]
-
-			#Captures events and exicutes code relating to CONFIRM BUTTON
-			buttonConfirmEvent = buttonConfirm.handleEvent(event)
-			if 'click' in buttonConfirmEvent or scanVal == '#CONFIRM':
-
-				#Figure out what state the GUI is currently in and perform the corrisponding opperations
-				if GUI_STATE  ==2 and not displayText==[] and not cur_AL.getCurrentState()[0]==displayText[0]:
-					
-					#IF this goto that... =P
-					if cur_AL.getCurrentState()[0] == None:
+				#Captures events and exicutes code relating to YES BUTTON
+				buttonYesEvent = buttonYes.handleEvent(event)
+				if 'click' in buttonYesEvent or (scanVal == '#CONFIRM' and (not GUI_STATE ==3.1 or not GUI_STATE ==4.1)):
+					if GUI_STATE ==2.1:
 						cur_AL.changeCurrentWO(displayText[0])
 						displayText=[]
 						GUI_STATE = 0
-					else:
-						GUI_STATE = 2.1
+						scanVal = ''
 
-					scanVal = ''
-
-				elif GUI_STATE ==2.5 and not displayText==[]:
-						cur_AL.changePeacesPerBox(int(displayText[0]))
-						cur_AL.refreshFailCount()
+					elif GUI_STATE ==1:
+						cur_AL.finishCurrentWO()
 						displayText=[]
-						GUI_STATE = 0
-
-				elif GUI_STATE  ==3 and not displayText==[]:
-
-					for inputs in displayText:
-						if not (inputs == '&' or inputs == ''):
-							addRemove.append(inputs)
-
-					displayText=[]
-					GUI_STATE = 3.1
-					scanVal = ''
-
-				elif GUI_STATE  ==4 and not addRemove==[]:
-
-					displayText=[]
-					GUI_STATE = 4.1
-					scanVal = ''
-
-				elif GUI_STATE == 7 and not displayText==[]:
-
-					GUI_STATE = 7.1
-					scanVal = ''
-
-				elif GUI_STATE == 7.1:
-
-					truth = False
-
-					if not propID == '':
-						if buttonTotalCount.bgcolor == GREEN:
-							if numPadDic['+/-'].bgcolor == GREEN:
-								truth = cur_AL.inc_CurTotalCount(amount = int(displayText[0]), force = True, ID = propID)
-								#print "1" , truth, displayText[0], int(displayText[0]), propID
-							else:
-								truth = cur_AL.inc_CurTotalCount(amount = -1*int(displayText[0]), force = True, ID = propID)
-								#print "2" , truth
-						else:
-							if numPadDic['+/-'].bgcolor == GREEN:
-								truth = cur_AL.inc_CurBoxCount(amount = int(displayText[0]), force = True, ID = propID)
-								#print "3" , truth
-							else:
-								truth = cur_AL.inc_CurBoxCount(amount = -1*int(displayText[0]), force = True, ID = propID)
-								#print "4" , truth
-
-
-
-
-
-					if truth:
-						GUI_STATE = 0
-						propID = ''
-						displayText=[]
-
-					else:
-						propID=''
-
-
-				elif not scanVal == '#CONFIRM':
-					GUI_STATE = 0
-					displayText=[]
-
-	
-			#Captures events and exicutes code relating to CANCLE BUTTON
-			buttonCancleEvent = buttonCancle.handleEvent(event)
-			if 'click' in buttonCancleEvent or (scanVal == '#CANCEL' and not GUI_STATE ==2.1):
-				GUI_STATE = 0
-				displayText = []
-				scanVal = ''
-
-			#Captures events and exicutes code relating to YES BUTTON
-			buttonYesEvent = buttonYes.handleEvent(event)
-			if 'click' in buttonYesEvent or (scanVal == '#CONFIRM' and (not GUI_STATE ==3.1 or not GUI_STATE ==4.1)):
-				if GUI_STATE ==2.1:
-					cur_AL.changeCurrentWO(displayText[0])
-					displayText=[]
-					GUI_STATE = 0
-					scanVal = ''
-
-				elif GUI_STATE ==1:
-					cur_AL.finishCurrentWO()
-					displayText=[]
-					GUI_STATE = 0
-					scanVal = ''
-
-				elif GUI_STATE == 6:
-					if not displayText == []:
-						cur_AL.changeState(cur_AL.getName(displayText[-1]))
-						displayText = []
 						GUI_STATE = 0
 						scanVal = ''
 
-				elif GUI_STATE == 5.5:
-					if not displayText == [] or dwnReason == None:
-						cur_AL.changeState(cur_AL.getName(displayText[-1]), dwnReason)
-						displayText = []
-						dwnReason = None
+					elif GUI_STATE == 6:
+						if not displayText == []:
+							cur_AL.changeState(cur_AL.getName(displayText[-1]))
+							displayText = []
+							GUI_STATE = 0
+							scanVal = ''
+
+					elif GUI_STATE == 5.5:
+						if not displayText == [] or dwnReason == None:
+							cur_AL.changeState(cur_AL.getName(displayText[-1]), dwnReason)
+							displayText = []
+							dwnReason = None
+							GUI_STATE = 0
+							scanVal = ''
+
+					elif not scanVal == '#CONFIRM':
+						GUI_STATE = 0
+						displayText=[]
+						scanVal = ''
+
+				#Captures events and exicutes code relating to NO BUTTON
+				buttonNoEvent = buttonNo.handleEvent(event)
+				if 'click' in buttonNoEvent or scanVal == '#CANCLE':
+					if GUI_STATE ==2.1:
+						cur_AL.changeCurrentWO(displayText[0],False)
+						displayText=[]
 						GUI_STATE = 0
 						scanVal = ''
 
-				elif not scanVal == '#CONFIRM':
-					GUI_STATE = 0
-					displayText=[]
-					scanVal = ''
+					else:
+						GUI_STATE = 0
+						displayText = []
+						scanVal = ''
 
-			#Captures events and exicutes code relating to NO BUTTON
-			buttonNoEvent = buttonNo.handleEvent(event)
-			if 'click' in buttonNoEvent or scanVal == '#CANCLE':
-				if GUI_STATE ==2.1:
-					cur_AL.changeCurrentWO(displayText[0],False)
-					displayText=[]
-					GUI_STATE = 0
-					scanVal = ''
+				#Captures events and exicutes code relating to OK BUTTON
+				buttonOkEvent = buttonOk.handleEvent(event)
+				if 'click' in buttonOkEvent or scanVal == '#CONFIRM':
+					if GUI_STATE == 3.1:
+						for emp in addRemove:
+							cur_AL.addEmployee(emp)
+						addRemove =[]
+						GUI_STATE = 0
+						scanVal = ''
 
-				else:
-					GUI_STATE = 0
-					displayText = []
-					scanVal = ''
+					elif GUI_STATE == 4.1:
+						for emp in addRemove:
+							cur_AL.removeEmployee(emp)
+						addRemove = []
+						GUI_STATE = 0
+						scanVal = ''
 
-			#Captures events and exicutes code relating to OK BUTTON
-			buttonOkEvent = buttonOk.handleEvent(event)
-			if 'click' in buttonOkEvent or scanVal == '#CONFIRM':
-				if GUI_STATE == 3.1:
-					for emp in addRemove:
-						cur_AL.addEmployee(emp)
-					addRemove =[]
-					GUI_STATE = 0
-					scanVal = ''
-
-				elif GUI_STATE == 4.1:
-					for emp in addRemove:
-						cur_AL.removeEmployee(emp)
-					addRemove = []
-					GUI_STATE = 0
-					scanVal = ''
-
-				else:
-					GUI_STATE = 0
-					displayText = []
-					addRemove = []
-					scanVal = ''
+					else:
+						GUI_STATE = 0
+						displayText = []
+						addRemove = []
+						scanVal = ''
 
 		'''
 		BELOW IS WHERE ALL DYNAMIC AND SOME ADAPTIVE STATIC CONTENT GETS CREATED BASE ON CURENT GUI_STATE
@@ -1159,6 +1171,22 @@ def main():
 						x = fontObjectHeader.render(str(displayText[0])+' Pieces',False,numPadDic['+/-'].bgcolor)
 						x_pos = WINDOWWIDTH/2-x.get_rect()[2]/2
 						pygame.display.get_surface().blit(x,(x_pos,y_pos))
+			elif GUI_STATE == 8:
+				pygame.draw.rect(DISPLAYSURFACE, RED, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER)))
+
+				Header_SO = pygame.font.Font('freesansbold.ttf',75).render("<! NOTICE !>",False, WHITE)
+				Header_Rect = Header_SO.get_rect()
+				Header_Rect.topleft = (WINDOWWIDTH/2 - Header_Rect[2]/2,BRD_SPACER*4)
+
+				Header_SO2 = fontObjectHeader.render(currentMsgDisp[0],False, BLACK)
+				Header_Rect2 = Header_SO2.get_rect()
+				Header_Rect2.topleft = (WINDOWWIDTH/2 - Header_Rect2[2]/2,WINDOWHEIGHT/2 - Header_Rect2[3]/2)
+
+				pygame.draw.rect(DISPLAYSURFACE, RED, Header_Rect)
+				DISPLAYSURFACE.blit(Header_SO,Header_Rect)
+
+				pygame.draw.rect(DISPLAYSURFACE, RED, Header_Rect2)
+				DISPLAYSURFACE.blit(Header_SO2,Header_Rect2)
 
 		else:
 

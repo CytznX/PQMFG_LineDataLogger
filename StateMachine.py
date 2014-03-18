@@ -8,7 +8,8 @@ rpi = False
 
 #Import the needed moduals
 import time, datetime, string, socket
-import PQMFG_TCPClient 
+import PQMFG_TCPClient
+import Queue
 
 if rpi:
 	import RPi.GPIO as GPIO
@@ -52,6 +53,9 @@ class ActivityLogger:
 		self.peacesPerBox = None
 		self.modCounter = None
 		self.modBoxCounter = None
+
+		#Used for showing messages to users
+		self.Messages = Queue.Queue()
 		
 		#Arraylist of what count adjustments took place and when
 		self.adjustments = []
@@ -89,6 +93,15 @@ class ActivityLogger:
 			GPIO.cleanup()
 		self.CurrentTCPServer.stop()
 		self.CurrentTCPServer.join()
+
+	def getMessage(self):
+		if not self.Messages.empty():
+			return self.Messages.get()
+		else:
+			return None
+
+	def pushMessage(self, message, dispTime):
+		self.Messages.put((message,dispTime))
 
 	def getCounts(self):
 		return self.totalCount, self.failCount, self.boxCount, self.peacesPerBox  
