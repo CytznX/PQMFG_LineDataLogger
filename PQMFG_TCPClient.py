@@ -93,6 +93,9 @@ class ThreadedTCPNetworkAgent(Thread):
 		#close the damn pipe from this side
 		clientsock.close()
 
+	def getSchedual(self):
+		pass
+
 	def stop(self):
 		#set runflag to False
 		self.running = False

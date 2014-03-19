@@ -254,8 +254,11 @@ def main():
 	buttonCompleteWO.font = pygame.font.Font('freesansbold.ttf',13)
 	buttonCompleteWO.bgcolor = GREEN
 
-	buttonSetBoxCount = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 3*BRD_SPACER+BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 'Set Pieces Per Box (PPB)')
+	buttonSetBoxCount = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 3*BRD_SPACER+BUTTON_HEIGHT, BUTTON_WIDTH/2 -(BRD_SPACER/2), BUTTON_HEIGHT), 'Set PPB')
 	buttonSetBoxCount.font = fontObjectDefault
+
+	buttonAdjustCount = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH+(BUTTON_WIDTH/2 +(BRD_SPACER/2)), 3*BRD_SPACER+BUTTON_HEIGHT, BUTTON_WIDTH/2 -(BRD_SPACER/2), BUTTON_HEIGHT), 'Adjust Count')
+	buttonAdjustCount.font = fontObjectDefault
 
 	buttonAddEmployee = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 5*BRD_SPACER+2*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 'Add Employee(s)')
 	buttonAddEmployee.font = fontObjectDefault
@@ -269,8 +272,9 @@ def main():
 	buttonMachineUp = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 8*BRD_SPACER+4*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 'Bring Line Up')
 	buttonMachineUp.font = fontObjectDefault
 
-	buttonAdjustCount = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 11*BRD_SPACER+6*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 'Adjust Product Count')
-	buttonAdjustCount.font = fontObjectDefault
+	ShowSchedual = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 11*BRD_SPACER+6*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 'Line Schedule')
+	ShowSchedual.font = fontObjectDefault
+	ShowSchedual.bgcolor = (50,50,255)
 
 	buttonShutdown = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 12*BRD_SPACER+7*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 'ShutDown Line Logger')
 	buttonShutdown.font = fontObjectDefault
@@ -586,6 +590,11 @@ def main():
 					numPadDic['+/-'].bgcolor = GREEN
 					displayText =[]
 
+				#Captures events realating to show schedual buttoin
+				ShowSchedualEvent = ShowSchedual.handleEvent(event)
+				if 'click' in ShowSchedualEvent:
+					pass
+
 				#Captures events and exicutes code relating to CONFIRM BUTTON
 				buttonConfirmEvent = buttonConfirm.handleEvent(event)
 				if 'click' in buttonConfirmEvent or scanVal == '#CONFIRM':
@@ -649,10 +658,6 @@ def main():
 								else:
 									truth = cur_AL.inc_CurBoxCount(amount = -1*int(displayText[0]), force = True, ID = propID)
 									#print "4" , truth
-
-
-
-
 
 						if truth:
 							GUI_STATE = 0
@@ -775,6 +780,7 @@ def main():
 			buttonAdjustCount.visible = False
 			buttonShutdown.visible = False
 			buttonOk.visible = False
+			ShowSchedual.visible = False
 
 			buttonTotalCount.visible = False
 			buttonBoxCount.visible = False
@@ -1171,10 +1177,12 @@ def main():
 						x = fontObjectHeader.render(str(displayText[0])+' Pieces',False,numPadDic['+/-'].bgcolor)
 						x_pos = WINDOWWIDTH/2-x.get_rect()[2]/2
 						pygame.display.get_surface().blit(x,(x_pos,y_pos))
+			
 			elif GUI_STATE == 8:
+
 				pygame.draw.rect(DISPLAYSURFACE, RED, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER)))
 
-				Header_SO = pygame.font.Font('freesansbold.ttf',75).render("<! NOTICE !>",False, WHITE)
+				Header_SO = pygame.font.Font('freesansbold.ttf',75).render("<! NOTICE "+str(int(int(currentMsgDisp[2])-(time.time()-currentMsgDisp[1])))+"!>",False, WHITE)
 				Header_Rect = Header_SO.get_rect()
 				Header_Rect.topleft = (WINDOWWIDTH/2 - Header_Rect[2]/2,BRD_SPACER*4)
 
@@ -1201,6 +1209,7 @@ def main():
 			buttonMachineUp.visible = True
 			buttonAdjustCount.visible = True
 			buttonShutdown.visible = True
+			ShowSchedual.visible = True
 
 			buttonTotalCount.visible = False
 			buttonBoxCount.visible = False
@@ -1591,6 +1600,7 @@ def main():
 		buttonOk.draw(DISPLAYSURFACE)
 		buttonTotalCount.draw(DISPLAYSURFACE)
 		buttonBoxCount.draw(DISPLAYSURFACE)
+		ShowSchedual.draw(DISPLAYSURFACE)
 
 		#only for remove pane
 		for key in stillLoggedIn.keys():
