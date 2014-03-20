@@ -6,7 +6,7 @@ import thread
 class ThreadedTCPNetworkAgent(Thread):
 	
 	'''Default constructor... Much Love''' 
-	def __init__(self, ActivityLogger, portNum, BuffSize=1024):
+	def __init__(self, ActivityLogger,FserverIP, FserverPort,portNum, BuffSize=1024):
 
 		#Initialize myself as thread... =P
 		Thread.__init__(self)
@@ -18,11 +18,19 @@ class ThreadedTCPNetworkAgent(Thread):
 		self._BuffSize = BuffSize
 		self.Addr = ('', portNum)
 
+		self.FserverIP = FserverIP
+		self.FserverPort = FserverPort
+
 		#create the socket that will be listening on
 		self.serversock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		self.serversock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 		self.serversock.bind(self.Addr)
 		self.serversock.listen(5)
+
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.connect((self.FserverIP, self.FserverPort))
+		s.send('#CONNECT '+str(self.CurLogger.MachineID))
+		s.close()
 
 	'''Heres where we spawn a minin thread that manages a individual connection to this machine'''
 	def miniThread(self,clientsock,addr):
@@ -93,10 +101,38 @@ class ThreadedTCPNetworkAgent(Thread):
 		#close the damn pipe from this side
 		clientsock.close()
 
+	def sendToServer(self, data, splitter = '////'):
+		succsesss = False
+		try: 
+			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			s.connect((self.FserverIP, self.FserverPort))
+
+			for message in data:
+				s.send(message)
+				s.send(splitter)
+
+			s.close()
+			succsesss = True
+		except socket.error:
+			succsesss = False
+			print "<<<<<<<<<<<<<<<Could not connect to server>>>>>>>>>>>>>>."
+			for message in data:
+				print message
+			print '<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>'
+		return succsesss
+
 	def getSchedual(self):
+		#NEeds to query jims SQL server... check back with him later
 		pass
 
 	def stop(self):
+
+		#Sending Shutdown Sig
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.connect((self.FserverIP, self.FserverPort))
+		s.send('#SHUTTING_DOWN')
+		s.close()
+
 		#set runflag to False
 		self.running = False
 

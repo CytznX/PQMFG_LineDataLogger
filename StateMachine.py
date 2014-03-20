@@ -29,7 +29,7 @@ class ActivityLogger:
 		#If this isnt being tested on my computer initialize piface
 
 		#The TCP server that waits for commands and is allowed to pull data from logger
-		self.CurrentTCPServer = PQMFG_TCPClient.ThreadedTCPNetworkAgent(self, self.port)
+		self.CurrentTCPServer = PQMFG_TCPClient.ThreadedTCPNetworkAgent(self, self.FserverIP, self.FserverPort, self.port)
 		self.CurrentTCPServer.start()
 
 		#Current WO that is being run
@@ -309,7 +309,7 @@ class ActivityLogger:
 		if not(self.current_WO == None) and SavePrevious:
 
 			'''First Send all relivant OLD data via TCP to server'''
-			connected = self.sendToServer(self.getFormatedLog())
+			connected = self.CurrentTCPServer.sendToServer(self.getFormatedLog())
 			
 		#Current WO that is being run
 		self.current_WO = WO_Name
@@ -355,7 +355,7 @@ class ActivityLogger:
 		if not self.currentState == None:
 
 			'''Create TCP Client and make it send shit '''
-			finishSuccsess = self.sendToServer(self.getFormatedLog())
+			finishSuccsess = self.CurrentTCPServer.sendToServer(self.getFormatedLog())
 
 			#Current WO that is being run
 			self.current_WO = None
@@ -666,26 +666,6 @@ class ActivityLogger:
 			Totals_Quality_Control += (end-start).seconds
 
 		return (Totals_Maitenance, Totals_Inventory, Totals_Quality_Control)
-
-	def sendToServer(self, data):
-		succsesss = False
-		try: 
-			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			s.connect((self.FserverIP, self.FserverPort))
-
-			for message in data:
-				s.send(message)
-				s.send('////')
-
-			s.close()
-			succsesss = True
-		except socket.error:
-			succsesss = False
-			print "<<<<<<<<<<<<<<<Could not connect to server>>>>>>>>>>>>>>."
-			for message in data:
-				print message
-			print '<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>'
-		return succsesss
 
 	def getFormatedLog(self, stillRunning = False):
 
