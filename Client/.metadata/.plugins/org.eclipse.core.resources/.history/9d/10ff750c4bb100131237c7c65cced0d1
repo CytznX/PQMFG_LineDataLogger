@@ -1,0 +1,6 @@
+public class NETAddress 
+{
+    int Port;
+    String IP;
+    // etc
+}

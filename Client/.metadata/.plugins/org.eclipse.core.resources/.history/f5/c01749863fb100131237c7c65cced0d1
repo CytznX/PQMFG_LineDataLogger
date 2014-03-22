@@ -1,0 +1,14 @@
+
+
+
+public class ClientAlpha
+{
+	public ClientAlpha(int width,int Height)
+	{
+		
+	}
+	
+	public static void main(String[] args) {
+		
+	}
+}

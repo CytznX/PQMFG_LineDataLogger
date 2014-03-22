@@ -1,0 +1,21 @@
+import java.net.Socket;
+
+
+
+
+public class ClientAlpha
+{
+	private Socket clientSocket = null;
+	private String IpAddress = "";
+	private int PortNum = 5005;
+	
+	
+	public ClientAlpha(int width,int Height)
+	{
+		clientSocket = new Socket(IpAddress, PortNum);
+	}
+	
+	public static void main(String[] args) {
+		
+	}
+}

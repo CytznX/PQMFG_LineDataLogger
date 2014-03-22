@@ -1,0 +1,18 @@
+public class NETAddress 
+{
+    int Port;
+    InetAddress IP;
+    // etc
+    
+    public NETAddress()
+    {
+        int Port = -1;
+        String IP = null;
+    }
+    public void setAdress(String input)
+    {
+    	IP = InetAddress.getByName(input);
+    }
+    
+    //InetAddress addr = InetAddress.getByName("127.0.0.1")
+}

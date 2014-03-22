@@ -1,0 +1,13 @@
+public class NETAddress 
+{
+    int Port;
+    String IP;
+    // etc
+    
+    public NETAddress()
+    {
+        int Port= null;
+        String IP = null;
+    }
+    
+}
