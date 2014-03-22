@@ -1,0 +1,11 @@
+Connection Recieved@(03/22/14, 15:26:11) From Addr: ('127.0.0.1', 55867)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(03/22/14, 15:26:50) From Addr: ('127.0.0.1', 55881)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(03/22/14, 15:40:47) From Addr: ('127.0.0.1', 55971)
+Connection Recieved@(03/22/14, 15:41:33) From Addr: ('127.0.0.1', 55988)
+Connection Recieved@(03/22/14, 15:42:03) From Addr: ('127.0.0.1', 55995)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
