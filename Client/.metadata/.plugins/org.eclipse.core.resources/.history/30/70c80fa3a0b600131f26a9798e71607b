@@ -411,8 +411,6 @@ public class ClientAlpha implements ActionListener
 					}
 					if (DoIExist != null)
 					{
-
-						String StartTime = null;
 						String minew = "";
 						int cnt = 0;
 						for (String line : DoIExist) 
@@ -423,23 +421,19 @@ public class ClientAlpha implements ActionListener
 								LineWOField.setForeground(Color.GREEN);
 								LineWOField.setBackground(Color.BLACK);
 							}
-							else if (cnt ==1)
-							{
-								cnt += 1;
-							}
 							else if (cnt != 1)
 							{
-								minew += (line+"\n");
+								minew += line+"\n";
 							}
-
+							cnt += 1;
 						}
-
+						
 						LineHeaderField.setText(elements[0]);
 						LineHeaderField.setForeground(Color.GREEN);
 						LineHeaderField.setBackground(Color.BLACK);
 
 						MainView.setText(minew);
-
+						
 						LineTimeField.setText("Line"+elements[0]+": Elapsed Time");
 						LineTimeField.setForeground(Color.GREEN);
 						LineTimeField.setBackground(Color.BLACK);
@@ -451,7 +445,7 @@ public class ClientAlpha implements ActionListener
 						LineHeaderField.setBackground(Color.BLACK);
 
 						MainView.setText("--Connection Established-- \nNo Work Order Currently Running");
-
+						
 						LineWOField.setText("None");
 						LineWOField.setForeground(Color.RED);
 						LineWOField.setBackground(Color.BLACK);
