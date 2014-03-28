@@ -434,14 +434,13 @@ public class ClientAlpha implements ActionListener
 							}
 							else if (cnt ==3)
 							{
-								int seconds = Integer.parseInt(line.split("\\s+")[1]);
-								
+
 								int hr = (int)(seconds/3600);
 								int rem = (int)(seconds%3600);
 								int mn = rem/60;
 								int sec = rem%60;
 
-								LineTimeField.setText(hr+":"+mn+":"+sec);
+								LineTimeField.setText("Line"+elements[0]+": Elapsed Time");
 								LineTimeField.setForeground(Color.GREEN);
 								LineTimeField.setBackground(Color.BLACK);
 							}

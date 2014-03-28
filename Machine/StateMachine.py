@@ -703,7 +703,7 @@ class ActivityLogger:
 			now = datetime.datetime.now()
 
 			#if machine is running Declare, otherwise assume W/O is finished
-			if stillRunning:
+			if stillRunning or not self.current_WO == None:
 				log += ['Running '+str((now-self.WO_StartTime).seconds)]
 			else:
 				log += ['Finished '+str((now-self.WO_StartTime).seconds)]
@@ -712,9 +712,9 @@ class ActivityLogger:
 			log +=[str(sum(self.totalCount)), str(self.totalCount),str(sum(self.boxCount)), str(self.boxCount),str(sum(self.failCount))]
 
 			if not self.peacesPerBox == None:
-				log +=[str(self.peacesPerBox)]
+				log +=[str(self.peacesPerBox),'']
 			else:
-				log +=['']
+				log +=['null','']
 			#get keys from working employee dictionary
 			empKeys = self.EmpWorkingDic.keys()
 			
@@ -793,11 +793,11 @@ class ActivityLogger:
 			self.BreakDownTime = []
 			'''
 
-			adjustMessage=''
+			adjustMessage=[]
 			for adjCounts in self.adjustments:
-				adjustMessage+= '('+str(adjCounts[0])+', '+str(adjCounts[1])+', '+str(adjCounts[2])+', '+adjCounts[3].strftime('%H:%M:%S')+')' 
+				adjustMessage+= ['('+str(adjCounts[0])+', '+str(adjCounts[1])+', '+str(adjCounts[2])+', '+adjCounts[3].strftime('%H:%M:%S')+')'] 
 				
-			log+=['---Adjustments----',adjustMessage,'']
+			log+=['---Adjustments----']+adjustMessage+['']
 
 
 			maintainMsg = ''

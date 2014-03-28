@@ -441,7 +441,7 @@ public class ClientAlpha implements ActionListener
 								int mn = rem/60;
 								int sec = rem%60;
 
-								LineTimeField.setText(hr+":"+mn+":"+sec);
+								LineTimeField.setText("Line"+elements[0]+": Elapsed Time");
 								LineTimeField.setForeground(Color.GREEN);
 								LineTimeField.setBackground(Color.BLACK);
 							}
