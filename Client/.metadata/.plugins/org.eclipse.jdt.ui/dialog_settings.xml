@@ -14,6 +14,11 @@
 	</section>
 	<section name="JavaElementSearchActions">
 	</section>
+	<section name="JavaSearchPage">
+		<item value="false" key="CASE_SENSITIVE"/>
+		<item value="11" key="INCLUDE_MASK"/>
+		<item value="0" key="HISTORY_SIZE"/>
+	</section>
 	<section name="quick_assist_proposal_size">
 	</section>
 	<section name="ProblemSeveritiesConfigurationBlock">
@@ -25,5 +30,7 @@
 		<item value="false" key="expanded6"/>
 		<item value="false" key="expanded5"/>
 		<item value="false" key="expanded0"/>
+	</section>
+	<section name="BreadcrumbItemDropDown">
 	</section>
 </section>

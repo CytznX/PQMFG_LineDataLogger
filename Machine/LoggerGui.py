@@ -336,7 +336,8 @@ def main():
 	dwnTimeButtons['Maitenance'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2-int(0.5*BUTTON_HEIGHT)-BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Maitenance')
 	dwnTimeButtons['Inventory'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2+int(0.5*BUTTON_HEIGHT), BUTTON_WIDTH, BUTTON_HEIGHT), 'Inventory')
 	dwnTimeButtons['Quality_Control'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2+int(1.5*BUTTON_HEIGHT)+BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Quality_Control')
-	dwnTimeButtons['Mid_Cancle'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2+int(2.5*BUTTON_HEIGHT)+2*BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Cancel')
+	dwnTimeButtons['Break'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2+int(2.5*BUTTON_HEIGHT)+2*BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Break')
+	dwnTimeButtons['Mid_Cancle'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2+int(3.5*BUTTON_HEIGHT)+3*BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Cancel')
 
 	#Itterate over button dictionaries and set there visability to False 
 	for key in dwnTimeButtons.keys():
@@ -762,7 +763,6 @@ def main():
 		#reset after previous itteration
 		dynamicContent = []
 		DyMessageLengths = []
-		Dy2MessageLengths = []
 		Stat2MessageLengths = []
 		
 		#This is is what determines what gets drawn to screen 
@@ -1398,12 +1398,20 @@ def main():
 			Stat2MessageLengths.append(QCDwnTime_Rect[0]+QCDwnTime_Rect[2])
 			dynamicContent.append((QCDwnTime_SO,QCDwnTime_Rect))
 
+			#Static Break message
+			BreakDwnTime_SO = fontObjectDefault.render('Break DwnTime:',False, WHITE)
+			BreakDwnTime_Rect = BreakDwnTime_SO.get_rect()
+			BreakDwnTime_Rect.topleft = (staticR2StartPos,DY_MachineStatus_Rect[1]+DY_MachineStatus_Rect[3])
+
+			Stat2MessageLengths.append(BreakDwnTime_Rect[0]+BreakDwnTime_Rect[2])
+			dynamicContent.append((BreakDwnTime_SO,BreakDwnTime_Rect))
+
 			#static seperator text
 			Seperator_SO = fontObjectDefault.render('--------------------------------------------',False, WHITE)
 			Seperator_Rect = Seperator_SO.get_rect()
 			Seperator_Rect.topleft = (staticR2StartPos,DY_MachineStatus_Rect[1]+DY_MachineStatus_Rect[3]+TXT_SPACER)
 
-			dynamicContent.append((Seperator_SO,Seperator_Rect))
+			#dynamicContent.append((Seperator_SO,Seperator_Rect))
 
 			#Static totola dwn time msg
 			TotalDwnTime_SO = fontObjectDefault.render('Total DwnTime:',False, WHITE)
@@ -1422,16 +1430,18 @@ def main():
 			dynamicR2StartPos = max(Stat2MessageLengths)+TXT_SPACER
 
 			#Gets and formates Data
-			Totals_Maitenance, Totals_Inventory, Totals_Quality_Control = cur_AL.getDwnTimesTotals()
-			TotalDwnTime = cur_AL.formatDiffDateTime(Totals_Maitenance+Totals_Inventory+Totals_Quality_Control)
+			Totals_Maitenance, Totals_Inventory, Totals_Quality_Control, Totals_Break = cur_AL.getDwnTimesTotals()
+			TotalDwnTime = cur_AL.formatDiffDateTime(Totals_Maitenance+Totals_Inventory+Totals_Quality_Control+Totals_Break)
 
 			Totals_Maitenance = cur_AL.formatDiffDateTime(Totals_Maitenance)
 			Totals_Inventory = cur_AL.formatDiffDateTime(Totals_Inventory)
 			Totals_Quality_Control = cur_AL.formatDiffDateTime(Totals_Quality_Control)
+			Totals_Break = cur_AL.formatDiffDateTime(Totals_Break)
 
 			Maintainance_msg = ''
 			Inventory_msg = ''
 			QC_msg = ''
+			Break_msg = ''
 			TotalDwnTime_msg =''
 
 			for ttime in Totals_Maitenance:
@@ -1455,6 +1465,13 @@ def main():
 					QC_msg+=str(ttime)
 				QC_msg+=':'
 
+			for ttime in Totals_Break:
+				if ttime <= 9:
+					Break_msg+='0'+str(ttime)
+				else:
+					Break_msg+=str(ttime)
+				Break_msg+=':'
+
 			for ttime in TotalDwnTime:
 				if ttime <= 9:
 					TotalDwnTime_msg+='0'+str(ttime)
@@ -1465,6 +1482,7 @@ def main():
 			Maintainance_msg = Maintainance_msg[:-1]
 			Inventory_msg = Inventory_msg[:-1]
 			QC_msg = QC_msg[:-1]
+			Break_msg = Break_msg[:-1]
 			TotalDwnTime_msg=TotalDwnTime_msg[:-1]
 
 
@@ -1472,6 +1490,7 @@ def main():
 			mainColor = GREEN
 			InvColor = GREEN
 			QCColor = GREEN
+			BreakColor = GREEN
 			totalColor = GREEN
 
 			if dwnTimeReason == 'Maitenance':
@@ -1483,6 +1502,9 @@ def main():
 			elif dwnTimeReason == 'Quality_Control':
 				QCColor = RED
 				totalColor = RED
+			elif dwnTimeReason == 'Break':
+				BreakColor = RED
+				totalColor = RED
 			
 			#dynamic maintanance downtime totals
 			Dy_MainDwnTime_SO = fontObjectDefault.render(Maintainance_msg,False, mainColor)
@@ -1490,7 +1512,6 @@ def main():
 			Dy_MainDwnTime_Rect.topleft = (dynamicR2StartPos,MachineTag_Rect[1]+MachineTag_Rect[3]+TXT_SPACER)
 
 			dynamicContent.append((Dy_MainDwnTime_SO,Dy_MainDwnTime_Rect))
-			Dy2MessageLengths.append((Dy_MainDwnTime_SO,Dy_MainDwnTime_Rect))
 
 			#dynamic Inventory down time totals
 			Dy_InvDwnTime_SO = fontObjectDefault.render(Inventory_msg,False, InvColor)
@@ -1498,7 +1519,6 @@ def main():
 			Dy_InvDwnTime_Rect.topleft = (dynamicR2StartPos,DY_MachinCurWO_Rect[1]+DY_MachinCurWO_Rect[3])
 
 			dynamicContent.append((Dy_InvDwnTime_SO,Dy_InvDwnTime_Rect))
-			Dy2MessageLengths.append((Dy_InvDwnTime_SO,Dy_InvDwnTime_Rect))
 
 			#dynamic Quality Control down time totals
 			Dy_QCDwnTime_SO = fontObjectDefault.render(QC_msg,False, QCColor)
@@ -1506,7 +1526,13 @@ def main():
 			Dy_QCDwnTime_Rect.topleft = (dynamicR2StartPos,DY_MachineRun_Rect[1]+DY_MachineRun_Rect[3])
 
 			dynamicContent.append((Dy_QCDwnTime_SO,Dy_QCDwnTime_Rect))
-			Dy2MessageLengths.append((Dy_QCDwnTime_SO,Dy_QCDwnTime_Rect))
+
+			#dynamic Break down time totals
+			Dy_BreakDwnTime_SO = fontObjectDefault.render(Break_msg,False, BreakColor)
+			Dy_BreakDwnTime_Rect = Dy_BreakDwnTime_SO.get_rect()
+			Dy_BreakDwnTime_Rect.topleft = (dynamicR2StartPos,DY_MachineStatus_Rect[1]+DY_MachineStatus_Rect[3])
+
+			dynamicContent.append((Dy_BreakDwnTime_SO,Dy_BreakDwnTime_Rect))
 
 			#Dynamic total dwn time msg
 			Dy_TotalDwnTime_SO = fontObjectDefault.render(TotalDwnTime_msg,False, totalColor)
@@ -1515,7 +1541,6 @@ def main():
 
 			dynamicContent.append((Dy_TotalDwnTime_SO,Dy_TotalDwnTime_Rect))
 			Stat2MessageLengths.append(Dy_TotalDwnTime_Rect[0]+Dy_TotalDwnTime_Rect[2])
-			Dy2MessageLengths.append((Dy_TotalDwnTime_SO,Dy_TotalDwnTime_Rect))
 
 			'''
 			BELOW IS WHERE CURRENT STAFF GET READ IN AND PLACE ON SCREEN

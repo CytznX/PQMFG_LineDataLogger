@@ -81,7 +81,8 @@ class ThreadedTCPNetworkAgent(Thread):
 
 					self.CurLogger.pushMessage(msg, command[-1])
 					clientsock.send("AKN\n")
-
+				else:
+					clientsock.send("Try Again\n")
 			else:
 				if not data: 
 					break
@@ -90,13 +91,17 @@ class ThreadedTCPNetworkAgent(Thread):
 				elif "#STATUS" == data.rstrip(): 
 					for x in self.CurLogger.getFormatedLog():
 						clientsock.send(x+"\n")
+				elif "#STATUS_C" == data.rstrip(): 
+					for x in self.CurLogger.getFormatedLog():
+						clientsock.send(x+"\n")
+					break
 				elif "#ALIVE" == data.rstrip():
 					clientsock.send(str(self.CurLogger.getCurrentState()))
 				elif "#COMPLETE" == data.rstrip():
 					self.CurLogger.finishCurrentWO()
 					clientsock.send("AKN\n")
 				else:
-					clientsock.send("INVALID COMMAND\n")
+					clientsock.send("INVALID COMMAND, '"+data.rstrip()+"'\n")
 
 		#close the damn pipe from this side
 		clientsock.close()
@@ -108,6 +113,7 @@ class ThreadedTCPNetworkAgent(Thread):
 			s.connect((self.FserverIP, self.FserverPort))
 
 			for message in data:
+				#print message
 				s.send(message)
 				s.send(splitter)
 

@@ -1,18 +1,24 @@
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-
+/**
+ * MADE THIS for some Variable holding
+ * */
 public class NETAddress 
 {
+	//2 variables... a Port# and a IP address
     int Port;
     InetAddress IP;
-    // etc
     
+    //Simple constructer
     public NETAddress()
     {
         int Port = -1;
         String IP = null;
     }
     
+    /*
+     * Getters and Setters
+     * */
     public boolean setIP(String input)
     {
     	boolean myReturn = false;
@@ -29,7 +35,9 @@ public class NETAddress
     	
     	return myReturn;
     }
-    
+    /*
+     * Getters and Setters
+     * */
     public boolean setport(int input)
     {
     	boolean myRetrun = false;
@@ -42,6 +50,9 @@ public class NETAddress
     	
     	return myRetrun;
     }
+    /*
+     * Getters and Setters
+     * */
     public boolean setport(String input)
     {
     	

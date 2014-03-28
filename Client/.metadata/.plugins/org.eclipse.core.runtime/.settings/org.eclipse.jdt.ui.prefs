@@ -1,5 +1,6 @@
+breadcrumb.org.eclipse.jdt.ui.JavaPerspective=true
 content_assist_favorite_static_members=
-content_assist_lru_history=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><history maxLHS\="100" maxRHS\="10"/>
+content_assist_lru_history=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><history maxLHS\="100" maxRHS\="10"><lhs name\="NETAddress"><rhs name\="NETAddress"/></lhs><lhs name\="javax.swing.text.JTextComponent"><rhs name\="javax.swing.JTextArea"/></lhs><lhs name\="javax.swing.Scrollable"><rhs name\="javax.swing.JTextArea"/></lhs><lhs name\="javax.accessibility.Accessible"><rhs name\="javax.swing.JTextArea"/><rhs name\="javax.swing.JButton"/></lhs><lhs name\="javax.swing.JComponent"><rhs name\="javax.swing.JTextArea"/><rhs name\="javax.swing.JButton"/></lhs><lhs name\="javax.swing.TransferHandler$HasGetTransferHandler"><rhs name\="javax.swing.JTextArea"/><rhs name\="javax.swing.JButton"/></lhs><lhs name\="java.awt.Container"><rhs name\="javax.swing.JTextArea"/><rhs name\="javax.swing.JButton"/></lhs><lhs name\="java.awt.Component"><rhs name\="javax.swing.JTextArea"/><rhs name\="javax.swing.JButton"/></lhs><lhs name\="java.awt.image.ImageObserver"><rhs name\="javax.swing.JTextArea"/><rhs name\="javax.swing.JButton"/></lhs><lhs name\="java.awt.MenuContainer"><rhs name\="javax.swing.JTextArea"/><rhs name\="javax.swing.JButton"/></lhs><lhs name\="javax.swing.JTextArea"><rhs name\="javax.swing.JTextArea"/></lhs><lhs name\="java.awt.geom.Dimension2D"><rhs name\="java.awt.Dimension"/></lhs><lhs name\="java.lang.Cloneable"><rhs name\="java.awt.Dimension"/></lhs><lhs name\="java.awt.Dimension"><rhs name\="java.awt.Dimension"/></lhs><lhs name\="javax.swing.AbstractButton"><rhs name\="javax.swing.JButton"/></lhs><lhs name\="java.awt.ItemSelectable"><rhs name\="javax.swing.JButton"/></lhs><lhs name\="javax.swing.SwingConstants"><rhs name\="javax.swing.JButton"/></lhs><lhs name\="javax.swing.JButton"><rhs name\="javax.swing.JButton"/></lhs><lhs name\="java.awt.Paint"><rhs name\="java.awt.Color"/></lhs><lhs name\="java.awt.Transparency"><rhs name\="java.awt.Color"/></lhs><lhs name\="java.awt.Color"><rhs name\="java.awt.Color"/></lhs></history>
 content_assist_number_of_computers=13
 content_assist_parameters_background=127,127,127
 content_assist_parameters_foreground=127,127,127
@@ -41,6 +42,8 @@ outlinesortoption=T,SF,SI,SM,F,I,C,M,
 proposalOrderMigrated=true
 semanticHighlighting.deprecatedMember.color=255,255,255
 semanticHighlighting.field.color=255,79,0
+semanticHighlighting.number.color=255,0,0
+semanticHighlighting.number.enabled=true
 semanticHighlighting.staticField.color=139,105,20
 semanticHighlighting.staticMethodInvocation.color=26,188,241
 sourceHoverBackgroundColor=77,77,77

@@ -20,6 +20,17 @@ class ThreadedTCPNetworkAgent(Thread):
 
 		self.CurrentLines = dict()
 		
+		#FOR TESTING ONLY
+		self.testing = True
+		'''if self.testing:
+			self.CurrentLines[3] =("192.168.20.198", 5005)
+			self.CurrentLines[4] =("192.168.20.198", 5005)
+			self.CurrentLines[5] =("192.168.20.198", 5005)
+			self.CurrentLines[11] =("192.168.20.198", 5005)			  
+			self.CurrentLines[34] =("192.168.20.198", 5005)
+			self.CurrentLines[7] =("192.168.20.198", 5005)
+		'''
+		
 		#Creates the logg folder if it doesnt exist
 		self.WO_LogFolder = Folder+'/'
 		if not os.path.isdir(self.WO_LogFolder):
@@ -39,11 +50,14 @@ class ThreadedTCPNetworkAgent(Thread):
 
 		#the collected message
 		message = ''
+		safety = ''
 		
 		#PULL IN NEW 
 		while 1:
 			data = clientsock.recv(self._BuffSize)
-			
+			safety += data
+			if self.testing: print "From "+str(addr)+": ", data, safety
+
 			#If theres nothing in the pipe... get out!!!
 			if not data: 
 				break
@@ -56,15 +70,24 @@ class ThreadedTCPNetworkAgent(Thread):
 					if self.CurrentLines[key][0] == addr[0]:
 						del(self.CurrentLines[key])
 
-			elif data.rstrip().startswith('#GET_ACTIVE'):
-				for key in self.CurrentLines.keys():
-					clientsock.send("Line: "+str(key)+" " +str(self.CurrentLines[key]))
+			elif data.rstrip().startswith('#GET_ACTIVE') or safety.rstrip().startswith('#GET_ACTIVE'):
+				if not self.CurrentLines.keys() == []:
+					for key in self.CurrentLines.keys():
+						msg = "Line: "+str(key)+" " +str(self.CurrentLines[key])+"\n"
+						clientsock.send(msg)
+						if self.testing: print msg
+				else:
+					clientsock.send("#NONE")
+
+				break
 
 			elif "#END" == data.rstrip(): 
 				self.stop()
 				break # type '#END' on client console to close connection from the server side
 			elif not data.rstrip().startswith('#'):
 				message += data
+
+			
 
 
 		formattedMess = message.split('////')
@@ -81,10 +104,11 @@ class ThreadedTCPNetworkAgent(Thread):
 				formattedMess[0] = 'W/O#: '+ formattedMess[0]
 				formattedMess[1] = 'Line#: '+ formattedMess[1]
 				formattedMess[2] = 'Start Time: '+ formattedMess[2]
-				formattedMess[3] = 'EndTime: '+ formattedMess[3]
-				formattedMess[4] = 'Total Count: '+ formattedMess[4]
-				formattedMess[5] = 'Fail Count: '+ formattedMess[5]
-				formattedMess[6] = 'Box Count: '+ formattedMess[6]
+				formattedMess[3] = 'RunTime: '+ formattedMess[3]
+				formattedMess[4] = 'Status: '+ formattedMess[4]
+				formattedMess[5] = 'Total Count: '+ formattedMess[5]
+				formattedMess[6] = 'Fail Count: '+ formattedMess[6]
+				formattedMess[7] = 'Box Count: '+ formattedMess[7]
 
 				if formattedMess[7] == '':
 					formattedMess[7] = 'Peaces Per Box: N/A'
@@ -137,7 +161,7 @@ class ThreadedTCPNetworkAgent(Thread):
 
 			#Here we wait for incoming connection
 			clientsock, addr = self.serversock.accept()
-			print "someones talking: ", addr
+			if self.testing: print "someones talking: ", addr
 			#we spawn new mini thread and pass off connection
 			thread.start_new_thread(self.miniThread, (clientsock, addr))
 

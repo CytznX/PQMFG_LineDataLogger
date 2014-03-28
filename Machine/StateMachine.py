@@ -64,6 +64,7 @@ class ActivityLogger:
 		self.MaintananceDwnTime = []
 		self.InventoryDwnTime = []
 		self.QualityControlDwnTime = []
+		self.BreakDownTime = []
 
 		#Keeps track of all logged in employees
 		self.EmpWorkingDic = dict()
@@ -341,6 +342,7 @@ class ActivityLogger:
 		self.MaintananceDwnTime = []
 		self.InventoryDwnTime = []
 		self.QualityControlDwnTime = []
+		self.BreakDownTime = []
 
 		return connected
 
@@ -386,6 +388,7 @@ class ActivityLogger:
 			self.MaintananceDwnTime = []
 			self.InventoryDwnTime = []
 			self.QualityControlDwnTime = []
+			self.BreakDownTime = []
 
 		return finishSuccsess
 
@@ -429,6 +432,10 @@ class ActivityLogger:
 			elif Reason == 'Quality_Control':
 				self.QualityControlDwnTime.append(((datetime.datetime.now(),ID), None))
 				self.currentReason = Reason
+			
+			elif Reason == 'Break':
+				self.BreakDownTime.append(((datetime.datetime.now(),ID), None))
+				self.currentReason = Reason
 
 		#(if False)
 		elif not self.currentState:
@@ -453,6 +460,10 @@ class ActivityLogger:
 				#Close QualityControlDwnTime Downtime
 				placeholder = self.QualityControlDwnTime[-1][0]
 				self.QualityControlDwnTime[-1] = (placeholder, (datetime.datetime.now(),ID))
+			
+			elif self.currentReason == 'Break':
+				placeholder = self.BreakDownTime[-1][0]
+				self.BreakDownTime[-1] = (placeholder, (datetime.datetime.now(),ID))
 
 			self.currentReason = None
 
@@ -625,16 +636,18 @@ class ActivityLogger:
 
 	def getDwnTimesTotals(self):
 		'''
-		current possible reasons: 1)Maitenance, 2)Inventory, 3)Quality_Control
+		current possible reasons: 1)Maitenance, 2)Inventory, 3)Quality_Control 4)Break
 		-------------------------------------------------------------------------
 		self.MaintananceDwnTime = []
 		self.InventoryDwnTime = []
 		self.QualityControlDwnTime = []
+		self.BreakDownTime = []
 		'''
 
 		Totals_Maitenance  = 0
 		Totals_Inventory  = 0
 		Totals_Quality_Control = 0
+		Totals_Break = 0
 
 		for dwnTimes in self.MaintananceDwnTime:
 			start = dwnTimes[0][0]
@@ -665,7 +678,16 @@ class ActivityLogger:
 
 			Totals_Quality_Control += (end-start).seconds
 
-		return (Totals_Maitenance, Totals_Inventory, Totals_Quality_Control)
+		for dwnTimes in self.BreakDownTime:
+			start = dwnTimes[0][0]
+			if dwnTimes[1] == None:
+				end = datetime.datetime.now()
+			else:
+				end = dwnTimes[1][0]
+
+			Totals_Break += (end-start).seconds			
+
+		return (Totals_Maitenance, Totals_Inventory, Totals_Quality_Control, Totals_Break)
 
 	def getFormatedLog(self, stillRunning = False):
 
@@ -682,12 +704,12 @@ class ActivityLogger:
 
 			#if machine is running Declare, otherwise assume W/O is finished
 			if stillRunning:
-				log += ['Running '+now.strftime('(%D) @ %H:%M:%S')]
+				log += ['Running '+str((now-self.WO_StartTime).seconds)]
 			else:
-				log += ['Finished ' +now.strftime('(%D) @ %H:%M:%S')]
+				log += ['Finished '+str((now-self.WO_StartTime).seconds)]
 
 			#add it to the current return log
-			log +=[str(sum(self.totalCount)), str(sum(self.failCount)), str(sum(self.boxCount))]
+			log +=[str(sum(self.totalCount)), str(self.totalCount),str(sum(self.boxCount)), str(self.boxCount),str(sum(self.failCount))]
 
 			if not self.peacesPerBox == None:
 				log +=[str(self.peacesPerBox)]
@@ -756,17 +778,19 @@ class ActivityLogger:
 
 			dwntime = self.getDwnTimesTotals()
 
-			#(Totals_Maitenance, Totals_Inventory, Totals_Quality_Control)
+			#(Totals_Maitenance, Totals_Inventory, Totals_Quality_Control, Totals_Break)
 
 			FormattedTotal = self.formatDiffDateTime(sum(dwntime))
 			FormattedMain = self.formatDiffDateTime(dwntime[0])
 			FormattedInv = self.formatDiffDateTime(dwntime[1])
 			FormattedQuality = self.formatDiffDateTime(dwntime[2])
+			FormattedBreak = self.formatDiffDateTime(dwntime[3])
 
 			'''
 			self.MaintananceDwnTime = []
 			self.InventoryDwnTime = []
 			self.QualityControlDwnTime = []
+			self.BreakDownTime = []
 			'''
 
 			adjustMessage=''
@@ -797,6 +821,13 @@ class ActivityLogger:
 				else: 
 					QualityControlMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) '
 
+			breakMsg = ''
+			for start,end in self.BreakDownTime:
+				if not end == None:
+					breakMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) '
+				else: 
+					breakMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) '
+
 			log+=['---Down Time----',  
 				'Maintanance> '+str(FormattedMain[0])+':'+str(FormattedMain[1])+':'+str(FormattedMain[2]),
 				maintainMsg,
@@ -804,8 +835,11 @@ class ActivityLogger:
 				InventoryMsg,
 				'Quality_Control> '+str(FormattedQuality[0])+':'+str(FormattedQuality[1])+':'+str(FormattedQuality[2]),
 				QualityControlMsg,
+				'Break> '+str(FormattedBreak[0])+':'+str(FormattedBreak[1])+':'+str(FormattedBreak[2]),
+				breakMsg,
 				'Total> '+str(FormattedTotal[0])+':'+str(FormattedTotal[1])+':'+str(FormattedTotal[2])]
-
+		else:
+			log += ["No WO Log Avalible, Machine is Idle"]
 		return log
 
 	def formatDiffDateTime(self, TimeDiff):

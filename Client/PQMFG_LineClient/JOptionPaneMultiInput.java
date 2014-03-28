@@ -9,7 +9,7 @@ public class JOptionPaneMultiInput
 	public JOptionPaneMultiInput()
 	{
 		IP.setText("127.0.0.1");
-		Port.setText("5005");
+		Port.setText("5006");
 		
 		myPanel.add(new JLabel("IP:"));
 		myPanel.add(IP);
