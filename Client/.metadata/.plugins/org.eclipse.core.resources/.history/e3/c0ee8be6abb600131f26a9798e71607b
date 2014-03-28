@@ -1,7 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -64,7 +63,6 @@ public class ClientAlpha implements ActionListener
 
 	//holds all button info
 	private static String[][] buttonDict = null;
-	private String[] CurrentElement = null;
 
 	//The Main METHOD!!! OMG!!!
 	public static void main(String[] args) 
@@ -380,16 +378,31 @@ public class ClientAlpha implements ActionListener
 			MachineSocket = new Socket(machineIpAdress, machinePortNum);
 
 			//debug
-			if (Testing) {System.out.println("Sending Comand...");}
+			if (Testing) {System.out.println("Im in...");}
 
 			String[] DoIExist = sendCommand("#STATUS_C", MachineSocket);
 			MachineSocket.close();
 
-			if (Testing) {System.out.println("Sent Comand and Recieved Response");}
+			if (Testing) {System.out.println("Im out");}
 
-
+			for (JButton ButtonEl : buttonList) 
+			{
+				if (ButtonEl != e.getSource())
+				{
+					ButtonEl.setBackground((new JButton("")).getBackground());
+				}
+				else
+				{
+					ButtonEl.setBackground(Color.green);
+				}
+			}
 			if (DoIExist != null && !DoIExist[0].equals("No WO Log Avalible, Machine is Idle"))
 			{
+
+
+				LineHeaderField.setText(elements[0]);
+				LineHeaderField.setForeground(Color.GREEN);
+				LineHeaderField.setBackground(Color.BLACK);
 
 				String StartTime = null;
 				String minew = "";
@@ -401,12 +414,6 @@ public class ClientAlpha implements ActionListener
 						LineWOField.setText(line);
 						LineWOField.setForeground(Color.GREEN);
 						LineWOField.setBackground(Color.BLACK);
-					}
-					else if(cnt==1)
-					{
-						LineHeaderField.setText(line);
-						LineHeaderField.setForeground(Color.GREEN);
-						LineHeaderField.setBackground(Color.BLACK);
 					}
 					else if (cnt ==2)
 					{
@@ -437,23 +444,7 @@ public class ClientAlpha implements ActionListener
 						LineTimeField.setForeground(Color.GREEN);
 						LineTimeField.setBackground(Color.BLACK);
 					}
-					else if (cnt ==4)
-					{
-						minew += ("Total Peaces Counted: "+line+"\n");
-					}
-					else if (cnt ==6)
-					{
-						minew += ("Total Boxs Counted: "+line+"\n");
-					}
-					else if (cnt ==8)
-					{
-						minew += ("Peaces Not Boxed(Failed): "+line+"\n");
-					}
-					else if (cnt ==9)
-					{
-						minew += ("Peaces Per Box: "+line+"\n");
-					}
-					else if(cnt!=1 && cnt!=5 && cnt !=7)
+					else if(cnt!=1)
 					{
 						minew += (line+"\n");
 					}
@@ -467,7 +458,7 @@ public class ClientAlpha implements ActionListener
 			}
 			else
 			{
-				LineHeaderField.setText(CurrentElement[0]);
+				LineHeaderField.setText(elements[0]);
 				LineHeaderField.setForeground(Color.GREEN);
 				LineHeaderField.setBackground(Color.BLACK);
 
@@ -487,7 +478,7 @@ public class ClientAlpha implements ActionListener
 		{
 			// TODO Auto-generated catch block
 			System.out.println("----Something Went wroong----");
-			System.out.println(CurrentElement[0]+" "+CurrentElement[1]+" "+CurrentElement[2]);
+			System.out.println(elements[0]+" "+elements[1]+" "+elements[2]);
 			System.out.println("---- ---- ----- ----");
 
 			System.out.println(e1);
@@ -505,29 +496,8 @@ public class ClientAlpha implements ActionListener
 			if (elements[0].equals(e.toString().split(",")[1].split(" ")[1]))	
 			{
 
-				CurrentElement = elements;
-				try 
-				{
-					machineIpAdress = InetAddress.getByName(elements[1]);
-					this.refreshView();
-					
-					for (JButton ButtonEl : buttonList) 
-					{
-						if (ButtonEl != e.getSource())
-						{
-							ButtonEl.setBackground((new JButton("")).getBackground());
-						}
-						else
-						{
-							ButtonEl.setBackground(Color.green);
-						}
-					}
-					
-					
-				} catch (UnknownHostException e1) 
-				{
-					JOptionPane.showMessageDialog(null, "Server report is corrupted improperly formated");
-				}
+
+				machineIpAdress = InetAddress.getByName(elements[1]);
 				machinePortNum = 5005;
 
 			}

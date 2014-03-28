@@ -445,14 +445,6 @@ public class ClientAlpha implements ActionListener
 					{
 						minew += ("Total Boxs Counted: "+line+"\n");
 					}
-					else if (cnt ==8)
-					{
-						minew += ("Peaces Not Boxed(Failed): "+line+"\n");
-					}
-					else if (cnt ==9)
-					{
-						minew += ("Peaces Per Box: "+line+"\n");
-					}
 					else if(cnt!=1 && cnt!=5 && cnt !=7)
 					{
 						minew += (line+"\n");

@@ -800,26 +800,26 @@ class ActivityLogger:
 			log+=['---Adjustments----']+adjustMessage+['']
 
 
-			maintainMsg = ''
+			maintainMsg = []
 			for start,end in self.MaintananceDwnTime:
 				if not end == None:
-					maintainMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) '
+					maintainMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) ']
 				else: 
-					maintainMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) '
+					maintainMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) ']
 
-			InventoryMsg = ''
+			InventoryMsg = []
 			for start,end in self.InventoryDwnTime:
 				if not end == None:
-					InventoryMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) '
+					InventoryMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) ']
 				else: 
-					InventoryMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) '
+					InventoryMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) ']
 
-			QualityControlMsg = ''
+			QualityControlMsg = []
 			for start,end in self.QualityControlDwnTime:
 				if not end == None:
-					QualityControlMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) '
+					QualityControlMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) ']
 				else: 
-					QualityControlMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) '
+					QualityControlMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) ']
 
 			breakMsg = ''
 			for start,end in self.BreakDownTime:
@@ -828,16 +828,16 @@ class ActivityLogger:
 				else: 
 					breakMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) '
 
-			log+=['---Down Time----',  
-				'Maintanance> '+str(FormattedMain[0])+':'+str(FormattedMain[1])+':'+str(FormattedMain[2]),
-				maintainMsg,
-				'Inventory> '+str(FormattedInv[0])+':'+str(FormattedInv[1])+':'+str(FormattedInv[2]),
-				InventoryMsg,
-				'Quality_Control> '+str(FormattedQuality[0])+':'+str(FormattedQuality[1])+':'+str(FormattedQuality[2]),
+			log+=['---Down Time----']+  
+				['Maintanance> '+str(FormattedMain[0])+':'+str(FormattedMain[1])+':'+str(FormattedMain[2])]+
+				maintainMsg+[""]+
+				['Inventory> '+str(FormattedInv[0])+':'+str(FormattedInv[1])+':'+str(FormattedInv[2])]+
+				InventoryMsg+[""]+
+				['Quality_Control> '+str(FormattedQuality[0])+':'+str(FormattedQuality[1])+':'+str(FormattedQuality[2])]+
 				QualityControlMsg,
-				'Break> '+str(FormattedBreak[0])+':'+str(FormattedBreak[1])+':'+str(FormattedBreak[2]),
-				breakMsg,
-				'Total> '+str(FormattedTotal[0])+':'+str(FormattedTotal[1])+':'+str(FormattedTotal[2])]
+				['Break> '+str(FormattedBreak[0])+':'+str(FormattedBreak[1])+':'+str(FormattedBreak[2])]+
+				breakMsg+[""]+
+				['Total> '+str(FormattedTotal[0])+':'+str(FormattedTotal[1])+':'+str(FormattedTotal[2])]
 		else:
 			log += ["No WO Log Avalible, Machine is Idle"]
 		return log

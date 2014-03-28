@@ -1,7 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Event;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -64,7 +63,6 @@ public class ClientAlpha implements ActionListener
 
 	//holds all button info
 	private static String[][] buttonDict = null;
-	private String[] CurrentElement = null;
 
 	//The Main METHOD!!! OMG!!!
 	public static void main(String[] args) 
@@ -369,134 +367,8 @@ public class ClientAlpha implements ActionListener
 		return returnString;
 	}
 
-
-	public void refreshView()
-	{
-		try 
-		{
-			//debug
-			if (Testing) {System.out.println(machineIpAdress.toString()+ " "+ String.valueOf(machinePortNum));}
-
-			MachineSocket = new Socket(machineIpAdress, machinePortNum);
-
-			//debug
-			if (Testing) {System.out.println("Sending Comand...");}
-
-			String[] DoIExist = sendCommand("#STATUS_C", MachineSocket);
-			MachineSocket.close();
-
-			if (Testing) {System.out.println("Sent Comand and Recieved Response");}
-
-
-			if (DoIExist != null && !DoIExist[0].equals("No WO Log Avalible, Machine is Idle"))
-			{
-
-				String StartTime = null;
-				String minew = "";
-				int cnt = 0;
-				for (String line : DoIExist) 
-				{
-					if (cnt == 0)
-					{
-						LineWOField.setText(line);
-						LineWOField.setForeground(Color.GREEN);
-						LineWOField.setBackground(Color.BLACK);
-					}
-					else if(cnt==1)
-					{
-						LineHeaderField.setText(line);
-						LineHeaderField.setForeground(Color.GREEN);
-						LineHeaderField.setBackground(Color.BLACK);
-					}
-					else if (cnt ==2)
-					{
-						minew += ("WO Start: "+line+"\n");
-					}
-					else if (cnt ==3)
-					{
-						int seconds = Integer.parseInt(line.split("\\s+")[1]);
-
-						int hr = (int)(seconds/3600);
-						int rem = (int)(seconds%3600);
-						int mn = rem/60;
-						int sec = rem%60;
-
-						String splice1 =":";
-						String splice2 = ":";
-
-						if (sec < 10)
-						{
-							splice2 = "0"+splice2;
-						}
-						if(mn <10)
-						{
-							splice1 = "0"+splice1;
-						}
-
-						LineTimeField.setText(hr+":"+mn+":"+sec);
-						LineTimeField.setForeground(Color.GREEN);
-						LineTimeField.setBackground(Color.BLACK);
-					}
-					else if (cnt ==4)
-					{
-						minew += ("Total Peaces Counted: "+line+"\n");
-					}
-					else if (cnt ==6)
-					{
-						minew += ("Total Boxs Counted: "+line+"\n");
-					}
-					else if (cnt ==8)
-					{
-						minew += ("Peaces Not Boxed(Failed): "+line+"\n");
-					}
-					else if (cnt ==9)
-					{
-						minew += ("Peaces Per Box: "+line+"\n");
-					}
-					else if(cnt!=1 && cnt!=5 && cnt !=7)
-					{
-						minew += (line+"\n");
-					}
-
-					cnt += 1;
-
-				}
-
-				MainView.setText(minew);
-
-			}
-			else
-			{
-				LineHeaderField.setText(CurrentElement[0]);
-				LineHeaderField.setForeground(Color.GREEN);
-				LineHeaderField.setBackground(Color.BLACK);
-
-				MainView.setText("--Connection Established-- \nNo WO Log Avalible, Machine is Idle");
-
-				LineWOField.setText("None");
-				LineWOField.setForeground(Color.RED);
-				LineWOField.setBackground(Color.BLACK);
-
-				LineTimeField.setText("None");
-				LineTimeField.setForeground(Color.RED);
-				LineTimeField.setBackground(Color.BLACK);
-			}
-
-		} 
-		catch (IOException e1) 
-		{
-			// TODO Auto-generated catch block
-			System.out.println("----Something Went wroong----");
-			System.out.println(CurrentElement[0]+" "+CurrentElement[1]+" "+CurrentElement[2]);
-			System.out.println("---- ---- ----- ----");
-
-			System.out.println(e1);
-
-		}
-	}
-
 	/*
-	 * ActionListener For all 
+	 * ActionListener Forall 
 	 * */
 	public void actionPerformed(ActionEvent e) 
 	{
@@ -505,12 +377,27 @@ public class ClientAlpha implements ActionListener
 			if (elements[0].equals(e.toString().split(",")[1].split(" ")[1]))	
 			{
 
-				CurrentElement = elements;
+				for (String string : elements) {
+					System.out.println(string);
+				}
 				try 
 				{
 					machineIpAdress = InetAddress.getByName(elements[1]);
-					this.refreshView();
-					
+					machinePortNum = 5005;
+
+					//debug
+					if (Testing) {System.out.println(machineIpAdress.toString()+ " "+ String.valueOf(machinePortNum));}
+
+					MachineSocket = new Socket(machineIpAdress, machinePortNum);
+
+					//debug
+					if (Testing) {System.out.println("Im in...");}
+
+					String[] DoIExist = sendCommand("#STATUS_C", MachineSocket);
+					MachineSocket.close();
+
+					if (Testing) {System.out.println("Im out");}
+
 					for (JButton ButtonEl : buttonList) 
 					{
 						if (ButtonEl != e.getSource())
@@ -522,13 +409,82 @@ public class ClientAlpha implements ActionListener
 							ButtonEl.setBackground(Color.green);
 						}
 					}
-					
-					
-				} catch (UnknownHostException e1) 
+					if (DoIExist != null && !DoIExist[0].equals("No WO Log Avalible, Machine is Idle"))
+					{
+
+
+						LineHeaderField.setText(elements[0]);
+						LineHeaderField.setForeground(Color.GREEN);
+						LineHeaderField.setBackground(Color.BLACK);
+
+						String StartTime = null;
+						String minew = "";
+						int cnt = 0;
+						for (String line : DoIExist) 
+						{
+							if (cnt == 0)
+							{
+								LineWOField.setText(line);
+								LineWOField.setForeground(Color.GREEN);
+								LineWOField.setBackground(Color.BLACK);
+							}
+							else if (cnt ==2)
+							{
+								minew += ("WO Start: "+line+"\n");
+							}
+							else if (cnt ==3)
+							{
+								int seconds = Integer.parseInt(line.split("\\s+")[1]);
+								
+								int hr = (int)(seconds/3600);
+								int rem = (int)(seconds%3600);
+								int mn = rem/60;
+								int sec = rem%60;
+
+								LineTimeField.setText(hr+":"+mn+":"+sec);
+								LineTimeField.setForeground(Color.GREEN);
+								LineTimeField.setBackground(Color.BLACK);
+							}
+							else if(cnt!=1)
+							{
+								minew += (line+"\n");
+							}
+
+							cnt += 1;
+
+						}
+
+						MainView.setText(minew);
+
+					}
+					else
+					{
+						LineHeaderField.setText(elements[0]);
+						LineHeaderField.setForeground(Color.GREEN);
+						LineHeaderField.setBackground(Color.BLACK);
+
+						MainView.setText("--Connection Established-- \nNo WO Log Avalible, Machine is Idle");
+
+						LineWOField.setText("None");
+						LineWOField.setForeground(Color.RED);
+						LineWOField.setBackground(Color.BLACK);
+
+						LineTimeField.setText("None");
+						LineTimeField.setForeground(Color.RED);
+						LineTimeField.setBackground(Color.BLACK);
+					}
+
+				} 
+				catch (IOException e1) 
 				{
-					JOptionPane.showMessageDialog(null, "Server report is corrupted improperly formated");
+					// TODO Auto-generated catch block
+					System.out.println("----Something Went wroong----");
+					System.out.println(elements[0]+" "+elements[1]+" "+elements[2]);
+					System.out.println("---- ---- ----- ----");
+
+					System.out.println(e1);
+
 				}
-				machinePortNum = 5005;
 
 			}
 		}
