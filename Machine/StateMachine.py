@@ -821,12 +821,12 @@ class ActivityLogger:
 				else: 
 					QualityControlMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) ']
 
-			breakMsg = ''
+			breakMsg = []
 			for start,end in self.BreakDownTime:
 				if not end == None:
-					breakMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) '
+					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) ']
 				else: 
-					breakMsg += '(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) '
+					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) ']
 
 			log+=['---Down Time----']+['Maintanance> '+str(FormattedMain[0])+':'+str(FormattedMain[1])+':'+str(FormattedMain[2])]+maintainMsg+[""]
 			log+=['Inventory> '+str(FormattedInv[0])+':'+str(FormattedInv[1])+':'+str(FormattedInv[2])]+InventoryMsg+[""]
