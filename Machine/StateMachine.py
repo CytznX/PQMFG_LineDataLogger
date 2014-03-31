@@ -329,7 +329,7 @@ class ActivityLogger:
 		self.modCounter = 0
 		self.modBoxCounter = 0
 		self.totalCount = [0]
-		self.failCount = [0]		
+		self.failCount = 0		
 		self.boxCount = [0]
 		self.peacesPerBox = None
 
@@ -501,7 +501,6 @@ class ActivityLogger:
 				if (datetime.datetime.now()-self.hourIncrement).seconds >3600:
 					self.hourIncrement = datetime.datetime.now()
 					self.boxCount.append(0)
-					self.failCount.append(0)
 					self.totalCount.append(amount)
 
 				#elses we increment current tally
@@ -517,7 +516,6 @@ class ActivityLogger:
 				if (datetime.datetime.now()-self.hourIncrement).seconds >3600:
 					self.hourIncrement = datetime.datetime.now()
 					self.boxCount.append(0)
-					self.failCount.append(0)
 					self.totalCount.append(amount)
 
 				#elses we increment current tally
@@ -540,15 +538,14 @@ class ActivityLogger:
 			if(datetime.datetime.now()-self.hourdecrement).seconds >3600:
 				self.hourdecrement = datetime.datetime.now()
 				self.boxCount.append(0)
-				self.failCount.append(0)
 				self.totalCount.append(0)
 
 			#elses we increment current tally
 			else:
 				if not (self.totalCount==None or self.boxCount ==None or self.peacesPerBox == None):
-					self.failCount[-1] = self.totalCount[-1] - (self.boxCount[-1]*self.peacesPerBox)
+					self.failCount = sum(self.totalCount) - (sum(self.boxCount)*self.peacesPerBox)
 				else:
-					self.failCount[-1] = 0
+					self.failCount = 0
 
 		return decrementSucssful
 
@@ -565,7 +562,6 @@ class ActivityLogger:
 				if(datetime.datetime.now()-self.hourdecrement).seconds >3600:
 					self.hourdecrement = datetime.datetime.now()
 					self.boxCount.append(amount)
-					self.failCount.append(0)
 					self.totalCount.append(0)
 
 				#elses we increment current tally
@@ -580,7 +576,6 @@ class ActivityLogger:
 				if(datetime.datetime.now()-self.hourdecrement).seconds >3600:
 					self.hourdecrement = datetime.datetime.now()
 					self.boxCount.append(amount)
-					self.failCount.append(0)
 					self.totalCount.append(0)
 
 				#elses we increment current tally
@@ -709,7 +704,7 @@ class ActivityLogger:
 				log += ['Finished '+str((now-self.WO_StartTime).seconds)]
 
 			#add it to the current return log
-			log +=[str(sum(self.totalCount)), str(self.totalCount),str(sum(self.boxCount)), str(self.boxCount),str(sum(self.failCount))]
+			log +=[str(sum(self.totalCount)), str(self.totalCount),str(sum(self.boxCount)), str(self.boxCount),str(self.failCount)]
 
 			if not self.peacesPerBox == None:
 				log +=[str(self.peacesPerBox),'']

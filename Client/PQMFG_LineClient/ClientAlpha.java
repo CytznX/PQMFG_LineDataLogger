@@ -29,11 +29,13 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.border.LineBorder;
+import javax.xml.ws.Response;
 
 public class ClientAlpha implements ActionListener
 {
 	//Boolean I use to control some debug print statements
 	private boolean Testing = true;
+	private boolean IamConnected = false;
 
 	//Some Initial Class Variables
 	private Socket ServerSocket = null; //Socket to the server
@@ -51,8 +53,10 @@ public class ClientAlpha implements ActionListener
 	private int windowWidth, windowHeight;
 
 	//GUI Elements
+	private JFrame guiFrame;
 	private JTextArea MainView;
-	private JButton[] buttonList;
+	private JButton[] MachineButtonList;
+	private JButton[] ComandButtonList;
 
 	private JLabel LineHeaderLabel = new JLabel("Viewing Line#: ");
 	private JLabel LineWOLabel= new JLabel("Running WO#: ");
@@ -65,6 +69,7 @@ public class ClientAlpha implements ActionListener
 	//holds all button info
 	private static String[][] buttonDict = null;
 	private String[] CurrentElement = null;
+	private String[] ComandList = {"#COMPLETE","#CHANGE", "#SETPPB","#ADJUST", "#UP","#DOWN","#ADD","#REMOVE","#MSG"};
 
 	//The Main METHOD!!! OMG!!!
 	public static void main(String[] args) 
@@ -122,7 +127,7 @@ public class ClientAlpha implements ActionListener
 				else
 				{
 					//Creates the panel holder(JFrame)
-					JFrame guiFrame = new JFrame();
+					guiFrame = new JFrame();
 
 					//make sure the program exits when the frame closes
 					guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -149,11 +154,10 @@ public class ClientAlpha implements ActionListener
 
 					}
 
-					//TODO might need to change this!!!
+					//create pannels and add them to frame
 					guiFrame.add(createButtons(),BorderLayout.WEST);
-
-					//guiFrame.add(tempPanel,BorderLayout.CENTER);
-					guiFrame.add(createCenterField(),BorderLayout.CENTER);
+					guiFrame.add(createCenterField(),BorderLayout.CENTER);					
+					guiFrame.add(createComandButtons(),BorderLayout.EAST);
 
 					//This will center the JFrame in the middle of the screen
 					guiFrame.setLocationRelativeTo(null);
@@ -184,9 +188,9 @@ public class ClientAlpha implements ActionListener
 		JPanel panel = new JPanel(new GridLayout(0,1, 10 ,10));
 
 		//Create Buttong
-		buttonList = new JButton[buttonDict.length];
+		MachineButtonList = new JButton[buttonDict.length];
 
-		panel.setPreferredSize(new Dimension(windowWidth/4,windowHeight));
+		panel.setPreferredSize(new Dimension(windowWidth/4-20,windowHeight));
 		panel.setBorder(
 				BorderFactory.createCompoundBorder(
 						BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Active Lines"),
@@ -196,9 +200,46 @@ public class ClientAlpha implements ActionListener
 		int cnt = 0;
 		for (String[] MachineLines : buttonDict) 
 		{
-			buttonList[cnt] = new JButton("Line: "+Integer.parseInt(MachineLines[0]));
-			buttonList[cnt].addActionListener(this);
-			panel.add(buttonList[cnt]);
+
+			MachineButtonList[cnt] = new JButton("Line: "+Integer.parseInt(MachineLines[0]));
+			MachineButtonList[cnt].addActionListener(this);
+			panel.add(MachineButtonList[cnt]);
+
+			cnt+=1;
+		}
+
+		return panel; 
+
+	}
+
+	/*
+	 * Used to Right side button pannel
+	 * */
+	protected JComponent createComandButtons() 
+	{
+		//Creates pannel that will be returned to constructor for later use
+		JPanel panel = new JPanel(new GridLayout(0,1, 10 ,10));
+
+		String[] ComandHeaders = {"Complete WO","Change WO", "Set PPB","Adjust Count", "Bring Machine Up", "Bring Machine Down","Add Employee", "Remove Employee","Send Message"};
+
+
+		//Create Buttong
+		ComandButtonList = new JButton[ComandList.length];
+
+		panel.setPreferredSize(new Dimension(windowWidth/4+20,windowHeight));
+		panel.setBorder(
+				BorderFactory.createCompoundBorder(
+						BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder("Commands"),
+								BorderFactory.createEmptyBorder(5,5,5,5)), 
+								panel.getBorder()));
+
+		int cnt = 0;
+		for (String Comand : ComandList) 
+		{
+			ComandButtonList[cnt] = new JButton(ComandHeaders[cnt]);
+			ComandButtonList[cnt].setFont(new Font("Arial", Font.PLAIN, 11));
+			ComandButtonList[cnt].addActionListener(this);
+			panel.add(ComandButtonList[cnt]);
 
 			cnt+=1;
 		}
@@ -213,14 +254,18 @@ public class ClientAlpha implements ActionListener
 	protected JComponent createCenterField() 
 	{
 
+		int spacerGap = 20;
+
 		//creates & formats panel that will be passed back later 
 		JPanel panel = new JPanel();
+		panel.setPreferredSize(new Dimension((windowWidth/2)-spacerGap, windowHeight));
+
 		JPanel tempPanel = new JPanel();
 		MainView = new JTextArea("-----NO CONNECTION ESTABLISHED-----\n");
 
 		//Configure the first temp pannel
 		tempPanel.setLayout(new GridBagLayout());
-		tempPanel.setPreferredSize(new Dimension(windowWidth/2,windowHeight/5));
+		tempPanel.setPreferredSize(new Dimension((windowWidth/2)-spacerGap,windowHeight/5));
 
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -271,7 +316,7 @@ public class ClientAlpha implements ActionListener
 		JScrollPane areaScrollPane = new JScrollPane(MainView);
 		areaScrollPane.setVerticalScrollBarPolicy(
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		areaScrollPane.setPreferredSize(new Dimension(windowWidth/2, windowHeight-(windowHeight/5)-45));
+		areaScrollPane.setPreferredSize(new Dimension((windowWidth/2)-spacerGap, windowHeight-(windowHeight/5)-45));
 
 		//More Formatting
 		areaScrollPane.setBorder(
@@ -464,6 +509,7 @@ public class ClientAlpha implements ActionListener
 
 				MainView.setText(minew);
 
+
 			}
 			else
 			{
@@ -510,8 +556,8 @@ public class ClientAlpha implements ActionListener
 				{
 					machineIpAdress = InetAddress.getByName(elements[1]);
 					this.refreshView();
-					
-					for (JButton ButtonEl : buttonList) 
+
+					for (JButton ButtonEl : MachineButtonList) 
 					{
 						if (ButtonEl != e.getSource())
 						{
@@ -520,10 +566,11 @@ public class ClientAlpha implements ActionListener
 						else
 						{
 							ButtonEl.setBackground(Color.green);
+							IamConnected = true;
 						}
 					}
-					
-					
+
+
 				} catch (UnknownHostException e1) 
 				{
 					JOptionPane.showMessageDialog(null, "Server report is corrupted improperly formated");
@@ -532,5 +579,56 @@ public class ClientAlpha implements ActionListener
 
 			}
 		}
+		int cnter =0 ;
+		for (JButton element: ComandButtonList)
+		{
+			if (element == e.getSource() && IamConnected)	
+			{
+
+				if(ComandList[cnter].equals("#COMPLETE"))
+				{
+					//Custom button text
+					Object[] options = {"Yes", "No"};
+					int n = JOptionPane.showOptionDialog(guiFrame,
+							"Are You Sure You would like to complete Current WO?",
+							"Confirmation Complete",
+							JOptionPane.YES_NO_CANCEL_OPTION,
+							JOptionPane.QUESTION_MESSAGE,
+							null, options, options[1]);
+
+					//n==0 if the yess option is selected
+					if(n==0)
+					{
+						try 
+						{
+							//open up new machine socket
+							MachineSocket = new Socket(machineIpAdress, machinePortNum);
+
+							//checks that command was sent... 
+							if(this.sendCommand("#COMPLETE_C", MachineSocket)[0].equals("#ACK"))
+							{
+								JOptionPane.showMessageDialog(guiFrame, "WO has been completed");
+							}
+							else
+							{
+								JOptionPane.showMessageDialog(guiFrame, "Something");
+							}
+
+							//closes the socket and refreshes the view...
+							MachineSocket.close();
+							this.refreshView();
+
+						} 
+						catch (IOException e1) 
+						{
+							JOptionPane.showMessageDialog(guiFrame, "Something Went Wrong\n"+e1);
+						}				
+					}
+				}
+				System.out.println(ComandList[cnter]);
+			}
+			cnter+=1;
+		}
 	}
 }
+

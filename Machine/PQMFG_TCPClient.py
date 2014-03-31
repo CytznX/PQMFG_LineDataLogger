@@ -43,23 +43,45 @@ class ThreadedTCPNetworkAgent(Thread):
 				if command[0] == "#UP" and len(command) == 2:
 					self.CurLogger.changeState(command[1])
 					clientsock.send("AKN\n")
+				if command[0] == "#UP_C" and len(command) == 2:
+					self.CurLogger.changeState(command[1])
+					clientsock.send("AKN\n")
+					break
 
 				elif command[0] == "#DOWN" and len(command) == 3:
 					#current possible reasons: 1)Maitenance, 2) Inventory, 3) Quality_Control
 					self.CurLogger.changeState(command[2], command[1])
 					clientsock.send("AKN\n")
+				elif command[0] == "#DOWN_C" and len(command) == 3:
+					#current possible reasons: 1)Maitenance, 2) Inventory, 3) Quality_Control
+					self.CurLogger.changeState(command[2], command[1])
+					clientsock.send("AKN\n")
+					break
 
 				elif command[0] == "#ADD":
 					for x in range(1,len(command)):
 						self.CurLogger.addEmployee(command[x]) 
 					clientsock.send("AKN\n")
+				elif command[0] == "#ADD_C":
+					for x in range(1,len(command)):
+						self.CurLogger.addEmployee(command[x]) 
+					clientsock.send("AKN\n")
+					break
 
 				elif command[0] == "#REMOVE":
 					for x in range(1,len(command)):
 						self.CurLogger.removeEmployee(command[x]) 
 					clientsock.send("AKN\n")
+				elif command[0] == "#REMOVE_C":
+					for x in range(1,len(command)):
+						self.CurLogger.removeEmployee(command[x]) 
+					clientsock.send("AKN\n")
+					break
 
 				elif command[0] == "#SETPPB" and len(command) == 2:
+					self.CurLogger.changePeacesPerBox(int(command[1]))
+					clientsock.send("AKN\n")
+				elif command[0] == "#SETPPB_C" and len(command) == 2:
 					self.CurLogger.changePeacesPerBox(int(command[1]))
 					clientsock.send("AKN\n")
 
@@ -69,10 +91,21 @@ class ThreadedTCPNetworkAgent(Thread):
 					elif command[1] == "BOX":
 						self.CurLogger.inc_CurBoxCount(None, int(command[2]), True, command[3])
 					clientsock.send("AKN\n")
+				elif command[0] == "#ADJUST_C" and len(command) == 4:
+					if command[1] == "TOTAL":
+						self.CurLogger.inc_CurTotalCount(None, int(command[2]), True, command[3])
+					elif command[1] == "BOX":
+						self.CurLogger.inc_CurBoxCount(None, int(command[2]), True, command[3])
+					clientsock.send("AKN\n")
+					break
 
 				elif command[0] == "#CHANGE" and len(command) == 2:
 					self.CurLogger.changeCurrentWO(command[1], False)
 					clientsock.send("AKN\n")
+				elif command[0] == "#CHANGE_C" and len(command) == 2:
+					self.CurLogger.changeCurrentWO(command[1], False)
+					clientsock.send("AKN\n")
+					break
 
 				elif command[0] == "#MSG" and self.isInt(command[-1]):
 					msg = ''
@@ -81,6 +114,15 @@ class ThreadedTCPNetworkAgent(Thread):
 
 					self.CurLogger.pushMessage(msg, command[-1])
 					clientsock.send("AKN\n")
+				elif command[0] == "#MSG" and self.isInt(command[-1]):
+					msg = ''
+					for y in range(1, len(command)-1):
+						msg += command[y]+" "
+
+					self.CurLogger.pushMessage(msg, command[-1])
+					clientsock.send("AKN\n")
+					break
+
 				else:
 					clientsock.send("Try Again\n")
 			else:
@@ -100,6 +142,10 @@ class ThreadedTCPNetworkAgent(Thread):
 				elif "#COMPLETE" == data.rstrip():
 					self.CurLogger.finishCurrentWO()
 					clientsock.send("AKN\n")
+				elif "#COMPLETE_C" == data.rstrip():
+					self.CurLogger.finishCurrentWO()
+					clientsock.send("AKN\n")
+					break
 				else:
 					clientsock.send("INVALID COMMAND, '"+data.rstrip()+"'\n")
 
