@@ -578,3 +578,6 @@ MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 Connection Recieved@(03/28/14, 13:10:41) From Addr: ('127.0.0.1', 38565)
 Data Is bad
 -------------------------END-------------------------
+Connection Recieved@(03/31/14, 14:41:33) From Addr: ('127.0.0.1', 42249)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
