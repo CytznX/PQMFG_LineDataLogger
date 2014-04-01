@@ -471,14 +471,14 @@ public class ClientAlpha implements ActionListener
 
 						if (sec < 10)
 						{
-							splice2 +="0";
+							splice2 = "0"+splice2;
 						}
 						if(mn <10)
 						{
-							splice1 += "0";
+							splice1 = "0"+splice1;
 						}
 
-						LineTimeField.setText(hr+splice1+mn+splice2+sec);
+						LineTimeField.setText(hr+":"+mn+":"+sec);
 						LineTimeField.setForeground(Color.GREEN);
 						LineTimeField.setBackground(Color.BLACK);
 					}
@@ -650,12 +650,10 @@ public class ClientAlpha implements ActionListener
 
 					}
 
-					//Some init place holders
+				
 					String msg = "Please Enter New WO number";
 					boolean keeprunning = true;
 					int response = 0;
-
-					//make sure we get a valid integer from user as input
 					while(keeprunning)
 					{
 						try 
@@ -668,8 +666,8 @@ public class ClientAlpha implements ActionListener
 							msg = "TRY AGAIN: Make sure  your Input is a valid Integer";
 						}
 					}
-
-					//Try opening the Tcp Connection and send the command
+					
+					
 					try 
 					{
 						MachineSocket = new Socket(machineIpAdress, machinePortNum);
@@ -682,100 +680,6 @@ public class ClientAlpha implements ActionListener
 						e1.printStackTrace();
 					}	
 					refreshView();
-				}
-				else if(ComandList[cnter].equals("#UP"))
-				{
-					String msg = "Please Enter Employee ID number";
-					boolean keeprunning = true;
-					String response= null;
-
-					while(keeprunning)
-					{
-						try 
-						{
-							response = JOptionPane.showInputDialog (msg);
-							Integer.parseInt(response);
-							keeprunning = false;
-						} 
-						catch (Exception e2) 
-						{
-							msg = "TRY AGAIN: Make sure your Input is a valid Integer";
-						}
-					}
-
-					try 
-					{
-						MachineSocket = new Socket(machineIpAdress, machinePortNum);
-						String[] resp = sendCommand("#UP_C "+response, MachineSocket);
-						MachineSocket.close();
-					} 
-					catch (IOException e1) 
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}	
-					refreshView();
-
-
-
-				}
-				else if(ComandList[cnter].equals("#DOWN"))
-				{
-					if(!LineWOField.getText().equals("None"))
-					{
-
-						String Command = "#DOWN_C ";
-
-						//current possible reasons: 1)Maitenance, 2) Inventory, 3) Quality_Control 4)Break
-						Object[] options = {"Maitenance", "Inventory", "Quality_Control", "Break", "Cancle"};
-						int n = JOptionPane.showOptionDialog(guiFrame,
-								"Please Select A reason for bringing the machine down",
-								"Bring Machine down", JOptionPane.YES_NO_CANCEL_OPTION,
-								JOptionPane.QUESTION_MESSAGE,
-								null, options, options[4]);
-
-						if (n!=options.length-1)
-						{
-							Command += options[n]+" ";
-
-							String msg = "Please Enter Employee ID number";
-							boolean keeprunning = true;
-							String response= null;
-
-							while(keeprunning)
-							{
-								try 
-								{
-									response = JOptionPane.showInputDialog (msg);
-									Integer.parseInt(response);
-									keeprunning = false;
-								} 
-								catch (Exception e2) 
-								{
-									msg = "TRY AGAIN: Make sure your Input is a valid Integer";
-								}
-								
-							}
-							
-							Command += response;
-							
-							try 
-							{
-								MachineSocket = new Socket(machineIpAdress, machinePortNum);
-								String[] resp = sendCommand(Command, MachineSocket);
-								MachineSocket.close();
-							} 
-							catch (IOException e1) 
-							{
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}	
-							refreshView();
-							
-							
-						}
-
-					}
 				}
 				System.out.println(ComandList[cnter]);
 			}

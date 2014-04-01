@@ -53,7 +53,7 @@ class ThreadedTCPNetworkAgent(Thread):
 					self.CurLogger.changeState(command[2], command[1])
 					clientsock.send("AKN\n")
 				elif command[0] == "#DOWN_C" and len(command) == 3:
-					#current possible reasons: 1)Maitenance, 2) Inventory, 3) Quality_Control
+					#current possible reasons: 1)Maitenance, 2) Inventory, 3) Quality_Control 4)Break
 					self.CurLogger.changeState(command[2], command[1])
 					clientsock.send("AKN\n")
 					break
@@ -99,12 +99,17 @@ class ThreadedTCPNetworkAgent(Thread):
 					clientsock.send("AKN\n")
 					break
 
-				elif command[0] == "#CHANGE" and len(command) == 2:
-					self.CurLogger.changeCurrentWO(command[1], False)
+				elif command[0] == "#CHANGE" and len(command) == 3:
+					if command[2] == "True" or command[2] == "true"
+						self.CurLogger.changeCurrentWO(command[1], True)
+					else:
+						self.CurLogger.changeCurrentWO(command[1], True)
 					clientsock.send("AKN\n")
-				elif command[0] == "#CHANGE_C" and len(command) == 2:
-					self.CurLogger.changeCurrentWO(command[1], False)
-					clientsock.send("AKN\n")
+				elif command[0] == "#CHANGE_C" and len(command) == 3:
+					if command[2] == "True" or command[2] == "true"
+						self.CurLogger.changeCurrentWO(command[1], True)
+					else:
+						self.CurLogger.changeCurrentWO(command[1], True)
 					break
 
 				elif command[0] == "#MSG" and self.isInt(command[-1]):

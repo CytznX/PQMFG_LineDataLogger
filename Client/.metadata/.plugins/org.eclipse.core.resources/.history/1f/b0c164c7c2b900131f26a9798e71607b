@@ -471,14 +471,14 @@ public class ClientAlpha implements ActionListener
 
 						if (sec < 10)
 						{
-							splice2 +="0";
+							splice2 = "0"+splice2;
 						}
 						if(mn <10)
 						{
-							splice1 += "0";
+							splice1 = "0"+splice1;
 						}
 
-						LineTimeField.setText(hr+splice1+mn+splice2+sec);
+						LineTimeField.setText(hr+":"+mn+":"+sec);
 						LineTimeField.setForeground(Color.GREEN);
 						LineTimeField.setBackground(Color.BLACK);
 					}

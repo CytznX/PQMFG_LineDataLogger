@@ -471,14 +471,14 @@ public class ClientAlpha implements ActionListener
 
 						if (sec < 10)
 						{
-							splice2 +="0";
+							splice2 = "0"+splice2;
 						}
 						if(mn <10)
 						{
-							splice1 += "0";
+							splice1 = "0"+splice1;
 						}
 
-						LineTimeField.setText(hr+splice1+mn+splice2+sec);
+						LineTimeField.setText(hr+":"+mn+":"+sec);
 						LineTimeField.setForeground(Color.GREEN);
 						LineTimeField.setBackground(Color.BLACK);
 					}
@@ -729,10 +729,10 @@ public class ClientAlpha implements ActionListener
 						//current possible reasons: 1)Maitenance, 2) Inventory, 3) Quality_Control 4)Break
 						Object[] options = {"Maitenance", "Inventory", "Quality_Control", "Break", "Cancle"};
 						int n = JOptionPane.showOptionDialog(guiFrame,
-								"Please Select A reason for bringing the machine down",
-								"Bring Machine down", JOptionPane.YES_NO_CANCEL_OPTION,
+								"Please Select A reason for bringing the machjine down",
+								JOptionPane.YES_NO_CANCEL_OPTION,
 								JOptionPane.QUESTION_MESSAGE,
-								null, options, options[4]);
+								null, options, options[1]);
 
 						if (n!=options.length-1)
 						{

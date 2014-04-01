@@ -1,0 +1,32 @@
+W/O#: 123
+Line#: 11
+Start Time: (04/01/14) @ 17:16:00
+RunTime: Running 701
+Status: 0
+Total Count: [0]
+Fail Count: 0
+Peaces Per Box: Box Count: [0]
+0
+null
+
+----Line Leader(s)----
+
+----Line Worker(s)----
+
+----Mechanic(s)----
+
+---Adjustments----
+
+---Down Time----
+Maintanance> 0:0:7
+((17:24:10,322),(17:24:18,322)) 
+
+Inventory> 0:0:0
+
+Quality_Control> 0:0:18
+((17:24:45,322),(17:25:04,322)) 
+
+Break> 0:0:0
+
+Total> 0:0:25
+

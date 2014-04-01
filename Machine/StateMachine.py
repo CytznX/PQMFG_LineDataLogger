@@ -699,9 +699,9 @@ class ActivityLogger:
 
 			#if machine is running Declare, otherwise assume W/O is finished
 			if stillRunning or not self.current_WO == None:
-				log += ['Running '+str((now-self.WO_StartTime).seconds)]
+				log += ['Running '+str(self.currentState)+" "+str((now-self.WO_StartTime).seconds)]
 			else:
-				log += ['Finished '+str((now-self.WO_StartTime).seconds)]
+				log += ['Finished '+str(self.currentState)+" "+str((now-self.WO_StartTime).seconds)]
 
 			#add it to the current return log
 			log +=[str(sum(self.totalCount)), str(self.totalCount),str(sum(self.boxCount)), str(self.boxCount),str(self.failCount)]
