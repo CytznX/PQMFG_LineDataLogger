@@ -991,7 +991,7 @@ public class ClientAlpha implements ActionListener
 				}
 				else if (ComandList[cnter].equals("#MSG")) 
 				{
-					String Command = "#MSG_C";
+					String Command = "#MSG";
 					
 					String msg = "Please Input a MSG";
 					String response = JOptionPane.showInputDialog (msg);

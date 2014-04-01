@@ -989,48 +989,6 @@ public class ClientAlpha implements ActionListener
 					
 					
 				}
-				else if (ComandList[cnter].equals("#MSG")) 
-				{
-					String Command = "#MSG_C";
-					
-					String msg = "Please Input a MSG";
-					String response = JOptionPane.showInputDialog (msg);
-							
-					msg = "Please Input How long you'd line message displayed for(in seconds)";
-					boolean keeprunning = true;
-					Command+=" "+response;
-					
-					while(keeprunning)
-					{
-						try 
-						{
-							response = JOptionPane.showInputDialog (msg);
-							Integer.parseInt(response);
-							keeprunning = false;
-						} 
-						catch (Exception e2) 
-						{
-							msg = "TRY AGAIN: Make sure your Input is a valid Integer";
-						}
-						
-					}
-					
-					
-					try 
-					{
-						MachineSocket = new Socket(machineIpAdress, machinePortNum);
-						String[] resp = sendCommand(Command+" "+response, MachineSocket);
-						MachineSocket.close();
-					} 
-					catch (IOException e1) 
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}	
-					refreshView();
-					
-					
-				}
 				
 				System.out.println(ComandList[cnter]);
 			}

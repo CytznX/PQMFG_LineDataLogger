@@ -84,6 +84,7 @@ class ThreadedTCPNetworkAgent(Thread):
 				elif command[0] == "#SETPPB_C" and len(command) == 2:
 					self.CurLogger.changePeacesPerBox(int(command[1]))
 					clientsock.send("AKN\n")
+					break
 
 				elif command[0] == "#ADJUST" and len(command) == 4:
 					if command[1] == "TOTAL":
@@ -119,7 +120,7 @@ class ThreadedTCPNetworkAgent(Thread):
 
 					self.CurLogger.pushMessage(msg, command[-1])
 					clientsock.send("AKN\n")
-				elif command[0] == "#MSG" and self.isInt(command[-1]):
+				elif command[0] == "#MSG_C" and self.isInt(command[-1]):
 					msg = ''
 					for y in range(1, len(command)-1):
 						msg += command[y]+" "

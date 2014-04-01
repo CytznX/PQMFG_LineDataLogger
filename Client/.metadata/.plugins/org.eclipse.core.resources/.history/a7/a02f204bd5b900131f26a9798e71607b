@@ -909,7 +909,7 @@ public class ClientAlpha implements ActionListener
 				{
 					String Command = "#ADD_C";
 					
-					String msg = "Please Input Employee ID(s), you'd like to Add";
+					String msg = "Please Input Employee ID";
 					boolean keeprunning = true;
 					String response= null;
 
@@ -931,90 +931,6 @@ public class ClientAlpha implements ActionListener
 						}
 						
 					}
-					
-					try 
-					{
-						MachineSocket = new Socket(machineIpAdress, machinePortNum);
-						String[] resp = sendCommand(Command+" "+response, MachineSocket);
-						MachineSocket.close();
-					} 
-					catch (IOException e1) 
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}	
-					refreshView();
-					
-					
-				}
-				else if (ComandList[cnter].equals("#REMOVE")) 
-				{
-					String Command = "#REMOVE_C";
-					
-					String msg = "Please Input Employee ID(s), you'd like to remove";
-					boolean keeprunning = true;
-					String response= null;
-
-					while(keeprunning)
-					{
-						try 
-						{
-							response = JOptionPane.showInputDialog (msg);
-							
-							for (String seg : response.split("\\s+")) {
-								Integer.parseInt(seg);
-							}
-							
-							keeprunning = false;
-						} 
-						catch (Exception e2) 
-						{
-							msg = "TRY AGAIN: Make sure your Input is all valid Integers";
-						}
-						
-					}
-					
-					try 
-					{
-						MachineSocket = new Socket(machineIpAdress, machinePortNum);
-						String[] resp = sendCommand(Command+" "+response, MachineSocket);
-						MachineSocket.close();
-					} 
-					catch (IOException e1) 
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}	
-					refreshView();
-					
-					
-				}
-				else if (ComandList[cnter].equals("#MSG")) 
-				{
-					String Command = "#MSG_C";
-					
-					String msg = "Please Input a MSG";
-					String response = JOptionPane.showInputDialog (msg);
-							
-					msg = "Please Input How long you'd line message displayed for(in seconds)";
-					boolean keeprunning = true;
-					Command+=" "+response;
-					
-					while(keeprunning)
-					{
-						try 
-						{
-							response = JOptionPane.showInputDialog (msg);
-							Integer.parseInt(response);
-							keeprunning = false;
-						} 
-						catch (Exception e2) 
-						{
-							msg = "TRY AGAIN: Make sure your Input is a valid Integer";
-						}
-						
-					}
-					
 					
 					try 
 					{
