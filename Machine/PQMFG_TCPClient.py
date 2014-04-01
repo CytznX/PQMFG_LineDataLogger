@@ -100,7 +100,7 @@ class ThreadedTCPNetworkAgent(Thread):
 					break
 
 				elif command[0] == "#CHANGE" and len(command) == 3:
-					if command[2] == "True" or command[2] == "true"
+					if command[2] == "True" or command[2] == "true":
 						self.CurLogger.changeCurrentWO(command[1], True)
 					else:
 						self.CurLogger.changeCurrentWO(command[1], True)

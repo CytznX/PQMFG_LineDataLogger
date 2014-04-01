@@ -692,3 +692,6 @@ MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 Connection Recieved@(04/01/14, 13:51:09) From Addr: ('192.168.20.105', 36346)
 MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 -------------------------END-------------------------
+Connection Recieved@(04/01/14, 13:52:53) From Addr: ('192.168.20.105', 36347)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
