@@ -27,10 +27,14 @@ class ThreadedTCPNetworkAgent(Thread):
 		self.serversock.bind(self.Addr)
 		self.serversock.listen(5)
 
-		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.connect((self.FserverIP, self.FserverPort))
-		s.send('#CONNECT '+str(self.CurLogger.MachineID))
-		s.close()
+		try:
+			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			s.connect((self.FserverIP, self.FserverPort))
+			s.send('#CONNECT '+str(self.CurLogger.MachineID))
+			s.close()
+		except socket.error:
+			print "\nSERVER IS NOT UP\n", self.FserverIP, self.FserverPort
+
 
 	'''Heres where we spawn a minin thread that manages a individual connection to this machine'''
 	def miniThread(self,clientsock,addr):
