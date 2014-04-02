@@ -100,6 +100,14 @@ class ThreadedTCPNetworkAgent(Thread):
 					clientsock.send("AKN\n")
 					break
 
+				elif command[0] == "#SLO" and len(command) == 1:
+					for emp in self.CurLogger.stillLoggedOn():
+						clientsock.send(emp+"\n")
+				elif command[0] == "#SLO_C" and len(command) == 1:
+					for emp in self.CurLogger.stillLoggedOn():
+						clientsock.send(emp+"\n")
+					break
+
 				elif command[0] == "#CHANGE" and len(command) == 3:
 					if command[2] == "True" or command[2] == "true":
 						self.CurLogger.changeCurrentWO(command[1], True)

@@ -1,0 +1,37 @@
+W/O#: 3221
+Line#: 11
+Start Time: (04/01/14) @ 20:28:35
+RunTime: Running True 1208
+Status: 0
+Total Count: [0]
+Fail Count: 0
+Peaces Per Box: Box Count: [0]
+0
+5
+
+----Line Leader(s)----
+
+----Line Worker(s)----
+99:  (20:43:44,20:43:54) 
+1:  (20:44:29,20:44:46) 
+3:  (20:44:29,20:44:46) 
+2:  (20:44:29,20:44:46) 
+4:  (20:44:29,20:44:46) 
+
+----Mechanic(s)----
+
+---Adjustments----
+
+---Down Time----
+Maintanance> 0:2:0
+((20:43:15,69),(20:45:15,6969)) 
+
+Inventory> 0:0:0
+
+Quality_Control> 0:0:0
+
+Break> 0:0:21
+((20:47:23,1212121),(20:47:45,2266)) 
+
+Total> 0:2:21
+

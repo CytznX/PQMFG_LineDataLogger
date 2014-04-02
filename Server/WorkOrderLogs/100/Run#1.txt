@@ -1,0 +1,32 @@
+W/O#: 100
+Line#: 11
+Start Time: (04/01/14) @ 20:09:02
+RunTime: Running True 20
+Status: 100
+Total Count: [100]
+Fail Count: 0
+Peaces Per Box: Box Count: [0]
+0
+null
+
+----Line Leader(s)----
+
+----Line Worker(s)----
+
+----Mechanic(s)----
+
+---Adjustments----
+(322, Total, 199, 20:09:09)
+(322, Total, -99, 20:09:17)
+
+---Down Time----
+Maintanance> 0:0:0
+
+Inventory> 0:0:0
+
+Quality_Control> 0:0:0
+
+Break> 0:0:0
+
+Total> 0:0:0
+

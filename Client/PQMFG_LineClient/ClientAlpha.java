@@ -20,6 +20,7 @@ import java.util.ArrayList;
 
 import javax.jws.soap.SOAPBinding.Use;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -55,6 +56,7 @@ public class ClientAlpha implements ActionListener
 	//GUI Elements
 	private JFrame guiFrame;
 	private JTextArea MainView;
+	private JTextArea WorkerView;
 	private JButton[] MachineButtonList;
 	private JButton[] ComandButtonList;
 
@@ -107,7 +109,7 @@ public class ClientAlpha implements ActionListener
 			LineTimeLabel.setFont(new Font("Verdana",1,globalFont));
 			LineTimeField.setFont(new Font("Verdana",1,globalFont));
 			LineTimeField.setForeground(Color.red);
-
+			
 			ServerIpAddress = myAdress.IP;
 			ServerPortNum = myAdress.Port;
 
@@ -184,9 +186,20 @@ public class ClientAlpha implements ActionListener
 	 * */
 	protected JComponent createButtons() 
 	{
+		
+		
 		//Creates pannel that will be returned to constructor for later use
-		JPanel panel = new JPanel(new GridLayout(0,1, 10 ,10));
-
+		JPanel panel;
+		
+		if(buttonDict.length>9)
+		{
+			panel = new JPanel(new GridLayout(0,1, 10 ,10));
+		}
+		else
+		{
+			panel = new JPanel(new GridLayout(9,1, 10 ,10));
+		}
+		
 		//Create Buttong
 		MachineButtonList = new JButton[buttonDict.length];
 
@@ -259,13 +272,19 @@ public class ClientAlpha implements ActionListener
 		//creates & formats panel that will be passed back later 
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(new Dimension((windowWidth/2)-spacerGap, windowHeight));
-
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		
 		JPanel tempPanel = new JPanel();
+		
 		MainView = new JTextArea("-----NO CONNECTION ESTABLISHED-----\n");
-
+		WorkerView = new JTextArea("-----NO CONNECTION ESTABLISHED-----\n");
+		MainView.setEditable(false);
+		WorkerView.setEditable(false);
+		
 		//Configure the first temp pannel
 		tempPanel.setLayout(new GridBagLayout());
-		tempPanel.setPreferredSize(new Dimension((windowWidth/2)-spacerGap,windowHeight/5));
+		//tempPanel.setPreferredSize(new Dimension((windowWidth*(3/4))-spacerGap,windowHeight/4));
+
 
 		GridBagConstraints c = new GridBagConstraints();
 
@@ -313,10 +332,26 @@ public class ClientAlpha implements ActionListener
 		panel.add(tempPanel);
 
 		//creates & Formats object that holds and navigates text area
+		JScrollPane areaScrollPane2 = new JScrollPane(WorkerView);
+		areaScrollPane2.setVerticalScrollBarPolicy(
+				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		areaScrollPane2.setPreferredSize(new Dimension((windowWidth/2)-spacerGap, (windowHeight/2)-45));
+
+		//More Formatting
+		areaScrollPane2.setBorder(
+				BorderFactory.createCompoundBorder(
+						BorderFactory.createCompoundBorder(
+								BorderFactory.createTitledBorder("Current Line Workers"),
+								BorderFactory.createEmptyBorder(5,5,5,5)),
+								areaScrollPane2.getBorder()));
+		
+		panel.add(areaScrollPane2);
+		
+		//creates & Formats object that holds and navigates text area
 		JScrollPane areaScrollPane = new JScrollPane(MainView);
 		areaScrollPane.setVerticalScrollBarPolicy(
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-		areaScrollPane.setPreferredSize(new Dimension((windowWidth/2)-spacerGap, windowHeight-(windowHeight/5)-45));
+		areaScrollPane.setPreferredSize(new Dimension((windowWidth/2)-spacerGap, windowHeight-45));
 
 		//More Formatting
 		areaScrollPane.setBorder(
@@ -417,6 +452,8 @@ public class ClientAlpha implements ActionListener
 
 	public void refreshView()
 	{
+		boolean Skipped = false;
+		
 		try 
 		{
 			//debug
@@ -432,7 +469,7 @@ public class ClientAlpha implements ActionListener
 
 			if (Testing) {System.out.println("Sent Comand and Recieved Response");}
 
-			
+
 			if (DoIExist != null && !DoIExist[0].equals("No WO Log Avalible, Machine is Idle")&& !DoIExist[0].equals("INVALID COMMAND"))
 			{
 
@@ -461,7 +498,7 @@ public class ClientAlpha implements ActionListener
 					{
 						int seconds = Integer.parseInt(line.split("\\s+")[2]);
 						String Status = line.split("\\s+")[1];
-						
+
 						int hr = (int)(seconds/3600);
 						int rem = (int)(seconds%3600);
 						int mn = rem/60;
@@ -482,27 +519,27 @@ public class ClientAlpha implements ActionListener
 						LineTimeField.setText(hr+splice1+mn+splice2+sec);
 						LineTimeField.setForeground(Color.GREEN);
 						LineTimeField.setBackground(Color.BLACK);
-						
+
 						if(Status.equals("False") || Status.equals("false"))
 						{
 							LineWOField.setForeground(Color.RED);
 							LineWOField.setBackground(Color.BLACK);
-							
+
 							LineHeaderField.setForeground(Color.RED);
 							LineHeaderField.setBackground(Color.BLACK);
-							
+
 							LineTimeField.setForeground(Color.RED);
 							LineTimeField.setBackground(Color.BLACK);
-							
+
 							LineTimeField.setText(LineTimeField.getText()+" DWN");
 						}
 						else
 						{
 							LineTimeField.setText(LineTimeField.getText()+" UP");
 						}
-						
-						
-						
+
+
+
 					}
 					else if (cnt ==4)
 					{
@@ -520,9 +557,21 @@ public class ClientAlpha implements ActionListener
 					{
 						minew += ("Peaces Per Box: "+line+"\n");
 					}
-					else if(cnt!=1 && cnt!=5 && cnt !=7)
+					else if (Skipped && line.equals("---Adjustments----"))
 					{
+						Skipped = false;
 						minew += (line+"\n");
+					}
+					else if(cnt!=1 && cnt!=5 && cnt !=7 && !Skipped)
+					{
+						if (line.equals("----Line Leader(s)----"))
+						{
+							Skipped = true;
+						}
+						else
+						{
+							minew += (line+"\n");
+						}
 					}
 
 					cnt += 1;
@@ -540,7 +589,7 @@ public class ClientAlpha implements ActionListener
 				LineHeaderField.setBackground(Color.BLACK);
 
 				MainView.setText("--Connection Established-- \nNo WO Log Avalible, Machine is Idle");
-
+				
 				LineWOField.setText("None");
 				LineWOField.setForeground(Color.RED);
 				LineWOField.setBackground(Color.BLACK);
@@ -675,43 +724,10 @@ public class ClientAlpha implements ActionListener
 					//Some init place holders
 					String msg = "Please Enter New WO number";
 					boolean keeprunning = true;
-					int response = 0;
+					String response = " ";
 
 					//make sure we get a valid integer from user as input
-					while(keeprunning)
-					{
-						try 
-						{
-							response = Integer.parseInt(JOptionPane.showInputDialog (msg));
-							keeprunning = false;
-						} 
-						catch (Exception e2) 
-						{
-							msg = "TRY AGAIN: Make sure  your Input is a valid Integer";
-						}
-					}
-
-					//Try opening the Tcp Connection and send the command
-					try 
-					{
-						MachineSocket = new Socket(machineIpAdress, machinePortNum);
-						String[] resp = sendCommand("#CHANGE_C "+String.valueOf(response)+" "+Save, MachineSocket);
-						MachineSocket.close();
-					} 
-					catch (IOException e1) 
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}	
-					refreshView();
-				}
-				else if(ComandList[cnter].equals("#UP"))
-				{
-					String msg = "Please Enter Employee ID number";
-					boolean keeprunning = true;
-					String response= null;
-
-					while(keeprunning)
+					while(keeprunning && response != null)
 					{
 						try 
 						{
@@ -721,24 +737,70 @@ public class ClientAlpha implements ActionListener
 						} 
 						catch (Exception e2) 
 						{
-							msg = "TRY AGAIN: Make sure your Input is a valid Integer";
+							msg = "TRY AGAIN: Make sure  your Input is a valid Integer";
 						}
 					}
 
-					try 
+					//Try opening the Tcp Connection and send the command
+					if(response != null)
 					{
-						MachineSocket = new Socket(machineIpAdress, machinePortNum);
-						String[] resp = sendCommand("#UP_C "+response, MachineSocket);
-						MachineSocket.close();
-					} 
-					catch (IOException e1) 
+						try 
+						{
+							MachineSocket = new Socket(machineIpAdress, machinePortNum);
+							String[] resp = sendCommand("#CHANGE_C "+response+" "+Save, MachineSocket);
+							MachineSocket.close();
+						} 
+						catch (IOException e1) 
+						{
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}	
+						refreshView();
+					}
+				}
+				else if(ComandList[cnter].equals("#UP"))
+				{
+					if(!LineWOField.getText().equals("None"))
 					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}	
-					refreshView();
 
+						String msg = "Please Enter Employee ID number";
+						boolean keeprunning = true;
+						String response= " ";
 
+						while(keeprunning && response != null)
+						{
+							try 
+							{
+								response = JOptionPane.showInputDialog (msg);
+								Integer.parseInt(response);
+								keeprunning = false;
+							} 
+							catch (Exception e2) 
+							{
+								msg = "TRY AGAIN: Make sure your Input is a valid Integer";
+							}
+						}
+						if(response != null)
+						{
+							try 
+							{
+								MachineSocket = new Socket(machineIpAdress, machinePortNum);
+								String[] resp = sendCommand("#UP_C "+response, MachineSocket);
+								MachineSocket.close();
+							} 
+							catch (IOException e1) 
+							{
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}	
+							refreshView();
+						}
+
+					}
+					else
+					{
+						MainView.append("\n\nCannot Bring Line Up, \nNo WO currently Running");
+					}
 
 				}
 				else if(ComandList[cnter].equals("#DOWN"))
@@ -762,9 +824,9 @@ public class ClientAlpha implements ActionListener
 
 							String msg = "Please Enter Employee ID number";
 							boolean keeprunning = true;
-							String response= null;
+							String response= " ";
 
-							while(keeprunning)
+							while(keeprunning && response != null)
 							{
 								try 
 								{
@@ -776,15 +838,64 @@ public class ClientAlpha implements ActionListener
 								{
 									msg = "TRY AGAIN: Make sure your Input is a valid Integer";
 								}
-								
+
 							}
-							
-							Command += response;
-							
+							if (response != null)
+							{
+								Command += response;
+
+								try 
+								{
+									MachineSocket = new Socket(machineIpAdress, machinePortNum);
+									String[] resp = sendCommand(Command, MachineSocket);
+									MachineSocket.close();
+								} 
+								catch (IOException e1) 
+								{
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}	
+								refreshView();
+							}
+
+
+						}
+
+					}
+					else
+					{
+						MainView.append("\n\nCannot Bring Line Down, \nNo WO currently Running");
+					}
+				}
+				else if(ComandList[cnter].equals("#SETPPB"))
+				{
+					if(!LineWOField.getText().equals("None"))
+					{
+						String msg = "Please Enter How Many Peaces Per Box";
+						boolean keeprunning = true;
+						String response= " ";
+
+						while(keeprunning && response != null)
+						{
+							try 
+							{
+								response = JOptionPane.showInputDialog (msg);
+								Integer.parseInt(response);
+								keeprunning = false;
+							} 
+							catch (Exception e2) 
+							{
+								msg = "TRY AGAIN: Make sure your Input is a valid Integer";
+							}
+
+						}
+
+						if (response != null)
+						{
 							try 
 							{
 								MachineSocket = new Socket(machineIpAdress, machinePortNum);
-								String[] resp = sendCommand(Command, MachineSocket);
+								String[] resp = sendCommand("#SETPPB_C "+response, MachineSocket);
 								MachineSocket.close();
 							} 
 							catch (IOException e1) 
@@ -793,103 +904,125 @@ public class ClientAlpha implements ActionListener
 								e1.printStackTrace();
 							}	
 							refreshView();
-							
-							
 						}
-
+					}
+					else
+					{
+						MainView.append("\n\nCannot set Parts Per Box, \nNo WO currently Running");
 					}
 				}
-				else if(ComandList[cnter].equals("#SETPPB"))
+				else if(ComandList[cnter].equals("#ADJUST"))
 				{
-					String msg = "Please Enter How Many Peaces Per Box";
-					boolean keeprunning = true;
-					String response= null;
 
-					while(keeprunning)
+					if(!LineWOField.getText().equals("None"))
+					{
+						String Command = "#ADJUST_C ";
+
+						//current possible reasons: 1)Maitenance, 2) Inventory, 3) Quality_Control 4)Break
+						Object[] options = {"TOTAL", "BOX", "Cancle"};
+						int n = JOptionPane.showOptionDialog(guiFrame,
+								"Please Select A reason for bringing the machine down",
+								"Bring Machine down", JOptionPane.YES_NO_CANCEL_OPTION,
+								JOptionPane.QUESTION_MESSAGE,
+								null, options, options[2]);
+
+
+						if(n != 2)
+						{
+							Command += options[n];
+
+							String msg = "How many Peaces would you like to add \n(Use neggative number for subtraction)";
+							boolean keeprunning = true;
+							String response= " ";
+
+							while(keeprunning && response != null)
+							{
+								try 
+								{
+									response = JOptionPane.showInputDialog (msg);
+									Integer.parseInt(response);
+									keeprunning = false;
+								} 
+								catch (Exception e2) 
+								{
+									msg = "TRY AGAIN: Make sure your Input is a valid Integer";
+								}
+
+							}
+							if (response != null)
+							{
+								Command+=" "+response;
+
+								msg = "Please Input Employee ID";
+								keeprunning = true;
+								response= " ";
+
+								while(keeprunning && response != null)
+								{
+									try 
+									{
+										response = JOptionPane.showInputDialog (msg);
+										Integer.parseInt(response);
+										keeprunning = false;
+									} 
+									catch (Exception e2) 
+									{
+										msg = "TRY AGAIN: Make sure your Input is a valid Integer";
+									}
+
+								}
+								if (response != null)
+								{
+									try 
+									{
+										MachineSocket = new Socket(machineIpAdress, machinePortNum);
+										String[] resp = sendCommand(Command+" "+response, MachineSocket);
+										MachineSocket.close();
+									} 
+									catch (IOException e1) 
+									{
+										// TODO Auto-generated catch block
+										e1.printStackTrace();
+									}	
+									refreshView();
+								}
+							}
+						}
+					}
+					else
+					{
+						MainView.append("\n\nCannot Adjust Count, \nNo WO currently Running");
+					}
+				}
+				else if (ComandList[cnter].equals("#ADD")) 
+				{
+					String Command = "#ADD_C";
+
+					String msg = "Please Input Employee ID(s), you'd like to Add";
+					boolean keeprunning = true;
+					String response= " ";
+
+					while(keeprunning && response != null)
 					{
 						try 
 						{
 							response = JOptionPane.showInputDialog (msg);
-							Integer.parseInt(response);
+
+							for (String seg : response.split("\\s+")) {
+								Integer.parseInt(seg);
+							}
+
 							keeprunning = false;
 						} 
 						catch (Exception e2) 
 						{
-							msg = "TRY AGAIN: Make sure your Input is a valid Integer";
+							msg = "TRY AGAIN: Make sure your Input is all valid Integers";
 						}
-						
+
 					}
-					try 
-					{
-						MachineSocket = new Socket(machineIpAdress, machinePortNum);
-						String[] resp = sendCommand("#SETPPB_C "+response, MachineSocket);
-						MachineSocket.close();
-					} 
-					catch (IOException e1) 
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}	
-					refreshView();
-					
-				}
-				else if(ComandList[cnter].equals("#ADJUST"))
-				{
-					String Command = "#ADJUST_C ";
 
-					//current possible reasons: 1)Maitenance, 2) Inventory, 3) Quality_Control 4)Break
-					Object[] options = {"TOTAL", "BOX", "Cancle"};
-					int n = JOptionPane.showOptionDialog(guiFrame,
-							"Please Select A reason for bringing the machine down",
-							"Bring Machine down", JOptionPane.YES_NO_CANCEL_OPTION,
-							JOptionPane.QUESTION_MESSAGE,
-							null, options, options[2]);
-					
-					
-					if(n != 2)
+					if(response != null)
 					{
-						Command += options[n];
-						
-						String msg = "How many Peaces would you like to add \n(Use neggative number for subtraction)";
-						boolean keeprunning = true;
-						String response= null;
-
-						while(keeprunning)
-						{
-							try 
-							{
-								response = JOptionPane.showInputDialog (msg);
-								Integer.parseInt(response);
-								keeprunning = false;
-							} 
-							catch (Exception e2) 
-							{
-								msg = "TRY AGAIN: Make sure your Input is a valid Integer";
-							}
-							
-						}
-						
-						Command+=" "+response;
-						
-						msg = "Please Input Employee ID";
-						keeprunning = true;
-						response= null;
-
-						while(keeprunning)
-						{
-							try 
-							{
-								response = JOptionPane.showInputDialog (msg);
-								Integer.parseInt(response);
-								keeprunning = false;
-							} 
-							catch (Exception e2) 
-							{
-								msg = "TRY AGAIN: Make sure your Input is a valid Integer";
-							}
-							
-						}
-						
 						try 
 						{
 							MachineSocket = new Socket(machineIpAdress, machinePortNum);
@@ -902,105 +1035,66 @@ public class ClientAlpha implements ActionListener
 							e1.printStackTrace();
 						}	
 						refreshView();
-						
 					}
-				}
-				else if (ComandList[cnter].equals("#ADD")) 
-				{
-					String Command = "#ADD_C";
-					
-					String msg = "Please Input Employee ID(s), you'd like to Add";
-					boolean keeprunning = true;
-					String response= null;
 
-					while(keeprunning)
-					{
-						try 
-						{
-							response = JOptionPane.showInputDialog (msg);
-							
-							for (String seg : response.split("\\s+")) {
-								Integer.parseInt(seg);
-							}
-							
-							keeprunning = false;
-						} 
-						catch (Exception e2) 
-						{
-							msg = "TRY AGAIN: Make sure your Input is all valid Integers";
-						}
-						
-					}
-					
-					try 
-					{
-						MachineSocket = new Socket(machineIpAdress, machinePortNum);
-						String[] resp = sendCommand(Command+" "+response, MachineSocket);
-						MachineSocket.close();
-					} 
-					catch (IOException e1) 
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}	
-					refreshView();
-					
-					
+
 				}
 				else if (ComandList[cnter].equals("#REMOVE")) 
 				{
 					String Command = "#REMOVE_C";
-					
+
 					String msg = "Please Input Employee ID(s), you'd like to remove";
 					boolean keeprunning = true;
-					String response= null;
+					String response= " ";
 
-					while(keeprunning)
+					while(keeprunning && response != null)
 					{
 						try 
 						{
 							response = JOptionPane.showInputDialog (msg);
-							
+
 							for (String seg : response.split("\\s+")) {
 								Integer.parseInt(seg);
 							}
-							
+
 							keeprunning = false;
 						} 
 						catch (Exception e2) 
 						{
 							msg = "TRY AGAIN: Make sure your Input is all valid Integers";
 						}
-						
+
 					}
-					
-					try 
+
+					if(response != null)
 					{
-						MachineSocket = new Socket(machineIpAdress, machinePortNum);
-						String[] resp = sendCommand(Command+" "+response, MachineSocket);
-						MachineSocket.close();
-					} 
-					catch (IOException e1) 
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}	
-					refreshView();
-					
-					
+						try 
+						{
+							MachineSocket = new Socket(machineIpAdress, machinePortNum);
+							String[] resp = sendCommand(Command+" "+response, MachineSocket);
+							MachineSocket.close();
+						} 
+						catch (IOException e1) 
+						{
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}	
+						refreshView();
+					}
+
 				}
 				else if (ComandList[cnter].equals("#MSG")) 
 				{
 					String Command = "#MSG_C";
-					
+
 					String msg = "Please Input a MSG";
 					String response = JOptionPane.showInputDialog (msg);
-							
+
 					msg = "Please Input How long you'd line message displayed for(in seconds)";
 					boolean keeprunning = true;
 					Command+=" "+response;
-					
-					while(keeprunning)
+
+					while(keeprunning && response != null)
 					{
 						try 
 						{
@@ -1012,29 +1106,35 @@ public class ClientAlpha implements ActionListener
 						{
 							msg = "TRY AGAIN: Make sure your Input is a valid Integer";
 						}
-						
+
 					}
-					
-					
-					try 
+
+					if (response != null)
 					{
-						MachineSocket = new Socket(machineIpAdress, machinePortNum);
-						String[] resp = sendCommand(Command+" "+response, MachineSocket);
-						MachineSocket.close();
-					} 
-					catch (IOException e1) 
-					{
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}	
-					refreshView();
-					
-					
+						try 
+						{
+							MachineSocket = new Socket(machineIpAdress, machinePortNum);
+							String[] resp = sendCommand(Command+" "+response, MachineSocket);
+							MachineSocket.close();
+						} 
+						catch (IOException e1) 
+						{
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}	
+						refreshView();
+					}
+
+
 				}
-				
-				System.out.println(ComandList[cnter]);
+
+				if (Testing){System.out.println(ComandList[cnter]);}
 			}
 			cnter+=1;
+		}
+		if (!IamConnected)
+		{
+			MainView.append("\n\nPlease select A machine (From 'Active Lines') \nBefore selecting comands");
 		}
 	}
 }

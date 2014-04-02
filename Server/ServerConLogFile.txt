@@ -767,3 +767,204 @@ Data Is bad
 Connection Recieved@(04/01/14, 15:46:01) From Addr: ('127.0.0.1', 45905)
 Data Is bad
 -------------------------END-------------------------
+Connection Recieved@(04/01/14, 15:47:58) From Addr: ('192.168.20.105', 33938)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 15:49:43) From Addr: ('192.168.20.105', 54909)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 15:57:30) From Addr: ('127.0.0.1', 45933)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 15:58:22) From Addr: ('127.0.0.1', 45941)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:05:57) From Addr: ('127.0.0.1', 45974)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:07:03) From Addr: ('127.0.0.1', 45982)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:08:20) From Addr: ('127.0.0.1', 45987)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:09:23) From Addr: ('192.168.20.105', 54910)
+Log Created: WorkOrderLogs/100/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:11:18) From Addr: ('127.0.0.1', 46010)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:11:28) From Addr: ('127.0.0.1', 46012)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:12:09) From Addr: ('127.0.0.1', 46015)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:12:18) From Addr: ('127.0.0.1', 46017)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:13:14) From Addr: ('127.0.0.1', 46021)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:15:37) From Addr: ('127.0.0.1', 46043)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:15:45) From Addr: ('192.168.20.105', 54911)
+Log Created: WorkOrderLogs/111/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:15:48) From Addr: ('192.168.20.105', 54912)
+Log Created: WorkOrderLogs/123/Run#6.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:19:13) From Addr: ('127.0.0.1', 46077)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:19:49) From Addr: ('192.168.20.105', 54913)
+Log Created: WorkOrderLogs/123/Run#7.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:19:54) From Addr: ('192.168.20.105', 54914)
+Log Created: WorkOrderLogs/321/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:21:50) From Addr: ('127.0.0.1', 46096)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:21:53) From Addr: ('192.168.20.105', 54915)
+Log Created: WorkOrderLogs/123/Run#8.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:26:34) From Addr: ('127.0.0.1', 46131)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:26:40) From Addr: ('192.168.20.105', 54916)
+Log Created: WorkOrderLogs/123/Run#9.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:26:53) From Addr: ('192.168.20.105', 54917)
+Log Created: WorkOrderLogs/666/Run#2.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:28:23) From Addr: ('127.0.0.1', 46146)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:28:35) From Addr: ('192.168.20.105', 54918)
+Log Created: WorkOrderLogs/777/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:30:06) From Addr: ('127.0.0.1', 46176)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:42:23) From Addr: ('192.168.20.98', 44209)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:48:43) From Addr: ('192.168.20.105', 54919)
+Log Created: WorkOrderLogs/3221/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 16:54:36) From Addr: ('192.168.20.105', 54920)
+Log Created: WorkOrderLogs/151515151/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 17:27:18) From Addr: ('127.0.0.1', 46527)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 17:27:51) From Addr: ('192.168.20.105', 54921)
+Log Created: WorkOrderLogs/222/Run#2.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 17:28:36) From Addr: ('192.168.20.105', 54922)
+Log Created: WorkOrderLogs/666/Run#3.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 17:29:10) From Addr: ('192.168.20.105', 54923)
+Log Created: WorkOrderLogs/777/Run#2.txt
+-------------------------END-------------------------
+Connection Recieved@(04/01/14, 17:30:01) From Addr: ('192.168.20.105', 54924)
+Log Created: WorkOrderLogs/8778/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:22:28) From Addr: ('127.0.0.1', 47050)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:23:22) From Addr: ('127.0.0.1', 47054)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:24:07) From Addr: ('127.0.0.1', 47073)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:25:24) From Addr: ('127.0.0.1', 47108)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:26:04) From Addr: ('127.0.0.1', 47111)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:28:58) From Addr: ('127.0.0.1', 47138)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:30:04) From Addr: ('127.0.0.1', 47143)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:30:25) From Addr: ('127.0.0.1', 47149)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:32:08) From Addr: ('127.0.0.1', 47159)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:32:33) From Addr: ('127.0.0.1', 47164)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:32:56) From Addr: ('127.0.0.1', 47165)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:33:32) From Addr: ('127.0.0.1', 47168)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:36:30) From Addr: ('127.0.0.1', 47191)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 11:37:03) From Addr: ('127.0.0.1', 47196)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 13:08:51) From Addr: ('192.168.20.98', 42464)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 13:09:15) From Addr: ('192.168.20.105', 54925)
+Log Created: WorkOrderLogs/999/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 13:16:01) From Addr: ('127.0.0.1', 47440)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 13:32:33) From Addr: ('127.0.0.1', 47599)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 13:33:19) From Addr: ('127.0.0.1', 47605)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 13:33:35) From Addr: ('127.0.0.1', 47608)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 13:35:16) From Addr: ('127.0.0.1', 47632)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 13:38:07) From Addr: ('127.0.0.1', 47642)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 13:38:28) From Addr: ('127.0.0.1', 47645)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 13:39:31) From Addr: ('127.0.0.1', 47664)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 15:32:55) From Addr: ('127.0.0.1', 48428)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 15:38:22) From Addr: ('127.0.0.1', 48504)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 15:39:15) From Addr: ('127.0.0.1', 48534)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 15:39:57) From Addr: ('127.0.0.1', 48579)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 15:40:56) From Addr: ('127.0.0.1', 48593)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 15:42:35) From Addr: ('127.0.0.1', 48616)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 15:43:06) From Addr: ('127.0.0.1', 48625)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:06:04) From Addr: ('192.168.20.198', 36085)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
