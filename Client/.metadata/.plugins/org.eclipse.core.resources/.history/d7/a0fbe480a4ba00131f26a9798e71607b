@@ -459,12 +459,12 @@ public class ClientAlpha implements ActionListener
 			//debug
 			if (Testing) {System.out.println(machineIpAdress.toString()+ " "+ String.valueOf(machinePortNum));}
 
+			MachineSocket = new Socket(machineIpAdress, machinePortNum);
+
 			//debug
 			if (Testing) {System.out.println("Sending Comand...");}
 
-			MachineSocket = new Socket(machineIpAdress, machinePortNum);
 			String[] DoIExist = sendCommand("#STATUS_C", MachineSocket);
-			MachineSocket = new Socket(machineIpAdress, machinePortNum);
 			String[] WhosLoggedIn = sendCommand("#SLO_C", MachineSocket);
 			MachineSocket.close();
 
@@ -472,15 +472,7 @@ public class ClientAlpha implements ActionListener
 
 			
 			if(WhosLoggedIn != null && !(WhosLoggedIn[0].equals("")||WhosLoggedIn[0].equals(" ")))
-			{
-				String AllEmp =""; 
-				for (String emp : WhosLoggedIn) {
-					AllEmp+= emp+"\n";
-					
-				}
-				WorkerView.setText(AllEmp);
-			}
-			
+
 			if (DoIExist != null && !DoIExist[0].equals("No WO Log Avalible, Machine is Idle")&& !DoIExist[0].equals("INVALID COMMAND")&& !DoIExist[0].equals("INVALID COMMAND, '#'"))
 			{
 

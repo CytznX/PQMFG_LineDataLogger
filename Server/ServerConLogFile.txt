@@ -968,3 +968,21 @@ Data Is bad
 Connection Recieved@(04/02/14, 16:06:04) From Addr: ('192.168.20.198', 36085)
 MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 -------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:15:04) From Addr: ('192.168.20.105', 32796)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:15:18) From Addr: ('127.0.0.1', 48942)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:15:30) From Addr: ('192.168.20.105', 32797)
+Log Created: WorkOrderLogs/666/Run#4.txt
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:24:13) From Addr: ('127.0.0.1', 49055)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:24:34) From Addr: ('127.0.0.1', 49057)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:25:56) From Addr: ('127.0.0.1', 49063)
+Data Is bad
+-------------------------END-------------------------
