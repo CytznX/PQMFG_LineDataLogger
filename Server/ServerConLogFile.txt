@@ -1007,3 +1007,9 @@ Data Is bad
 Connection Recieved@(04/02/14, 16:40:16) From Addr: ('192.168.20.105', 47741)
 MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 -------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:42:09) From Addr: ('192.168.20.105', 50959)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:44:01) From Addr: ('127.0.0.1', 49210)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------

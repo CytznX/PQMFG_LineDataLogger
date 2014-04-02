@@ -109,7 +109,7 @@ public class ClientAlpha implements ActionListener
 			LineTimeLabel.setFont(new Font("Verdana",1,globalFont));
 			LineTimeField.setFont(new Font("Verdana",1,globalFont));
 			LineTimeField.setForeground(Color.red);
-
+			
 			ServerIpAddress = myAdress.IP;
 			ServerPortNum = myAdress.Port;
 
@@ -186,11 +186,11 @@ public class ClientAlpha implements ActionListener
 	 * */
 	protected JComponent createButtons() 
 	{
-
-
+		
+		
 		//Creates pannel that will be returned to constructor for later use
 		JPanel panel;
-
+		
 		if(buttonDict.length>9)
 		{
 			panel = new JPanel(new GridLayout(0,1, 10 ,10));
@@ -199,7 +199,7 @@ public class ClientAlpha implements ActionListener
 		{
 			panel = new JPanel(new GridLayout(9,1, 10 ,10));
 		}
-
+		
 		//Create Buttong
 		MachineButtonList = new JButton[buttonDict.length];
 
@@ -273,14 +273,14 @@ public class ClientAlpha implements ActionListener
 		JPanel panel = new JPanel();
 		panel.setPreferredSize(new Dimension((windowWidth/2)-spacerGap, windowHeight));
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
+		
 		JPanel tempPanel = new JPanel();
-
+		
 		MainView = new JTextArea("-----NO CONNECTION ESTABLISHED-----\n");
 		WorkerView = new JTextArea("-----NO CONNECTION ESTABLISHED-----\n");
 		MainView.setEditable(false);
 		WorkerView.setEditable(false);
-
+		
 		//Configure the first temp pannel
 		tempPanel.setLayout(new GridBagLayout());
 		//tempPanel.setPreferredSize(new Dimension((windowWidth*(3/4))-spacerGap,windowHeight/4));
@@ -344,9 +344,9 @@ public class ClientAlpha implements ActionListener
 								BorderFactory.createTitledBorder("Current Line Workers"),
 								BorderFactory.createEmptyBorder(5,5,5,5)),
 								areaScrollPane2.getBorder()));
-
+		
 		panel.add(areaScrollPane2);
-
+		
 		//creates & Formats object that holds and navigates text area
 		JScrollPane areaScrollPane = new JScrollPane(MainView);
 		areaScrollPane.setVerticalScrollBarPolicy(
@@ -453,7 +453,7 @@ public class ClientAlpha implements ActionListener
 	public void refreshView()
 	{
 		boolean Skipped = false;
-
+		
 		try 
 		{
 			//debug
@@ -470,24 +470,17 @@ public class ClientAlpha implements ActionListener
 
 			if (Testing) {System.out.println("Sent Comand and Recieved Response");}
 
-
+			
 			if(WhosLoggedIn != null && !(WhosLoggedIn[0].equals("")||WhosLoggedIn[0].equals(" ")))
 			{
 				String AllEmp =""; 
 				for (String emp : WhosLoggedIn) {
 					AllEmp+= emp+"\n";
-
+					
 				}
-				if (!AllEmp.equals(""))
-				{
-					WorkerView.setText(AllEmp);
-				}
-				else
-				{
-					WorkerView.setText("No Employees currently Active on Line");
-				}
-
-			}			
+				WorkerView.setText(AllEmp);
+			}
+			
 			if (DoIExist != null && !DoIExist[0].equals("No WO Log Avalible, Machine is Idle")&& !DoIExist[0].equals("INVALID COMMAND")&& !DoIExist[0].equals("INVALID COMMAND, '#'"))
 			{
 
@@ -607,7 +600,7 @@ public class ClientAlpha implements ActionListener
 				LineHeaderField.setBackground(Color.BLACK);
 
 				MainView.setText("--Connection Established-- \nNo WO Log Avalible, Machine is Idle");
-
+				
 				LineWOField.setText("None");
 				LineWOField.setForeground(Color.RED);
 				LineWOField.setBackground(Color.BLACK);

@@ -484,7 +484,7 @@ public class ClientAlpha implements ActionListener
 				}
 				else
 				{
-					WorkerView.setText("No Employees currently Active on Line");
+					WorkerView.setText(AllEmp);
 				}
 
 			}			

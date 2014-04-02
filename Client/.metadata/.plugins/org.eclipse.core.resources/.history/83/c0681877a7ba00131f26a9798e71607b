@@ -481,12 +481,8 @@ public class ClientAlpha implements ActionListener
 				if (!AllEmp.equals(""))
 				{
 					WorkerView.setText(AllEmp);
-				}
-				else
-				{
-					WorkerView.setText("No Employees currently Active on Line");
-				}
 
+				}
 			}			
 			if (DoIExist != null && !DoIExist[0].equals("No WO Log Avalible, Machine is Idle")&& !DoIExist[0].equals("INVALID COMMAND")&& !DoIExist[0].equals("INVALID COMMAND, '#'"))
 			{

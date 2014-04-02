@@ -149,10 +149,10 @@ class ThreadedTCPNetworkAgent(Thread):
 						clientsock.send(x+"\n")
 					break
 
-				elif command[0] == "#SLO" and len(command) == 1:
+				elif data.rstrip() == "#SLO":
 					for emp in self.CurLogger.stillLoggedOn():
 						clientsock.send(str(emp)+"\n")
-				elif command[0] == "#SLO_C" and len(command) == 1:
+				elif data.rstrip() == "#SLO_C":
 					for emp in self.CurLogger.stillLoggedOn():
 						clientsock.send(str(emp)+"\n")
 					break
