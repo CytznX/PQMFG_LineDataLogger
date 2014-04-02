@@ -986,3 +986,12 @@ Data Is bad
 Connection Recieved@(04/02/14, 16:25:56) From Addr: ('127.0.0.1', 49063)
 Data Is bad
 -------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:33:08) From Addr: ('192.168.20.105', 32798)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:34:16) From Addr: ('192.168.20.105', 54604)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:34:30) From Addr: ('127.0.0.1', 49121)
+Data Is bad
+-------------------------END-------------------------

@@ -104,14 +104,6 @@ class ThreadedTCPNetworkAgent(Thread):
 					clientsock.send("AKN\n")
 					break
 
-				elif command[0] == "#SLO" and len(command) == 1:
-					for emp in self.CurLogger.stillLoggedOn():
-						clientsock.send(emp+"\n")
-				elif command[0] == "#SLO_C" and len(command) == 1:
-					for emp in self.CurLogger.stillLoggedOn():
-						clientsock.send(emp+"\n")
-					break
-
 				elif command[0] == "#CHANGE" and len(command) == 3:
 					if command[2] == "True" or command[2] == "true":
 						self.CurLogger.changeCurrentWO(command[1], True)
@@ -148,6 +140,7 @@ class ThreadedTCPNetworkAgent(Thread):
 					break
 				elif "#END" == data.rstrip():
 					break
+
 				elif "#STATUS" == data.rstrip(): 
 					for x in self.CurLogger.getFormatedLog():
 						clientsock.send(x+"\n")
@@ -155,8 +148,18 @@ class ThreadedTCPNetworkAgent(Thread):
 					for x in self.CurLogger.getFormatedLog():
 						clientsock.send(x+"\n")
 					break
+
+				elif command[0] == "#SLO" and len(command) == 1:
+					for emp in self.CurLogger.stillLoggedOn():
+						clientsock.send(emp+"\n")
+				elif command[0] == "#SLO_C" and len(command) == 1:
+					for emp in self.CurLogger.stillLoggedOn():
+						clientsock.send(emp+"\n")
+					break
+
 				elif "#ALIVE" == data.rstrip():
 					clientsock.send(str(self.CurLogger.getCurrentState()))
+
 				elif "#COMPLETE" == data.rstrip():
 					self.CurLogger.finishCurrentWO()
 					clientsock.send("AKN\n")
@@ -164,8 +167,11 @@ class ThreadedTCPNetworkAgent(Thread):
 					self.CurLogger.finishCurrentWO()
 					clientsock.send("AKN\n")
 					break
+					
 				else:
 					clientsock.send("INVALID COMMAND, '"+data.rstrip()+"'\n")
+					if data.rstrip().endswith("_C"):
+						break
 
 		#close the damn pipe from this side
 		clientsock.close()
