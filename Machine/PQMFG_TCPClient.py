@@ -151,10 +151,10 @@ class ThreadedTCPNetworkAgent(Thread):
 
 				elif command[0] == "#SLO" and len(command) == 1:
 					for emp in self.CurLogger.stillLoggedOn():
-						clientsock.send(emp+"\n")
+						clientsock.send(str(emp)+"\n")
 				elif command[0] == "#SLO_C" and len(command) == 1:
 					for emp in self.CurLogger.stillLoggedOn():
-						clientsock.send(emp+"\n")
+						clientsock.send(str(emp)+"\n")
 					break
 
 				elif "#ALIVE" == data.rstrip():
@@ -167,7 +167,7 @@ class ThreadedTCPNetworkAgent(Thread):
 					self.CurLogger.finishCurrentWO()
 					clientsock.send("AKN\n")
 					break
-					
+
 				else:
 					clientsock.send("INVALID COMMAND, '"+data.rstrip()+"'\n")
 					if data.rstrip().endswith("_C"):
