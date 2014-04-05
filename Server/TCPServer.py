@@ -119,7 +119,7 @@ class ThreadedTCPNetworkAgent(Thread):
 				if formattedMess[9] == '':
 					formattedMess[9] = 'Peaces Per Box: N/A'
 				else:
-					formattedMess[9] = 'Peaces Per Box: '+ formattedMess[7]
+					formattedMess[9] = 'Peaces Per Box: '+ formattedMess[9]
 
 				if not os.path.isdir(self.WO_LogFolder + w0+'/'):
 					os.makedirs(self.WO_LogFolder + w0+'/')
