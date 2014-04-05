@@ -109,16 +109,17 @@ class ThreadedTCPNetworkAgent(Thread):
 				formattedMess[0] = 'W/O#: '+ formattedMess[0]
 				formattedMess[1] = 'Line#: '+ formattedMess[1]
 				formattedMess[2] = 'Start Time: '+ formattedMess[2]
-				formattedMess[3] = 'RunTime: '+ formattedMess[3]
-				formattedMess[4] = 'Status: '+ formattedMess[4]
-				formattedMess[5] = 'Total Count: '+ formattedMess[5]
-				formattedMess[6] = 'Fail Count: '+ formattedMess[6]
-				formattedMess[7] = 'Box Count: '+ formattedMess[7]
+				formattedMess[3] = 'Status/RunTime: '+ formattedMess[3]+'(seconds)'
+				formattedMess[4] = 'Total Count: '+ formattedMess[4]
+				formattedMess[5] = 'Total Hourly: '+ formattedMess[5]
+				formattedMess[6] = 'Box Count: '+ formattedMess[6]
+				formattedMess[7] = 'Box Hourly: '+ formattedMess[7]
+				formattedMess[8] = 'Fail Count: '+ formattedMess[8]
 
-				if formattedMess[7] == '':
-					formattedMess[7] = 'Peaces Per Box: N/A'
+				if formattedMess[9] == '':
+					formattedMess[9] = 'Peaces Per Box: N/A'
 				else:
-					formattedMess[7] = 'Peaces Per Box: '+ formattedMess[7]
+					formattedMess[9] = 'Peaces Per Box: '+ formattedMess[7]
 
 				if not os.path.isdir(self.WO_LogFolder + w0+'/'):
 					os.makedirs(self.WO_LogFolder + w0+'/')
