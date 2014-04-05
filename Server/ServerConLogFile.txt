@@ -1085,3 +1085,10 @@ Log Created: WorkOrderLogs/666/Run#6.txt
 Connection Recieved@(04/05/14, 14:42:13) From Addr: ('192.168.20.105', 55711)
 Log Created: WorkOrderLogs/123/Run#10.txt
 -------------------------END-------------------------
+Connection Recieved@(04/05/14, 15:07:49) From Addr: ('127.0.0.1', 49471)
+Connection Recieved@(04/05/14, 15:09:12) From Addr: ('192.168.2.146', 37500)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 15:12:16) From Addr: ('192.168.2.146', 37501)
+Log Created: WorkOrderLogs/1111/Run#1.txt
+-------------------------END-------------------------

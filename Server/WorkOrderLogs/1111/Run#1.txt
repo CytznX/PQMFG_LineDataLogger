@@ -1,0 +1,35 @@
+W/O#: 1111
+Line#: 11
+Start Time: (04/05/14) @ 15:09:02
+RunTime: Running True 168
+Status: 22
+Total Count: [22]
+Fail Count: 1
+Peaces Per Box: Box Count: [1]
+9
+13
+
+----Line Leader(s)----
+
+----Line Worker(s)----
+5555:  (15:10:31,15:10:36) 
+
+----Mechanic(s)----
+
+---Adjustments----
+
+---Down Time----
+Maintanance> 0:0:4
+((15:11:33,212),(15:11:37,1)) 
+
+Inventory> 0:0:6
+((15:11:20,Rich Beachy),(15:11:26,658)) 
+
+Quality_Control> 0:0:2
+((15:11:44,22222),(15:11:47,9)) 
+
+Break> 0:0:25
+((15:10:49,Rich Beachy),(15:11:14,Rich Beachy)) 
+
+Total> 0:0:37
+
