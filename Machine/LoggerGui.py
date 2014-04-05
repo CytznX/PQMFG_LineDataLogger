@@ -384,7 +384,6 @@ def main():
 				if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE) or ('click' in buttonShutDownEvent and cur_AL.getCurrentState()[0]==None):
 					print 'Quiting...'
 					
-<<<<<<< HEAD:Machine/LoggerGui.py
 					try:
 						pygame.quit()
 						print 'Quiting Pygame... 3...'
@@ -403,8 +402,8 @@ def main():
 						
 						print 'Linelogger State Machine has been destroyed...'
 						print 'killing Everything!!!'				
-						#shutdownPI() #used to kill pi
-						sys.exit() #used to return to comandLine
+						shutdownPI() #used to kill pi
+						#sys.exit() #used to return to comandLine
 
 				#if any other key is press we add it to our Barcode Reader objecect
 				if event.type == KEYDOWN:    
@@ -417,44 +416,7 @@ def main():
 					if GUI_STATE == 2:
 						if displayText == []:
 							displayText.append(scanVal)
-=======
-					print 'Linelogger State Machine has been destroyed...'
-					print 'killing Everything!!!'				
-					shutdownPI() #used to kill pi
-					#sys.exit() #used to return to comandLine
 
-			#if any other key is press we add it to our Barcode Reader objecect
-			if event.type == KEYDOWN:    
-				BCreader.add(event.key)
-
-			#check to see if we have any availible strings collected
-			scanVal = BCreader.getAvalibleMessage()
-			if not scanVal == '':
-				print scanVal 
-			
-			if not scanVal == '' and not scanVal.startswith('#'):
-
-				if GUI_STATE == 2:
-					if displayText == []:
-						displayText.append(scanVal)
-					else:
-						displayText[0] = scanVal
-
-				elif GUI_STATE == 3:
-					if not displayText == [] and displayText[-1] == '':
-						displayText[-1] = scanVal
-						displayText+=['&','']
-					else:
-						displayText.append(scanVal)
-						displayText+=['&','']
-
-				elif GUI_STATE == 4:
-					tmp = cur_AL.getName(scanVal)
-					if tmp in stillLoggedIn.keys():
-						if stillLoggedIn[tmp].bgcolor == DEFAULT_BG:
-							stillLoggedIn[tmp].bgcolor = GREEN
-							addRemove.append(tmp)
->>>>>>> origin/Raspi:LoggerGui.py
 						else:
 							displayText[0] = scanVal
 
@@ -480,8 +442,7 @@ def main():
 					elif GUI_STATE == 6 or GUI_STATE == 5.5:
 						displayText = [scanVal]
 						scanVal = ''
-
-							 
+	 
 				elif GUI_STATE ==5 and not scanVal == '':
 					if scanVal == '#MAINTENANCE':
 						dwnReason = 'Maitenance'
