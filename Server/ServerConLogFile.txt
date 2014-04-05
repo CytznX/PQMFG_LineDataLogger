@@ -1046,3 +1046,42 @@ MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 Connection Recieved@(04/04/14, 12:43:41) From Addr: ('127.0.0.1', 38765)
 Data Is bad
 -------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:35:31) From Addr: ('192.168.20.105', 51751)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:36:30) From Addr: ('127.0.0.1', 49243)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:37:22) From Addr: ('127.0.0.1', 49248)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:37:34) From Addr: ('192.168.20.105', 51752)
+Log Created: WorkOrderLogs/432/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:38:52) From Addr: ('192.168.20.105', 51753)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:39:05) From Addr: ('192.168.20.105', 51754)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:40:25) From Addr: ('192.168.20.105', 34682)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:40:36) From Addr: ('192.168.20.105', 34683)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:41:24) From Addr: ('192.168.20.105', 55708)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:41:40) From Addr: ('192.168.20.105', 55709)
+Log Created: WorkOrderLogs/666/Run#5.txt
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:41:55) From Addr: ('127.0.0.1', 49274)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:42:04) From Addr: ('192.168.20.105', 55710)
+Log Created: WorkOrderLogs/666/Run#6.txt
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 14:42:13) From Addr: ('192.168.20.105', 55711)
+Log Created: WorkOrderLogs/123/Run#10.txt
+-------------------------END-------------------------
