@@ -288,7 +288,7 @@ public class ClientAlpha implements ActionListener
 
 		GridBagConstraints c = new GridBagConstraints();
 
-		c.fill = GridBagConstraints.HORIZONTAL; 
+		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 0;
 		tempPanel.add(LineHeaderLabel, c);
@@ -336,7 +336,7 @@ public class ClientAlpha implements ActionListener
 		areaScrollPane2.setVerticalScrollBarPolicy(
 				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		areaScrollPane2.setPreferredSize(new Dimension((windowWidth/2)-spacerGap, (windowHeight/2)-45));
-		
+
 		//More Formatting
 		areaScrollPane2.setBorder(
 				BorderFactory.createCompoundBorder(
@@ -345,8 +345,6 @@ public class ClientAlpha implements ActionListener
 								BorderFactory.createEmptyBorder(5,5,5,5)),
 								areaScrollPane2.getBorder()));
 
-		//Add the new text area to the pannel and return it...
-		areaScrollPane2.setAutoscrolls(false);
 		panel.add(areaScrollPane2);
 
 		//creates & Formats object that holds and navigates text area
@@ -365,7 +363,6 @@ public class ClientAlpha implements ActionListener
 
 
 		//Add the new text area to the pannel and return it...
-		areaScrollPane.setAutoscrolls(false);
 		panel.add(areaScrollPane);
 		return panel;
 	}
@@ -485,12 +482,12 @@ public class ClientAlpha implements ActionListener
 				{
 					WorkerView.setText(AllEmp);
 				}
+				else
+				{
+					WorkerView.setText("No Employees currently Active on Line");
+				}
 
-			}
-			else
-			{
-				WorkerView.setText("No Employees currently Active on Line");
-			}
+			}			
 			if (DoIExist != null && !DoIExist[0].equals("No WO Log Avalible, Machine is Idle")&& !DoIExist[0].equals("INVALID COMMAND")&& !DoIExist[0].equals("INVALID COMMAND, '#'"))
 			{
 
@@ -600,8 +597,6 @@ public class ClientAlpha implements ActionListener
 				}
 
 				MainView.setText(minew);
-				MainView.setCaretPosition(0);
-				
 
 
 			}

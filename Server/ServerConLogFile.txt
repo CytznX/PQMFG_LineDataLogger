@@ -1013,3 +1013,36 @@ MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 Connection Recieved@(04/02/14, 16:44:01) From Addr: ('127.0.0.1', 49210)
 MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 -------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:48:44) From Addr: ('192.168.20.105', 50960)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:49:45) From Addr: ('192.168.20.105', 58001)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:49:59) From Addr: ('127.0.0.1', 49248)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:51:45) From Addr: ('127.0.0.1', 49257)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 16:57:51) From Addr: ('127.0.0.1', 49359)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 17:22:41) From Addr: ('127.0.0.1', 49468)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 17:36:45) From Addr: ('127.0.0.1', 49746)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/02/14, 17:53:09) From Addr: ('127.0.0.1', 49892)
+Data Is bad
+-------------------------END-------------------------
+Connection Recieved@(04/04/14, 12:42:14) From Addr: ('192.168.20.105', 60643)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/04/14, 12:42:57) From Addr: ('192.168.20.105', 44331)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/04/14, 12:43:41) From Addr: ('127.0.0.1', 38765)
+Data Is bad
+-------------------------END-------------------------

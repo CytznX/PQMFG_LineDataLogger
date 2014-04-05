@@ -42,6 +42,11 @@ class ThreadedTCPNetworkAgent(Thread):
 		self.serversock.bind(self.Addr)
 		self.serversock.listen(5)
 
+	def whoIsAlive(self,):
+		
+		time.sleep(60)#Delay for 1 minute....
+
+
 	'''Heres where we spawn a minin thread that manages a individual connection to this machine'''
 	def miniThread(self,clientsock,addr):
 		

@@ -204,10 +204,14 @@ class ThreadedTCPNetworkAgent(Thread):
 	def stop(self):
 
 		#Sending Shutdown Sig
-		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.connect((self.FserverIP, self.FserverPort))
-		s.send('#SHUTTING_DOWN')
-		s.close()
+		try:
+			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			s.connect((self.FserverIP, self.FserverPort))
+			s.send('#SHUTTING_DOWN')
+			s.close()
+		except socket.error:
+			print "Cant connect to server... Failed to send shutdown msg"
+
 
 		#set runflag to False
 		self.running = False

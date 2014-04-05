@@ -288,7 +288,7 @@ public class ClientAlpha implements ActionListener
 
 		GridBagConstraints c = new GridBagConstraints();
 
-		c.fill = GridBagConstraints.HORIZONTAL; 
+		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 0;
 		tempPanel.add(LineHeaderLabel, c);
@@ -345,7 +345,6 @@ public class ClientAlpha implements ActionListener
 								BorderFactory.createEmptyBorder(5,5,5,5)),
 								areaScrollPane2.getBorder()));
 
-		//Add the new text area to the pannel and return it...
 		areaScrollPane2.setAutoscrolls(false);
 		panel.add(areaScrollPane2);
 
@@ -365,7 +364,6 @@ public class ClientAlpha implements ActionListener
 
 
 		//Add the new text area to the pannel and return it...
-		areaScrollPane.setAutoscrolls(false);
 		panel.add(areaScrollPane);
 		return panel;
 	}
