@@ -1,24 +1,29 @@
 #!/usr/bin/env python
 
 import socket, os
+import datetime, time
+
 from threading import Thread
-import thread
-import datetime
+from openpyxl import *
 
 class ThreadedTCPNetworkAgent(Thread):
 	
 	'''Default constructor... Much Love''' 
-	def __init__(self, portNum, Folder= 'WorkOrderLogs',BuffSize=1024):
+	def __init__(self, portNum, Folder= 'WorkOrderExcelLogs',BuffSize=1024):
 
 		#Initialize myself as thread... =P
 		Thread.__init__(self)
 
 		#setup some class variables
 		self.running = True
+		self.DefaultClientPort= 5005
 		self._BuffSize = BuffSize
 		self.Addr = ('', portNum)
 
 		self.CurrentLines = dict()
+
+		self.IsMachineAlive = Thread(target=self.whoIsAlive, args=())
+		self.IsMachineAlive.start()
 		
 		#FOR TESTING ONLY
 		self.testing = True
@@ -42,9 +47,21 @@ class ThreadedTCPNetworkAgent(Thread):
 		self.serversock.bind(self.Addr)
 		self.serversock.listen(5)
 
-	def whoIsAlive(self,):
-		
-		time.sleep(60)#Delay for 1 minute....
+	def whoIsAlive(self):
+		while self.running:
+			for key in self.CurrentLines.keys():
+
+				try: 
+					Test = socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((key, self.DefaultClientPort))
+					Test.send("#ALIVE")
+					inData = Test.recv(self._BuffSize)
+					if not inData:
+						del(self.CurrentLines[key])
+
+				except Error:
+					del(self.CurrentLines[key])
+
+			time.sleep(60)#Delay for 1 minute....
 
 
 	'''Heres where we spawn a minin thread that manages a individual connection to this machine'''
@@ -56,9 +73,9 @@ class ThreadedTCPNetworkAgent(Thread):
 		#the collected message
 		message = ''
 		safety = ''
-		
+
 		#PULL IN NEW 
-		while 1:
+		while self.running:
 			data = clientsock.recv(self._BuffSize)
 			safety += data
 			if self.testing: print "From "+str(addr)+": ", data, safety
@@ -82,65 +99,75 @@ class ThreadedTCPNetworkAgent(Thread):
 						clientsock.send(msg)
 						if self.testing: print msg
 				else:
-					clientsock.send("#NONE")
+						clientsock.send("#NONE")
 
 				break
 
 			elif "#END" == data.rstrip(): 
-				self.stop()
-				break # type '#END' on client console to close connection from the server side
+					self.stop()
+					break # type '#END' on client console to close connection from the server side
 			elif not data.rstrip().startswith('#'):
-				message += data
+					message += data
 
-			
+			formattedMess = message.split('////')
+
+			#close the damn thing from this side
+			clientsock.close()
+
+			if not data.rstrip().startswith('#') and not message == '':
+				#CREATE XLSX DOC
+				#--------------------------------------------------------------
+				try:
+
+					w0 = formattedMess[0]
+
+					if os.path.isfile(w0 +".xlsx"):
+						wb = Workbook()
+						headerSheet = wb.active
+						headerSheet.title = "Work Order Sumary"
+						headerSheet['A1'] = "WO#: "
+						headerSheet['B1'] = w0
+						headerSheet['A3'] = "Run#"
+						headerSheet['B3'] = "Start Time"
+						headerSheet['c3'] = "EndTime Time"
+					else:
 
 
-		formattedMess = message.split('////')
+					formattedMess[0] = 'W/O#: '+ formattedMess[0]
+					formattedMess[1] = 'Line#: '+ formattedMess[1]
+					formattedMess[2] = 'Start Time: '+ formattedMess[2]
+					formattedMess[3] = 'Status/RunTime: '+ formattedMess[3]+'(seconds)'
+					formattedMess[4] = 'Total Count: '+ formattedMess[4]
+					formattedMess[5] = 'Total Hourly: '+ formattedMess[5]
+					formattedMess[6] = 'Box Count: '+ formattedMess[6]
+					formattedMess[7] = 'Box Hourly: '+ formattedMess[7]
+					formattedMess[8] = 'Fail Count: '+ formattedMess[8]
 
-		#close the damn thing from this side
-		clientsock.close()
+					if formattedMess[9] == '':
+						formattedMess[9] = 'Peaces Per Box: N/A'
+					else:
+						formattedMess[9] = 'Peaces Per Box: '+ formattedMess[9]
 
-		if not data.rstrip().startswith('#') and not message == '':
-			#CREATE XLSX DOC
-			#--------------------------------------------------------------
-			try:
+					if not os.path.isdir(self.WO_LogFolder + w0+'/'):
+						os.makedirs(self.WO_LogFolder + w0+'/')
 
-				w0 = formattedMess[0]
-				formattedMess[0] = 'W/O#: '+ formattedMess[0]
-				formattedMess[1] = 'Line#: '+ formattedMess[1]
-				formattedMess[2] = 'Start Time: '+ formattedMess[2]
-				formattedMess[3] = 'Status/RunTime: '+ formattedMess[3]+'(seconds)'
-				formattedMess[4] = 'Total Count: '+ formattedMess[4]
-				formattedMess[5] = 'Total Hourly: '+ formattedMess[5]
-				formattedMess[6] = 'Box Count: '+ formattedMess[6]
-				formattedMess[7] = 'Box Hourly: '+ formattedMess[7]
-				formattedMess[8] = 'Fail Count: '+ formattedMess[8]
+					count = 1
+					while os.path.exists(self.WO_LogFolder + w0+'/Run#'+str(count)+'.txt'): 
+						count += 1
 
-				if formattedMess[9] == '':
-					formattedMess[9] = 'Peaces Per Box: N/A'
-				else:
-					formattedMess[9] = 'Peaces Per Box: '+ formattedMess[9]
+					fullPath = self.WO_LogFolder + w0+'/Run#'+str(count)+'.txt'
+					self.writeFile(fullPath,formattedMess)
+					
+					log += ['Log Created: '+fullPath]
 
-				if not os.path.isdir(self.WO_LogFolder + w0+'/'):
-					os.makedirs(self.WO_LogFolder + w0+'/')
+				except IndexError, e:
+					log += ['Data Is bad']
 
-				count = 1
-				while os.path.exists(self.WO_LogFolder + w0+'/Run#'+str(count)+'.txt'): 
-					count += 1
+				log += ['-------------------------END-------------------------']
 
-				fullPath = self.WO_LogFolder + w0+'/Run#'+str(count)+'.txt'
-				self.writeFile(fullPath,formattedMess)
-				
-				log += ['Log Created: '+fullPath]
-
-			except IndexError, e:
-				log += ['Data Is bad']
-
-			log += ['-------------------------END-------------------------']
-
-		else:
-			log += ['MACHINE IS GOING DOWN DO TO EXTERNAL COMAND']
-			log += ['-------------------------END-------------------------']
+			else:
+				log += ['MACHINE IS GOING DOWN DO TO EXTERNAL COMAND']
+				log += ['-------------------------END-------------------------']
 
 		self.writeFile('ServerConLogFile.txt', log, "a")
 			
@@ -152,13 +179,21 @@ class ThreadedTCPNetworkAgent(Thread):
 
 	def stop(self):
 		#set runflag to False
+
+		if self.testing: print "Setting RunFlag to False"
 		self.running = False
 
+		if self.testing: print "Waiting for alive thread to join"
+		self.IsMachineAlive.join()
+
 		#Create a connection to self so that we skip of blocking call
+		if self.testing: print "Creating Kill Connection"
 		socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(self.Addr)
 
 		#Kill the pipe
+		if self.testing: print "Clossing Pipe"
 		self.serversock.close()
+
 
 	def run(self):
 
@@ -167,9 +202,9 @@ class ThreadedTCPNetworkAgent(Thread):
 
 			#Here we wait for incoming connection
 			clientsock, addr = self.serversock.accept()
-			if self.testing: print "someones talking: ", addr
+			if self.testing: print "Connection Started: ", addr
 			#we spawn new mini thread and pass off connection
-			thread.start_new_thread(self.miniThread, (clientsock, addr))
+			Thread(target=self.miniThread, args=(clientsock, addr)).start()
 
 if __name__=='__main__':
 	a = ThreadedTCPNetworkAgent(5006)

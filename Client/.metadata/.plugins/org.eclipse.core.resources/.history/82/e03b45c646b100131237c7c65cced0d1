@@ -1,6 +1,0 @@
-public class NETAddress 
-{
-    int returnCode;
-    String errorMessage;
-    // etc
-}

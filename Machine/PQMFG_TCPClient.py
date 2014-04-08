@@ -1,7 +1,6 @@
 import socket
 from threading import Thread
 from StateMachine import *
-import thread
 
 class ThreadedTCPNetworkAgent(Thread):
 	
@@ -238,7 +237,8 @@ class ThreadedTCPNetworkAgent(Thread):
 			clientsock, addr = self.serversock.accept()
 
 			#we spawn new mini thread and pass off connection
-			thread.start_new_thread(self.miniThread, (clientsock, addr))
+			Thread(target=self.miniThread, args=(clientsock, addr)).start()
+
 
 if __name__=='__main__':
 	a = ThreadedTCPNetworkAgent(None,5006)

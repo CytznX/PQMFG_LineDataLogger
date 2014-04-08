@@ -698,7 +698,7 @@ class ActivityLogger:
 			now = datetime.datetime.now()
 
 			#if machine is running Declare, otherwise assume W/O is finished
-			if stillRunning or not self.current_WO == None:
+			if stillRunning and not self.current_WO == None:
 				log += ['Running '+str(self.currentState)+" "+str((now-self.WO_StartTime).seconds)]
 			else:
 				log += ['Finished '+str(self.currentState)+" "+str((now-self.WO_StartTime).seconds)]

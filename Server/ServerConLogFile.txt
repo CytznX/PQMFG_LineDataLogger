@@ -1052,3 +1052,35 @@ MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 Connection Recieved@(04/05/14, 15:31:06) From Addr: ('192.168.20.105', 39250)
 Log Created: WorkOrderLogs/666/Run#5.txt
 -------------------------END-------------------------
+Connection Recieved@(04/05/14, 15:48:13) From Addr: ('127.0.0.1', 49588)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 15:48:15) From Addr: ('127.0.0.1', 49589)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 15:49:10) From Addr: ('192.168.20.105', 39251)
+Log Created: WorkOrderLogs/333/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 15:49:42) From Addr: ('127.0.0.1', 49594)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/05/14, 15:50:29) From Addr: ('127.0.0.1', 52382)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/07/14, 10:35:28) From Addr: ('192.168.2.146', 36247)
+Log Created: WorkOrderLogs/122752/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/07/14, 13:29:20) From Addr: ('192.168.2.146', 36248)
+Log Created: WorkOrderLogs/122752/Run#2.txt
+-------------------------END-------------------------
+Connection Recieved@(04/07/14, 14:37:24) From Addr: ('127.0.0.1', 39348)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/07/14, 14:42:48) From Addr: ('127.0.0.1', 39363)
+Connection Recieved@(04/07/14, 14:43:46) From Addr: ('127.0.0.1', 39364)
+Connection Recieved@(04/07/14, 19:33:08) From Addr: ('192.168.2.146', 36249)
+Log Created: WorkOrderLogs/121144/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/08/14, 10:24:28) From Addr: ('192.168.2.146', 36250)
+Log Created: WorkOrderLogs/121312/Run#1.txt
+-------------------------END-------------------------
