@@ -58,7 +58,7 @@ class ThreadedTCPNetworkAgent(Thread):
 		safety = ''
 		
 		#PULL IN NEW 
-		while 1:
+		while self.running:
 			data = clientsock.recv(self._BuffSize)
 			safety += data
 			if self.testing: print "From "+str(addr)+": ", data, safety
