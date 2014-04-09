@@ -80,7 +80,7 @@ class ThreadedTCPNetworkAgent(Thread):
 		while self.running:
 			data = clientsock.recv(self._BuffSize)
 			safety += data
-			if self.testing: print "From "+str(addr)+": ", data, safety
+			if self.testing: print "From "+str(addr)
 
 			#If theres nothing in the pipe... get out!!!
 			if not data: 
@@ -136,18 +136,30 @@ class ThreadedTCPNetworkAgent(Thread):
 
 					#Creates Headers For Data Columbs
 					headerSheet['A3'] = "Run#"
+					headerSheet['A3'].style.font.bold = True
 					headerSheet['B3'] = "Start Time"
+					headerSheet['B3'].style.font.bold = True
 					headerSheet['C3'] = "EndTime Time"
+					headerSheet['C3'].style.font.bold = True
 					headerSheet['D3'] = "Total Count"
+					headerSheet['D3'].style.font.bold = True
 					headerSheet['E3'] = "Total Box"
+					headerSheet['E3'].style.font.bold = True
 					headerSheet['F3'] = "Total Tossed"
+					headerSheet['F3'].style.font.bold = True
 
-					headerSheet['A4'] = "----"
-					headerSheet['B4'] = "----"
-					headerSheet['C4'] = "----"
-					headerSheet['D4'] = "----"
-					headerSheet['E4'] = "----"
-					headerSheet['F4'] = "----"
+					headerSheet['A4'] = "------------"
+					headerSheet['A4'].style.font.bold = True
+					headerSheet['B4'] = "------------"
+					headerSheet['B4'].style.font.bold = True
+					headerSheet['C4'] = "------------"
+					headerSheet['C4'].style.font.bold = True
+					headerSheet['D4'] = "------------"
+					headerSheet['D4'].style.font.bold = True
+					headerSheet['E4'] = "------------"
+					headerSheet['E4'].style.font.bold = True
+					headerSheet['F4'] = "------------"
+					headerSheet['F4'].style.font.bold = True
 
 					headerSheet['A5'] = "1"
 					headerSheet['B5'] = formattedMess[2]
@@ -161,34 +173,42 @@ class ThreadedTCPNetworkAgent(Thread):
 
 					#Second
 					FirstSheet['A1'] = 'Line#: '
+					FirstSheet['A1'].style.font.bold = True
 					FirstSheet['B1'] = formattedMess[1]
 
 					#Third
 					FirstSheet['A2'] = 'Start Time: '
+					FirstSheet['A2'].style.font.bold = True
 					FirstSheet['B2'] = formattedMess[2]
 
 					#Forth
 					FirstSheet['A3'] = formattedMess[3].split()[0]
+					FirstSheet['A3'].style.font.bold = True
 					FirstSheet['B3'] = formattedMess[3].split()[1]
 
 					#Five
 					FirstSheet['A4'] = 'Total Count: '
+					FirstSheet['A4'].style.font.bold = True
 					FirstSheet['B4'] = formattedMess[4]
 
 					#Six
 					FirstSheet['A5']= 'Total Hourly: '
+					FirstSheet['A5'].style.font.bold = True
 					FirstSheet['B5']= formattedMess[5]						
 
 					#Seven
 					FirstSheet['A6']= 'Box Count: '
+					FirstSheet['A6'].style.font.bold = True
 					FirstSheet['B6']= formattedMess[6] 
 					
 					#Eight
 					FirstSheet['A7']= 'Box Hourly: '
+					FirstSheet['A7'].style.font.bold = True
 					FirstSheet['B7']= formattedMess[7] 
 					
 					#Nine
-					FirstSheet['A8']= 'Fail Count: ' 
+					FirstSheet['A8']= 'Fail Count: '
+					FirstSheet['A8'].style.font.bold = True 
 					FirstSheet['B8']= formattedMess[8] 
 
 					if formattedMess[9] == '':
@@ -198,10 +218,12 @@ class ThreadedTCPNetworkAgent(Thread):
 						FirstSheet['A9'] = 'Peaces Per Box: ' 
 						FirstSheet['B9'] = formattedMess[9]
 					
+					FirstSheet['A9'].style.font.bold = True
+
 					for count in range(10,len(formattedMess)):
 						FirstSheet['A'+str(count)]=formattedMess[count]
 
-					wb.save(self.WO_LogFolder+w0+".xlsx")#<<<<<<<<<<<<<<<<<<<<-------------------------------------------- SAVe the file
+					wb.save(self.WO_LogFolder+w0+".xlsx")#<<<<<<<<<<<<<<<<<<<<-------------------------------------------- Save the file
 
 				else:
 
@@ -210,45 +232,56 @@ class ThreadedTCPNetworkAgent(Thread):
 					headerSheet = wb.get_sheet_by_name("Work Order Sumary")
 					SheetNames = wb.get_sheet_names()
 
-					headerSheet['A'+str(5+len(SheetNames)-1)] = "1"
-					headerSheet['B'+str(5+len(SheetNames)-1)] = formattedMess[2]
-					headerSheet['C'+str(5+len(SheetNames)-1)] = formattedMess[3].split()[1]
-					headerSheet['D'+str(5+len(SheetNames)-1)] = formattedMess[4]
-					headerSheet['E'+str(5+len(SheetNames)-1)] = formattedMess[6]
-					headerSheet['F'+str(5+len(SheetNames)-1)] = formattedMess[8]
+					print len(SheetNames)
+
+					headerSheet['A'+str(4+len(SheetNames))] = str(len(SheetNames))
+					headerSheet['B'+str(4+len(SheetNames))] = formattedMess[2]
+					headerSheet['C'+str(4+len(SheetNames))] = formattedMess[3].split()[1]
+					headerSheet['D'+str(4+len(SheetNames))] = formattedMess[4]
+					headerSheet['E'+str(4+len(SheetNames))] = formattedMess[6]
+					headerSheet['F'+str(4+len(SheetNames))] = formattedMess[8]
 
 					NewSheet = wb.create_sheet()
-					NewSheet.title = 'Run#'+str(len(SheetNames)-1)
+					NewSheet.title = 'Run#'+str(len(SheetNames))
 
+					#Second
 					NewSheet['A1'] = 'Line#: '
+					NewSheet['A1'].style.font.bold = True
 					NewSheet['B1'] = formattedMess[1]
 
 					#Third
 					NewSheet['A2'] = 'Start Time: '
+					NewSheet['A2'].style.font.bold = True
 					NewSheet['B2'] = formattedMess[2]
 
 					#Forth
 					NewSheet['A3'] = formattedMess[3].split()[0]
+					NewSheet['A3'].style.font.bold = True
 					NewSheet['B3'] = formattedMess[3].split()[1]
 
 					#Five
 					NewSheet['A4'] = 'Total Count: '
+					NewSheet['A4'].style.font.bold = True
 					NewSheet['B4'] = formattedMess[4]
 
 					#Six
 					NewSheet['A5']= 'Total Hourly: '
+					NewSheet['A5'].style.font.bold = True
 					NewSheet['B5']= formattedMess[5]						
 
 					#Seven
 					NewSheet['A6']= 'Box Count: '
+					NewSheet['A6'].style.font.bold = True
 					NewSheet['B6']= formattedMess[6] 
 					
 					#Eight
 					NewSheet['A7']= 'Box Hourly: '
+					NewSheet['A7'].style.font.bold = True
 					NewSheet['B7']= formattedMess[7] 
 					
 					#Nine
-					NewSheet['A8']= 'Fail Count: ' 
+					NewSheet['A8']= 'Fail Count: '
+					NewSheet['A8'].style.font.bold = True 
 					NewSheet['B8']= formattedMess[8] 
 
 					if formattedMess[9] == '':
@@ -258,11 +291,13 @@ class ThreadedTCPNetworkAgent(Thread):
 						NewSheet['A9'] = 'Peaces Per Box: ' 
 						NewSheet['B9'] = formattedMess[9]
 					
+					NewSheet['A9'].style.font.bold = True
+					
 					for count in range(10,len(formattedMess)):
 						NewSheet['A'+str(count)]=formattedMess[count]
 
 
-					wb.save(self.WO_LogFolder+w0+".xlsx")
+					wb.save(self.WO_LogFolder+w0+".xlsx")#<<<<<<<<<<<<<<<<<<<<-------------------------------------------- Save the file
 
 				fullPath = self.WO_LogFolder + w0+'.xlsx'					
 				log += ['Log Created: '+fullPath]
