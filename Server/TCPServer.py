@@ -2,9 +2,11 @@
 
 import socket, os
 import datetime, time
+import openpyxl
 
 from threading import Thread
-from openpyxl import *
+from openpyxl import Workbook
+from openpyxl import load_workbook
 
 class ThreadedTCPNetworkAgent(Thread):
 	
@@ -104,71 +106,174 @@ class ThreadedTCPNetworkAgent(Thread):
 				break
 
 			elif "#END" == data.rstrip(): 
-					self.stop()
-					break # type '#END' on client console to close connection from the server side
+				self.stop()
+				break # type '#END' on client console to close connection from the server side
 			elif not data.rstrip().startswith('#'):
-					message += data
+				message += data
 
-			formattedMess = message.split('////')
+		formattedMess = message.split('////')
 
-			#close the damn thing from this side
-			clientsock.close()
+		#close the damn thing from this side
+		clientsock.close() 
 
-			if not data.rstrip().startswith('#') and not message == '':
-				#CREATE XLSX DOC
-				#--------------------------------------------------------------
-				try:
+		if not data.rstrip().startswith('#') and not message == '':
+			#CREATE XLSX DOC
+			#--------------------------------------------------------------
+			try:
 
-					w0 = formattedMess[0]
+				w0 = formattedMess[0]
 
-					if os.path.isfile(w0 +".xlsx"):
-						wb = Workbook()
-						headerSheet = wb.active
-						headerSheet.title = "Work Order Sumary"
-						headerSheet['A1'] = "WO#: "
-						headerSheet['B1'] = w0
-						headerSheet['A3'] = "Run#"
-						headerSheet['B3'] = "Start Time"
-						headerSheet['c3'] = "EndTime Time"
-					else:
+				if not os.path.isfile(self.WO_LogFolder+w0 +".xlsx"):
+					
+					#Create a new 
+					wb = Workbook()
+					headerSheet = wb.active
+					
 
+					headerSheet.title = "Work Order Sumary"
+					headerSheet['A1'] = "WO#: "
+					headerSheet['B1'] = w0
 
-					formattedMess[0] = 'W/O#: '+ formattedMess[0]
-					formattedMess[1] = 'Line#: '+ formattedMess[1]
-					formattedMess[2] = 'Start Time: '+ formattedMess[2]
-					formattedMess[3] = 'Status/RunTime: '+ formattedMess[3]+'(seconds)'
-					formattedMess[4] = 'Total Count: '+ formattedMess[4]
-					formattedMess[5] = 'Total Hourly: '+ formattedMess[5]
-					formattedMess[6] = 'Box Count: '+ formattedMess[6]
-					formattedMess[7] = 'Box Hourly: '+ formattedMess[7]
-					formattedMess[8] = 'Fail Count: '+ formattedMess[8]
+					#Creates Headers For Data Columbs
+					headerSheet['A3'] = "Run#"
+					headerSheet['B3'] = "Start Time"
+					headerSheet['C3'] = "EndTime Time"
+					headerSheet['D3'] = "Total Count"
+					headerSheet['E3'] = "Total Box"
+					headerSheet['F3'] = "Total Tossed"
+
+					headerSheet['A4'] = "----"
+					headerSheet['B4'] = "----"
+					headerSheet['C4'] = "----"
+					headerSheet['D4'] = "----"
+					headerSheet['E4'] = "----"
+					headerSheet['F4'] = "----"
+
+					headerSheet['A5'] = "1"
+					headerSheet['B5'] = formattedMess[2]
+					headerSheet['C5'] = formattedMess[3].split()[1]
+					headerSheet['D5'] = formattedMess[4]
+					headerSheet['E5'] = formattedMess[6]
+					headerSheet['F5'] = formattedMess[8]
+
+					FirstSheet = wb.create_sheet()
+					FirstSheet.title = 'Run#1'
+
+					#Second
+					FirstSheet['A1'] = 'Line#: '
+					FirstSheet['B1'] = formattedMess[1]
+
+					#Third
+					FirstSheet['A2'] = 'Start Time: '
+					FirstSheet['B2'] = formattedMess[2]
+
+					#Forth
+					FirstSheet['A3'] = formattedMess[3].split()[0]
+					FirstSheet['B3'] = formattedMess[3].split()[1]
+
+					#Five
+					FirstSheet['A4'] = 'Total Count: '
+					FirstSheet['B4'] = formattedMess[4]
+
+					#Six
+					FirstSheet['A5']= 'Total Hourly: '
+					FirstSheet['B5']= formattedMess[5]						
+
+					#Seven
+					FirstSheet['A6']= 'Box Count: '
+					FirstSheet['B6']= formattedMess[6] 
+					
+					#Eight
+					FirstSheet['A7']= 'Box Hourly: '
+					FirstSheet['B7']= formattedMess[7] 
+					
+					#Nine
+					FirstSheet['A8']= 'Fail Count: ' 
+					FirstSheet['B8']= formattedMess[8] 
 
 					if formattedMess[9] == '':
-						formattedMess[9] = 'Peaces Per Box: N/A'
+						FirstSheet['A9'] = 'Peaces Per Box: ' 
+						FirstSheet['B9'] = 'N/A' 
 					else:
-						formattedMess[9] = 'Peaces Per Box: '+ formattedMess[9]
-
-					if not os.path.isdir(self.WO_LogFolder + w0+'/'):
-						os.makedirs(self.WO_LogFolder + w0+'/')
-
-					count = 1
-					while os.path.exists(self.WO_LogFolder + w0+'/Run#'+str(count)+'.txt'): 
-						count += 1
-
-					fullPath = self.WO_LogFolder + w0+'/Run#'+str(count)+'.txt'
-					self.writeFile(fullPath,formattedMess)
+						FirstSheet['A9'] = 'Peaces Per Box: ' 
+						FirstSheet['B9'] = formattedMess[9]
 					
-					log += ['Log Created: '+fullPath]
+					for count in range(10,len(formattedMess)):
+						FirstSheet['A'+str(count)]=formattedMess[count]
 
-				except IndexError, e:
-					log += ['Data Is bad']
+					wb.save(self.WO_LogFolder+w0+".xlsx")#<<<<<<<<<<<<<<<<<<<<-------------------------------------------- SAVe the file
 
-				log += ['-------------------------END-------------------------']
+				else:
 
-			else:
-				log += ['MACHINE IS GOING DOWN DO TO EXTERNAL COMAND']
-				log += ['-------------------------END-------------------------']
+					wb = load_workbook(self.WO_LogFolder+w0+'.xlsx')
 
+					headerSheet = wb.get_sheet_by_name("Work Order Sumary")
+					SheetNames = wb.get_sheet_names()
+
+					headerSheet['A'+str(5+len(SheetNames)-1)] = "1"
+					headerSheet['B'+str(5+len(SheetNames)-1)] = formattedMess[2]
+					headerSheet['C'+str(5+len(SheetNames)-1)] = formattedMess[3].split()[1]
+					headerSheet['D'+str(5+len(SheetNames)-1)] = formattedMess[4]
+					headerSheet['E'+str(5+len(SheetNames)-1)] = formattedMess[6]
+					headerSheet['F'+str(5+len(SheetNames)-1)] = formattedMess[8]
+
+					NewSheet = wb.create_sheet()
+					NewSheet.title = 'Run#'+str(len(SheetNames)-1)
+
+					NewSheet['A1'] = 'Line#: '
+					NewSheet['B1'] = formattedMess[1]
+
+					#Third
+					NewSheet['A2'] = 'Start Time: '
+					NewSheet['B2'] = formattedMess[2]
+
+					#Forth
+					NewSheet['A3'] = formattedMess[3].split()[0]
+					NewSheet['B3'] = formattedMess[3].split()[1]
+
+					#Five
+					NewSheet['A4'] = 'Total Count: '
+					NewSheet['B4'] = formattedMess[4]
+
+					#Six
+					NewSheet['A5']= 'Total Hourly: '
+					NewSheet['B5']= formattedMess[5]						
+
+					#Seven
+					NewSheet['A6']= 'Box Count: '
+					NewSheet['B6']= formattedMess[6] 
+					
+					#Eight
+					NewSheet['A7']= 'Box Hourly: '
+					NewSheet['B7']= formattedMess[7] 
+					
+					#Nine
+					NewSheet['A8']= 'Fail Count: ' 
+					NewSheet['B8']= formattedMess[8] 
+
+					if formattedMess[9] == '':
+						NewSheet['A9'] = 'Peaces Per Box: ' 
+						NewSheet['B9'] = 'N/A' 
+					else:
+						NewSheet['A9'] = 'Peaces Per Box: ' 
+						NewSheet['B9'] = formattedMess[9]
+					
+					for count in range(10,len(formattedMess)):
+						NewSheet['A'+str(count)]=formattedMess[count]
+
+
+					wb.save(self.WO_LogFolder+w0+".xlsx")
+
+				fullPath = self.WO_LogFolder + w0+'.xlsx'					
+				log += ['Log Created: '+fullPath]
+
+			except IndexError, e:
+				log += ['Data Is bad']
+
+		else:
+			log += ['MACHINE IS GOING DOWN DO TO EXTERNAL COMAND']
+			
+		log += ['-------------------------END-------------------------']
 		self.writeFile('ServerConLogFile.txt', log, "a")
 			
 	def writeFile(self, FileName, Content , write ="w"):
