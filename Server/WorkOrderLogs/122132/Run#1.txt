@@ -1,0 +1,37 @@
+W/O#: 122132
+Line#: 11
+Start Time: (04/08/14) @ 10:24:31
+Status/RunTime: Running True 17455(seconds)
+Total Count: 6291
+Total Hourly: [1222, 1, 1597, 0, 486, 1181, 510, 1171, 123]
+Box Count: 515
+Box Hourly: [87, 0, 132, 3, 29, 104, 39, 99, 22]
+Fail Count: 111
+Peaces Per Box: 12
+
+----Line Leader(s)----
+
+----Line Worker(s)----
+1219:  (11:53:14,15:15:26) 
+1696:  (11:57:16,15:15:26) 
+1445:  (11:57:33,15:15:26) 
+1469:  (11:57:03,15:15:26) 
+1691:  (08:05:50,15:15:26) 
+
+----Mechanic(s)----
+
+---Adjustments----
+
+---Down Time----
+Maintanance> 0:0:0
+
+Inventory> 0:0:0
+
+Quality_Control> 0:12:32
+((10:24:49,1219),(10:37:22,1219)) 
+
+Break> 0:33:22
+((12:32:12,1219),(13:05:34,1219)) 
+
+Total> 0:45:54
+

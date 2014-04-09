@@ -1092,3 +1092,42 @@ MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 Connection Recieved@(04/05/14, 15:12:16) From Addr: ('192.168.2.146', 37501)
 Log Created: WorkOrderLogs/1111/Run#1.txt
 -------------------------END-------------------------
+Connection Recieved@(04/08/14, 15:15:30) From Addr: ('192.168.2.146', 36251)
+Log Created: WorkOrderLogs/122132/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/08/14, 15:15:36) From Addr: ('192.168.2.146', 36252)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/08/14, 15:16:25) From Addr: ('192.168.2.146', 53920)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/08/14, 15:20:23) From Addr: ('192.168.2.146', 35802)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/08/14, 15:21:14) From Addr: ('192.168.2.146', 35803)
+Log Created: WorkOrderLogs/666/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/08/14, 15:31:31) From Addr: ('192.168.2.146', 33586)
+Log Created: WorkOrderLogs/666/Run#2.txt
+-------------------------END-------------------------
+Connection Recieved@(04/08/14, 15:34:31) From Addr: ('192.168.2.146', 38591)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/08/14, 15:39:19) From Addr: ('192.168.2.146', 52420)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/08/14, 15:44:59) From Addr: ('192.168.2.146', 45667)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/08/14, 16:36:10) From Addr: ('192.168.2.146', 48134)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/08/14, 16:39:14) From Addr: ('192.168.2.146', 48135)
+Log Created: WorkOrderLogs/666/Run#3.txt
+-------------------------END-------------------------
+Connection Recieved@(04/09/14, 08:06:49) From Addr: ('192.168.2.146', 48136)
+Log Created: WorkOrderLogs/122132/Run#2.txt
+-------------------------END-------------------------
+Connection Recieved@(04/09/14, 09:10:01) From Addr: ('192.168.2.146', 48137)
+Log Created: WorkOrderLogs/122390/Run#1.txt
+-------------------------END-------------------------

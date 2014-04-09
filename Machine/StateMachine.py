@@ -522,7 +522,7 @@ class ActivityLogger:
 				else:
 					self.totalCount[-1] += amount
 
-		self.refreshFailCount()
+			self.refreshFailCount()
 		return incrementSucssful
 	'''
 	Used to Increment the current fail count on running work order
@@ -552,7 +552,6 @@ class ActivityLogger:
 	def inc_CurBoxCount(self,  event = None, amount =1, force = False, ID = None):
 		
 		decrementSucssful = False
-
 		if not self.current_WO == None and (not self.currentState == False or force):
 
 			if amount==1 and ID == None:
