@@ -63,6 +63,9 @@ class ThreadedTCPNetworkAgent(Thread):
 				except socket.error:
 					del(self.CurrentLines[key])
 
+				except TypeError:
+					print "UHHHHHHH Typer error?", key, self.DefaultClientPort
+
 			time.sleep(60)#Delay for 1 minute....
 
 
