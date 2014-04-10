@@ -60,7 +60,7 @@ class ThreadedTCPNetworkAgent(Thread):
 					if not inData:
 						del(self.CurrentLines[key])
 
-				except Error:
+				except socket.error:
 					del(self.CurrentLines[key])
 
 			time.sleep(60)#Delay for 1 minute....
@@ -220,8 +220,34 @@ class ThreadedTCPNetworkAgent(Thread):
 					
 					FirstSheet['A9'].style.font.bold = True
 
+					employees = True
+					downTime = False
+					Alpha = 'A'
+
 					for count in range(10,len(formattedMess)):
-						FirstSheet['A'+str(count)]=formattedMess[count]
+
+						if employees and (formattedMess[count] == "----Line Leader(s)----" or formattedMess[count] == "----Line Leader(s)----" or formattedMess[count] == "----Mechanic(s)----"):
+							FirstSheet[Alpha+str(count)]=formattedMess[count]
+						
+						elif formattedMess[count].startswith("---Adjustments----"):
+							employees = False
+							FirstSheet[Alpha+str(count)]=formattedMess[count]
+
+						elif formattedMess[count].startswith("---Down Time----"):
+							downTime = True
+							FirstSheet[Alpha+str(count)]=formattedMess[count]
+
+						elif downTime and not formattedMess[count].startswith("---"):
+							FirstSheet[Alpha+str(count)]=formattedMess[count]
+						elif employees:
+							for columbs in formattedMess[count].split():
+								FirstSheet[Alpha+str(count)]= columbs
+								Alpha = chr(ord(Alpha) + 1)
+							Alpha = 'A'
+
+						else:
+							FirstSheet[Alpha+str(count)]=formattedMess[count]
+
 
 					wb.save(self.WO_LogFolder+w0+".xlsx")#<<<<<<<<<<<<<<<<<<<<-------------------------------------------- Save the file
 

@@ -701,7 +701,7 @@ class ActivityLogger:
 			if stillRunning and not self.current_WO == None:
 				log += ['Running '+str(self.currentState)+" "+str((now-self.WO_StartTime).seconds)]
 			else:
-				log += ['Finished: '+now.WO_StartTime.strftime('(%D) @ %H:%M:%S')]
+				log += ['Finished: '+now.strftime('(%D) @ %H:%M:%S')]
 
 			#add it to the current return log
 			log +=[str(sum(self.totalCount)), str(self.totalCount),str(sum(self.boxCount)), str(self.boxCount),str(self.failCount)]
