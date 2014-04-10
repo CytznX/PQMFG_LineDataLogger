@@ -1123,3 +1123,18 @@ Log Created: WorkOrderExcelLogs/3232.xlsx
 Connection Recieved@(04/09/14, 17:49:40) From Addr: ('192.168.20.105', 45303)
 Log Created: WorkOrderExcelLogs/3232.xlsx
 -------------------------END-------------------------
+Connection Recieved@(04/09/14, 19:34:35) From Addr: ('192.168.2.146', 48139)
+Log Created: WorkOrderLogs/122519/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/10/14, 09:25:44) From Addr: ('192.168.2.146', 48140)
+Log Created: WorkOrderLogs/122389/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/10/14, 09:53:11) From Addr: ('192.168.2.146', 48141)
+Log Created: WorkOrderLogs/121786/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/10/14, 10:43:33) From Addr: ('192.168.20.105', 45305)
+Log Created: WorkOrderExcelLogs/333.xlsx
+-------------------------END-------------------------
+Connection Recieved@(04/10/14, 10:46:27) From Addr: ('192.168.20.105', 45306)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
