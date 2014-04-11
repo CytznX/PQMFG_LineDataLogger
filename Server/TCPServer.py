@@ -54,7 +54,7 @@ class ThreadedTCPNetworkAgent(Thread):
 			for key in self.CurrentLines.keys():
 
 				try: 
-					Test = socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((key, self.DefaultClientPort))
+					Test = socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect(self.CurrentLines[key])
 					Test.send("#ALIVE")
 					inData = Test.recv(self._BuffSize)
 					if not inData:
@@ -137,6 +137,9 @@ class ThreadedTCPNetworkAgent(Thread):
 					headerSheet['A1'] = "WO#: "
 					headerSheet['B1'] = w0
 
+					headerSheet['A1'].style.font.size = 20
+					headerSheet['B1'].style.font.size = 20
+
 					#Creates Headers For Data Columbs
 					headerSheet['A3'] = "Run#"
 					headerSheet['A3'].style.font.bold = True
@@ -166,7 +169,7 @@ class ThreadedTCPNetworkAgent(Thread):
 
 					headerSheet['A5'] = "1"
 					headerSheet['B5'] = formattedMess[2]
-					headerSheet['C5'] = formattedMess[3].split()[1]
+					headerSheet['C5'] = formattedMess[3].split()[1]+" "+formattedMess[3].split()[2]+" "+formattedMess[3].split()[3]
 					headerSheet['D5'] = formattedMess[4]
 					headerSheet['E5'] = formattedMess[6]
 					headerSheet['F5'] = formattedMess[8]
@@ -229,19 +232,34 @@ class ThreadedTCPNetworkAgent(Thread):
 
 					for count in range(10,len(formattedMess)):
 
-						if employees and (formattedMess[count] == "----Line Leader(s)----" or formattedMess[count] == "----Line Leader(s)----" or formattedMess[count] == "----Mechanic(s)----"):
+						if employees and (formattedMess[count] == "----Line Leader(s)----" or formattedMess[count] == "----Line Worker(s)----" or formattedMess[count] == "----Mechanic(s)----"):
 							FirstSheet[Alpha+str(count)]=formattedMess[count]
+							FirstSheet[Alpha+str(count)].style.font.bold = True
 						
 						elif formattedMess[count].startswith("---Adjustments----"):
 							employees = False
 							FirstSheet[Alpha+str(count)]=formattedMess[count]
+							FirstSheet[Alpha+str(count)].style.font.bold = True
+
 
 						elif formattedMess[count].startswith("---Down Time----"):
 							downTime = True
 							FirstSheet[Alpha+str(count)]=formattedMess[count]
+							FirstSheet[Alpha+str(count)].style.font.bold = True
 
-						elif downTime and not formattedMess[count].startswith("---"):
-							FirstSheet[Alpha+str(count)]=formattedMess[count]
+						# Maintanance>, Inventory>, Quality_Control>, Break> , Total>
+						elif downTime and not (formattedMess[count].startswith("Maintanance>")or formattedMess[count].startswith("Inventory>") or formattedMess[count].startswith("Quality_Control>")or formattedMess[count].startswith("Break>") or formattedMess[count].startswith("Total>")):
+							for columbs in formattedMess[count].split(','):
+								FirstSheet[Alpha+str(count)]= columbs
+								Alpha = chr(ord(Alpha) + 1)
+							Alpha = 'A'
+
+						elif downTime:
+							FirstSheet[Alpha+str(count)]= formattedMess[count].split()[0]
+							FirstSheet[Alpha+str(count)].style.font.bold = True
+							FirstSheet[chr(ord(Alpha) + 1)+str(count)]= formattedMess[count].split()[1]
+
+
 						elif employees:
 							for columbs in formattedMess[count].split():
 								FirstSheet[Alpha+str(count)]= columbs
@@ -251,6 +269,15 @@ class ThreadedTCPNetworkAgent(Thread):
 						else:
 							FirstSheet[Alpha+str(count)]=formattedMess[count]
 
+					headerSheet.column_dimensions["A"].width = 15.0
+					headerSheet.column_dimensions["B"].width = 15.0
+					headerSheet.column_dimensions["C"].width = 15.0
+					headerSheet.column_dimensions["D"].width = 15.0
+					headerSheet.column_dimensions["E"].width = 15.0
+					headerSheet.column_dimensions["F"].width = 15.0
+
+					FirstSheet.column_dimensions["A"].width = 20.0
+					FirstSheet.column_dimensions["B"].width = 20.0
 
 					wb.save(self.WO_LogFolder+w0+".xlsx")#<<<<<<<<<<<<<<<<<<<<-------------------------------------------- Save the file
 
@@ -322,9 +349,51 @@ class ThreadedTCPNetworkAgent(Thread):
 					
 					NewSheet['A9'].style.font.bold = True
 					
-					for count in range(10,len(formattedMess)):
-						NewSheet['A'+str(count)]=formattedMess[count]
+					employees = True
+					downTime = False
+					Alpha = 'A'
 
+					for count in range(10,len(formattedMess)):
+
+						if employees and (formattedMess[count] == "----Line Leader(s)----" or formattedMess[count] == "----Line Worker(s)----" or formattedMess[count] == "----Mechanic(s)----"):
+							NewSheet[Alpha+str(count)]=formattedMess[count]
+							NewSheet[Alpha+str(count)].style.font.bold = True
+						
+						elif formattedMess[count].startswith("---Adjustments----"):
+							employees = False
+							NewSheet[Alpha+str(count)]=formattedMess[count]
+							NewSheet[Alpha+str(count)].style.font.bold = True
+
+
+						elif formattedMess[count].startswith("---Down Time----"):
+							downTime = True
+							NewSheet[Alpha+str(count)]=formattedMess[count]
+							NewSheet[Alpha+str(count)].style.font.bold = True
+
+						# Maintanance>, Inventory>, Quality_Control>, Break> , Total>
+						elif downTime and not (formattedMess[count].startswith("Maintanance>")or formattedMess[count].startswith("Inventory>") or formattedMess[count].startswith("Quality_Control>")or formattedMess[count].startswith("Break>") or formattedMess[count].startswith("Total>")):
+							for columbs in formattedMess[count].split(','):
+								NewSheet[Alpha+str(count)]= columbs
+								Alpha = chr(ord(Alpha) + 1)
+							Alpha = 'A'
+
+						elif downTime:
+							NewSheet[Alpha+str(count)]= formattedMess[count].split()[0]
+							NewSheet[Alpha+str(count)].style.font.bold = True
+							NewSheet[chr(ord(Alpha) + 1)+str(count)]= formattedMess[count].split()[1]
+
+
+						elif employees:
+							for columbs in formattedMess[count].split():
+								NewSheet[Alpha+str(count)]= columbs
+								Alpha = chr(ord(Alpha) + 1)
+							Alpha = 'A'
+
+						else:
+							NewSheet[Alpha+str(count)]=formattedMess[count]
+
+					NewSheet.column_dimensions["A"].width = 20.0
+					NewSheet.column_dimensions["B"].width = 20.0
 
 					wb.save(self.WO_LogFolder+w0+".xlsx")#<<<<<<<<<<<<<<<<<<<<-------------------------------------------- Save the file
 

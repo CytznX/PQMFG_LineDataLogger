@@ -1165,3 +1165,84 @@ Log Created: WorkOrderExcelLogs/666.xlsx
 Connection Recieved@(04/10/14, 15:46:22) From Addr: ('192.168.20.105', 53329)
 MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 -------------------------END-------------------------
+Connection Recieved@(04/10/14, 15:54:13) From Addr: ('192.168.20.198', 46359)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/10/14, 15:54:58) From Addr: ('192.168.20.198', 46362)
+Log Created: WorkOrderExcelLogs/333.xlsx
+-------------------------END-------------------------
+Connection Recieved@(04/10/14, 15:55:15) From Addr: ('192.168.20.198', 46367)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/10/14, 19:05:26) From Addr: ('192.168.2.146', 48142)
+Log Created: WorkOrderLogs/121149/Run#1.txt
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 09:45:48) From Addr: ('192.168.20.198', 46607)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 09:46:49) From Addr: ('192.168.20.198', 46613)
+Log Created: WorkOrderExcelLogs/666.xlsx
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 09:47:13) From Addr: ('192.168.20.198', 46616)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 10:08:02) From Addr: ('192.168.20.198', 46759)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 10:09:15) From Addr: ('192.168.20.198', 46775)
+Log Created: WorkOrderExcelLogs/1111.xlsx
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 10:09:21) From Addr: ('192.168.20.198', 46779)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 10:19:04) From Addr: ('192.168.20.198', 46862)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 10:20:34) From Addr: ('192.168.20.198', 46883)
+Log Created: WorkOrderExcelLogs/666.xlsx
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 10:20:41) From Addr: ('192.168.20.198', 46887)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 10:27:24) From Addr: ('192.168.20.198', 46931)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 10:28:42) From Addr: ('192.168.20.198', 46945)
+Log Created: WorkOrderExcelLogs/333.xlsx
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 10:44:29) From Addr: ('192.168.20.198', 47091)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 10:46:57) From Addr: ('192.168.20.198', 47117)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 11:00:54) From Addr: ('192.168.20.198', 47153)
+Log Created: WorkOrderExcelLogs/666.xlsx
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 11:01:01) From Addr: ('192.168.20.198', 47157)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 11:08:06) From Addr: ('192.168.20.198', 47179)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 11:09:15) From Addr: ('192.168.20.198', 47182)
+Log Created: WorkOrderExcelLogs/666.xlsx
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 11:12:25) From Addr: ('192.168.20.198', 47188)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 11:14:20) From Addr: ('192.168.20.198', 47221)
+Log Created: WorkOrderExcelLogs/66.xlsx
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 11:14:26) From Addr: ('192.168.20.198', 47226)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 11:17:13) From Addr: ('192.168.20.198', 47244)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 11:17:25) From Addr: ('192.168.20.198', 47248)
+Log Created: WorkOrderExcelLogs/666.xlsx
+-------------------------END-------------------------
+Connection Recieved@(04/11/14, 11:17:33) From Addr: ('192.168.20.198', 47250)
+Log Created: WorkOrderExcelLogs/111.xlsx
+-------------------------END-------------------------
