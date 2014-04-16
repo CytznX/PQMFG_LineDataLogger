@@ -1255,7 +1255,12 @@ def main():
 				countColor = GREEN
 				counts = cur_AL.getCounts()
 				total_msg = str(sum(counts[0]))
-				box_msg = str(sum(counts[2]))
+
+				if not counts[3] == None:
+					box_msg = str(sum(counts[2]))+'('+str(counts[3])+')'
+				else:
+					box_msg = str(sum(counts[2]))
+					
 				fail_msg = str(counts[1])
 
 			else:

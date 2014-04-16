@@ -697,10 +697,10 @@ class ActivityLogger:
 			now = datetime.datetime.now()
 
 			#if machine is running Declare, otherwise assume W/O is finished
-			if stillRunning or not self.current_WO == None:
+			if stillRunning and not self.current_WO == None:
 				log += ['Running '+str(self.currentState)+" "+str((now-self.WO_StartTime).seconds)]
 			else:
-				log += ['Finished '+str(self.currentState)+" "+str((now-self.WO_StartTime).seconds)]
+				log += ['Finished: '+now.strftime('(%D) @ %H:%M:%S')]
 
 			#add it to the current return log
 			log +=[str(sum(self.totalCount)), str(self.totalCount),str(sum(self.boxCount)), str(self.boxCount),str(self.failCount)]
@@ -797,30 +797,30 @@ class ActivityLogger:
 			maintainMsg = []
 			for start,end in self.MaintananceDwnTime:
 				if not end == None:
-					maintainMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) ']
+					maintainMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
 				else: 
-					maintainMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) ']
+					maintainMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
 
 			InventoryMsg = []
 			for start,end in self.InventoryDwnTime:
 				if not end == None:
-					InventoryMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) ']
+					InventoryMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
 				else: 
-					InventoryMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) ']
+					InventoryMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
 
 			QualityControlMsg = []
 			for start,end in self.QualityControlDwnTime:
 				if not end == None:
-					QualityControlMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) ']
+					QualityControlMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
 				else: 
-					QualityControlMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) ']
+					QualityControlMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
 
 			breakMsg = []
 			for start,end in self.BreakDownTime:
 				if not end == None:
-					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+','+str(end[1])+')) ']
+					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
 				else: 
-					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+','+str(start[1])+'),('+now.strftime('%H:%M:%S')+',N/A)) ']
+					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
 
 			log+=['---Down Time----']+['Maintanance> '+str(FormattedMain[0])+':'+str(FormattedMain[1])+':'+str(FormattedMain[2])]+maintainMsg+[""]
 			log+=['Inventory> '+str(FormattedInv[0])+':'+str(FormattedInv[1])+':'+str(FormattedInv[2])]+InventoryMsg+[""]
