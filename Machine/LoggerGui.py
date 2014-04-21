@@ -1107,9 +1107,10 @@ def main():
 					elif GUI_STATE == 4.1:
 						Header_SO2 = fontObjectHeader.render("You have sucsessfuly Removed the following employees:",False, WHITE)
 					elif GUI_STATE == 7.1:
+
 						Header_SO2 = fontObjectHeader.render('You Want '
 															+('Add To ' if numPadDic['+/-'].bgcolor == GREEN else 'Subtract From ')
-															+('BoxCount' if buttonTotalCount.bgcolor == GREEN else 'TotalCount'), False, WHITE)
+															+('BoxCount' if not buttonTotalCount.bgcolor == GREEN else 'TotalCount'), False, WHITE)
 
 						if not propID == '':
 							Header_SO4 = pygame.font.Font('freesansbold.ttf',44).render('ID: '+cur_AL.getName(propID),False, RED)

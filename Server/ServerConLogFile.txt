@@ -1291,3 +1291,12 @@ MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
 Connection Recieved@(04/15/14, 18:49:50) From Addr: ('192.168.2.146', 48148)
 Data Is bad
 -------------------------END-------------------------
+Connection Recieved@(04/17/14, 15:59:14) From Addr: ('127.0.0.1', 41982)
+MACHINE IS GOING DOWN DO TO EXTERNAL COMAND
+-------------------------END-------------------------
+Connection Recieved@(04/17/14, 17:07:46) From Addr: ('192.168.2.146', 49800)
+Log Created: WorkOrderExcelLogs/122383.xlsx
+-------------------------END-------------------------
+Connection Recieved@(04/17/14, 18:28:23) From Addr: ('192.168.2.146', 49801)
+Log Created: WorkOrderExcelLogs/122047.xlsx
+-------------------------END-------------------------

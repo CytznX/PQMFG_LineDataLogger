@@ -43,7 +43,6 @@ class ActivityLogger:
 		self.WO_StartTime = None
 
 		#last hour increment/decrement time
-		self.hourIncrement = None
 		self.hourdecrement = None
 
 		#Keeps Track Of Pass/Fail Count
@@ -322,7 +321,6 @@ class ActivityLogger:
 		#When Was this WO started on the Line
 
 		self.WO_StartTime = datetime.datetime.now()
-		self.hourIncrement = datetime.datetime.now()
 		self.hourdecrement = datetime.datetime.now()
 
 		#Keeps Track Of Pass/Fail Count
@@ -370,7 +368,6 @@ class ActivityLogger:
 			self.WO_StartTime = None
 
 			#last hour increment/decrement time
-			self.hourIncrement = None
 			self.hourdecrement = None
 
 			#Keeps Track Of Pass/Fail Count
@@ -498,8 +495,8 @@ class ActivityLogger:
 				incrementSucssful = True
 
 				#If more than a hour has passed start new tally and reset clock
-				if (datetime.datetime.now()-self.hourIncrement).seconds >3600:
-					self.hourIncrement = datetime.datetime.now()
+				if (datetime.datetime.now()-self.hourdecrement).seconds >3600:
+					self.hourdecrement = datetime.datetime.now()
 					self.boxCount.append(0)
 					self.totalCount.append(amount)
 
@@ -513,8 +510,8 @@ class ActivityLogger:
 				incrementSucssful = True
 
 				#If more than a hour has passed start new tally and reset clock
-				if (datetime.datetime.now()-self.hourIncrement).seconds >3600:
-					self.hourIncrement = datetime.datetime.now()
+				if (datetime.datetime.now()-self.hourdecrement).seconds >3600:
+					self.hourdecrement = datetime.datetime.now()
 					self.boxCount.append(0)
 					self.totalCount.append(amount)
 
@@ -614,7 +611,7 @@ class ActivityLogger:
 					else:
 						peacesPacked = self.totalCount[-1]
 
-					curAvg = peacesPacked/((datetime.datetime.now()-self.hourIncrement).seconds/60.0)
+					curAvg = peacesPacked/((datetime.datetime.now()-self.hourdecrement).seconds/60.0)
 
 					
 				else:

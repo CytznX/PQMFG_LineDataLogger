@@ -78,7 +78,7 @@ class ThreadedTCPNetworkAgent(Thread):
 		#the collected message
 		message = ''
 		safety = ''
-
+		data = ''
 		#PULL IN NEW 
 		while self.running:
 			data = clientsock.recv(self._BuffSize)
@@ -190,7 +190,7 @@ class ThreadedTCPNetworkAgent(Thread):
 					#Forth
 					FirstSheet['A3'] = formattedMess[3].split()[0]
 					FirstSheet['A3'].style.font.bold = True
-					FirstSheet['B3'] = formattedMess[3].split()[1]
+					FirstSheet['B3'] = formattedMess[3].split()[1]+" "+formattedMess[3].split()[2]+" "+formattedMess[3].split()[3]
 
 					#Five
 					FirstSheet['A4'] = 'Total Count: '
@@ -313,7 +313,7 @@ class ThreadedTCPNetworkAgent(Thread):
 					#Forth
 					NewSheet['A3'] = formattedMess[3].split()[0]
 					NewSheet['A3'].style.font.bold = True
-					NewSheet['B3'] = formattedMess[3].split()[1]
+					formattedMess[3].split()[1]+" "+formattedMess[3].split()[2]+" "+formattedMess[3].split()[3]
 
 					#Five
 					NewSheet['A4'] = 'Total Count: '
