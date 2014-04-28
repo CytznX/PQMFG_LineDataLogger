@@ -1,4 +1,4 @@
-Server/WorkOrderExcelLogs
-Server/WorkOrderLogs
-Client/.metadata
+Server/WorkOrderExcelLogs/
+Server/WorkOrderLogs/
+Client/.metadata/
 Server/ServerConLogFile.txt
