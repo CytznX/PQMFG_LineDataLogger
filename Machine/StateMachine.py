@@ -52,6 +52,20 @@ class ActivityLogger:
 		self.peacesPerBox = None
 		self.modCounter = None
 		self.modBoxCounter = None
+		self.FillStart = None
+		self.FillEnd = None
+
+		self._BatchInfo = dict()
+		self._BatchInfo["INIT"] = ["Batch Code","Fill Weight","Total Weight","Total Wt Range"]
+		
+		self._PalletInfo = dict()
+		self._PalletInfo["INIT"] = ["Pallet#","Cases","Pcs/Case","Count","Batch#"]
+
+		self._QCInfo = dict()
+		self._QCInfo["INIT"] =["Batch#","Stability","Begins","Middle","Ends","Re-Sample","Initials"]
+
+		self.fillSheet = dict()
+
 
 		#Used for showing messages to users
 		self.Messages = Queue.Queue()
@@ -330,8 +344,18 @@ class ActivityLogger:
 		self.failCount = 0		
 		self.boxCount = [0]
 		self.peacesPerBox = None
+		self.FillStart = None
+		self.FillEnd = None
 
-		self.peacesPerBox = None
+		self._BatchInfo = dict()
+		self._BatchInfo["INIT"] = ["Batch Code","Fill Weight","Total Weight","Total Wt Range"]
+		
+		self._PalletInfo = dict()
+		self._PalletInfo["INIT"] = ["Pallet#","Cases","Pcs/Case","Count","Batch#"]
+
+		self._QCInfo = dict()
+		self._QCInfo["INIT"] =["Batch#","Stability","Begins","Middle","Ends","Re-Sample","Initials"]
+
 
 		#Keeps Track of count adjustments
 		self.adjustments = []
@@ -343,6 +367,21 @@ class ActivityLogger:
 		self.BreakDownTime = []
 
 		return connected
+
+	def _getQC(self):
+		return self._QCInfo
+	def _setQC(self, newCol):
+		self._QCInfo = newCol
+
+	def _getPallet(self):
+		return self._PalletInfo
+	def _setPallet(self, newCol):
+		self._PalletInfo = newCol
+
+	def _getBatch(self):
+		return self._BatchInfo
+	def _setBatch(self, newCol):
+		self._BatchInfo = newCol
 
 	def changePeacesPerBox(self, ppb):
 		self.peacesPerBox = ppb
@@ -377,6 +416,19 @@ class ActivityLogger:
 			self.failCount = None
 			self.boxCount = None
 			self.peacesPerBox = None
+			self.FillStart = None
+			self.FillEnd = None
+
+			self._BatchInfo = dict()
+			self._BatchInfo["INIT"] = ["Batch Code","Fill Weight","Total Weight","Total Wt Range"]
+		
+			self._PalletInfo = dict()
+			self._PalletInfo["INIT"] = ["Pallet#","Cases","Pcs/Case","Count","Batch#"]
+
+			self._QCInfo = dict()
+			self._QCInfo["INIT"] =["Batch#","Stability","Begins","Middle","Ends","Re-Sample","Initials"]
+
+
 
 			#Keeps Track of count adjustments
 			self.adjustments = []
@@ -472,6 +524,10 @@ class ActivityLogger:
 	def getCurrentState(self):
 		return (self.current_WO,self.currentState, self.currentReason)
 
+	def getStartTimes(self):
+		return (self.WO_StartTime, self.FillStart, self.FillEnd)
+
+
 	'''
 	Used to Increment the current pass count on running work order
 	'''
@@ -494,6 +550,12 @@ class ActivityLogger:
 			if amount==1 and ID == None:
 				incrementSucssful = True
 
+
+				if self.FillStart == None:
+					self.FillStart = datetime.datetime.now()
+					
+				self.FillEnd = datetime.datetime.now()
+
 				#If more than a hour has passed start new tally and reset clock
 				if (datetime.datetime.now()-self.hourdecrement).seconds >3600:
 					self.hourdecrement = datetime.datetime.now()
@@ -503,6 +565,7 @@ class ActivityLogger:
 				#elses we increment current tally
 				else:
 					self.totalCount[-1] += amount
+
 
 
 			elif (not amount == 1) or (not ID == None):
@@ -834,3 +897,7 @@ class ActivityLogger:
 		minutes =(TimeDiff-(hours*3600))/60
 		sec = (TimeDiff-(hours*3600)-(minutes*60))
 		return hours, minutes, sec
+
+	BatchInfo = property(_getBatch, _setBatch)
+	PalletInfo = property(_getPallet, _setPallet)
+	QCInfo = property(_getQC, _setQC)

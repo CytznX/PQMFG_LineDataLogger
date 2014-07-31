@@ -29,74 +29,74 @@ BUTTON_HEIGHT = 55
 
 IDSIZE = 105
 
-#Used to Determin window dimensions 
-WINDOWWIDTH = 1024
-WINDOWHEIGHT = 600
+#Used to Determin window dimensions
+WINDOWWIDTH = 1366
+WINDOWHEIGHT = 768
 
-#Where the topleft point of text columb is 
+#Where the topleft point of text columb is
 TEXT_Strt_Top = 20
 TEXT_Strt_Left = IDSIZE+3*BRD_SPACER
 
 #Some arbitrary colors I hard codded in
-RED = (255,0,0)
-BLUE = (0,0,255)
-GREEN = (0,255,0)
-YELLOW = (255,255,51)
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+YELLOW = (255, 255, 51)
 
 DEFAULT_BG = (212, 208, 200)
 
-LIGHT_GREEN = (100,255,100)
-LIGHT_BLUE = (100,100,255)
-ORANGE = (255,128,0)
-MAROON = (150,0,0)
-DARK_GREEN =(0,128,0)
-DARK_BLUE =(0,0,128)
+LIGHT_GREEN = (100, 255, 100)
+LIGHT_BLUE = (100, 100, 255)
+ORANGE = (255, 128, 0)
+MAROON = (150, 0, 0)
+DARK_GREEN = (0, 128, 0)
+DARK_BLUE = (0, 0, 128)
 
 WHITE = (255, 255, 255)
-BLACK =(0,0,0)
-GREY = (200, 200, 200) 
+BLACK = (0, 0, 0)
+GREY = (200, 200, 200)
 
+#How I shutdown the pi
 def shutdownPI():
 	command = "/usr/bin/sudo /sbin/shutdown -h now"
 	process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
 	output = process.communicate()[0]
 	print output
 
-'''
-I thought i was gonna use this method more than i actually did ... so shoot me
-'''
-def drawText(text, size, color, DisplaySurf, Tx, Ty, Width, Height, SLO, state = None):
-	
+
+#I thought i was gonna use this method more than i actually did ... so shoot me
+def drawText(text, size, color, DisplaySurf, Tx, Ty, Width, Height, SLO, state=None):
+
 	#DisplaySurf = pygame.display.get_surface()
-	spacer= 10
+	spacer = 10
 	x_pos = Tx+5
 	y_pos = Ty+5
-	font = pygame.font.Font('freesansbold.ttf',size)
+	font = pygame.font.Font('freesansbold.ttf', size)
 
 	#This for loop implements some autosizing features
 	for t in text:
-		x = font.render(t,False,WHITE)
+		x = font.render(t, False, WHITE)
 
-		while x.get_rect()[2] > Width-2*spacer and not size<10:
+		while x.get_rect()[2] > Width-2*spacer and not size < 10:
 			size = size-1
-			font = pygame.font.Font('freesansbold.ttf',size)
-			x = font.render(t,False,WHITE)
+			font = pygame.font.Font('freesansbold.ttf', size)
+			x = font.render(t, False, WHITE)
 
 	#here we iterate over all passed text
 	for t in text:
 
 		#This if determines what coloring to use... based off state variable
-		if state == None:
-			x = font.render(t,False,WHITE)
+		if state is None:
+			x = font.render(t, False, WHITE)
 		elif state:
 
 			#Implements basic color scheme (ADD.. I think)
 			if not t == '&' and not [item for item in SLO.stillLoggedOn() if t in item or SLO.getName(t) in item]:
-				x = font.render(t,False,GREEN)
+				x = font.render(t, False, GREEN)
 			elif not t == '&':
-				x = font.render(t,False,RED)
+				x = font.render(t, False, RED)
 			else:
-				x = font.render(t,False,WHITE)
+				x = font.render(t, False, WHITE)
 		else:
 
 			#Implements basic color scheme (Remove.. I think)
@@ -143,6 +143,7 @@ def main():
 	addRemove = []
 	dwnReason = None
 	currentMsgDisp = None
+	beenClicked = None
 
 	#Sets screen resolution and title
 	DISPLAYSURFACE = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
@@ -174,14 +175,14 @@ def main():
 	MachineTag_SO = fontObjectHeader.render("___PQMFG Line Controler_____________________",False, LIGHT_BLUE)
 	MachineTag_Rect = MachineTag_SO.get_rect()
 	MachineTag_Rect.topleft = (TEXT_Strt_Left,TEXT_Strt_Top)
-	
+
 	initStaticText.append((MachineTag_SO,MachineTag_Rect))
 
 	#CURRENT Work Order message
 	MachinCurWO_SO = fontObjectDefault.render(MachinWO_Msg,False, WHITE)
 	MachinCurWO_Rect = MachinCurWO_SO.get_rect()
 	MachinCurWO_Rect.topleft = (TEXT_Strt_Left+2*TXT_SPACER,MachineTag_Rect[1]+MachineTag_Rect[3]+TXT_SPACER)
-	
+
 	messageLengths.append(MachinCurWO_Rect[0]+MachinCurWO_Rect[2])
 	initStaticText.append((MachinCurWO_SO,MachinCurWO_Rect))
 
@@ -189,7 +190,7 @@ def main():
 	MachineRun_SO = fontObjectDefault.render(MachineRunTime_Msg,False, WHITE)
 	MachineRun_Rect = MachineRun_SO.get_rect()
 	MachineRun_Rect.topleft = (TEXT_Strt_Left+2*TXT_SPACER,MachinCurWO_Rect[1]+MachinCurWO_Rect[3])
-	
+
 	messageLengths.append(MachineRun_Rect[0]+MachineRun_Rect[2])
 	initStaticText.append((MachineRun_SO,MachineRun_Rect))
 
@@ -198,7 +199,7 @@ def main():
 	MachineStatus_SO = fontObjectDefault.render(MachineStatus_Msg,False, WHITE)
 	MachineStatus_Rect = MachineStatus_SO.get_rect()
 	MachineStatus_Rect.topleft = (TEXT_Strt_Left+2*TXT_SPACER,MachineRun_Rect[1]+MachineRun_Rect[3])
-	
+
 	messageLengths.append(MachineStatus_Rect[0]+MachineStatus_Rect[2])
 	initStaticText.append((MachineStatus_SO,MachineStatus_Rect))
 
@@ -206,14 +207,14 @@ def main():
 	Hour_PPM_MSG_SO = fontObjectDefault.render(Hour_PPM_MSG,False, WHITE)
 	Hour_PPM_MSG_Rect = Hour_PPM_MSG_SO.get_rect()
 	Hour_PPM_MSG_Rect.topleft = (TEXT_Strt_Left+2*TXT_SPACER,MachineStatus_Rect[1]+MachineStatus_Rect[3]+TXT_SPACER)
-	
+
 	messageLengths.append(Hour_PPM_MSG_Rect[0]+Hour_PPM_MSG_Rect[2])
 	initStaticText.append((Hour_PPM_MSG_SO,Hour_PPM_MSG_Rect))
 
 	AVG_PPM_MSG_SO = fontObjectDefault.render(AVG_PPM_MSG,False, WHITE)
 	AVG_PPM_MSG_Rect = AVG_PPM_MSG_SO.get_rect()
 	AVG_PPM_MSG_Rect.topleft = (TEXT_Strt_Left+2*TXT_SPACER,Hour_PPM_MSG_Rect[1]+Hour_PPM_MSG_Rect[3])
-	
+
 	messageLengths.append(AVG_PPM_MSG_Rect[0]+AVG_PPM_MSG_Rect[2])
 	initStaticText.append((AVG_PPM_MSG_SO,AVG_PPM_MSG_Rect))
 
@@ -224,7 +225,7 @@ def main():
 	TotalParts_MSG_SO = fontObjectDefault.render("Total:",False, WHITE)
 	TotalParts_MSG_Rect = TotalParts_MSG_SO.get_rect()
 	TotalParts_MSG_Rect.topleft = (BRD_SPACER+TXT_SPACER,MachineStatus_Rect[1]+MachineStatus_Rect[3]+TXT_SPACER)
-	
+
 	initStaticText.append((TotalParts_MSG_SO,TotalParts_MSG_Rect))
 
 	TotalBoxs_MSG_SO = fontObjectDefault.render("Boxes:",False, WHITE)
@@ -272,9 +273,9 @@ def main():
 	buttonMachineUp = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 8*BRD_SPACER+4*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 'Bring Line Up')
 	buttonMachineUp.font = fontObjectDefault
 
-	ShowSchedual = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 11*BRD_SPACER+6*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 'Line Schedule')
-	ShowSchedual.font = fontObjectDefault
-	ShowSchedual.bgcolor = (50,50,255)
+	FillSheet = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 11*BRD_SPACER+6*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 'Fill Sheet')
+	FillSheet.font = fontObjectDefault
+	FillSheet.bgcolor = (50,50,255)
 
 	buttonShutdown = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 12*BRD_SPACER+7*BUTTON_HEIGHT, BUTTON_WIDTH, BUTTON_HEIGHT), 'ShutDown Line Logger')
 	buttonShutdown.font = fontObjectDefault
@@ -298,7 +299,7 @@ def main():
 	buttonNo.font = fontObjectDefault
 	buttonNo.visible = False
 
-	#OK Button 
+	#OK Button
 	buttonOk = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT-BUTTON_HEIGHT- 2*BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'OK')
 	buttonOk.font = fontObjectDefault
 	buttonOk.visible = False
@@ -309,6 +310,18 @@ def main():
 
 	buttonBoxCount = pygbutton.PygButton(((WINDOWWIDTH/6)-BUTTON_WIDTH/4, 80+WINDOWHEIGHT/2+BRD_SPACER/2, BUTTON_WIDTH/2, BUTTON_HEIGHT), 'BoxCount')
 	buttonBoxCount.font = fontObjectDefault
+
+	#FILL SHEET BUTTONS
+	buttonPackOff = pygbutton.PygButton((WINDOWWIDTH/2+int(2.5*BRD_SPACER),5*BRD_SPACER+153, 24, 25), '     ')
+	buttonPackOff.font = fontObjectDefault
+	buttonPackOff.bgcolor = RED
+	buttonPackOff.visible = False
+
+	buttonADD = pygbutton.PygButton((WINDOWWIDTH/2 - BUTTON_WIDTH-BRD_SPACER, WINDOWHEIGHT-BUTTON_HEIGHT- 2*BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'ADD')
+	buttonADD.visible = False
+
+	buttonBack = pygbutton.PygButton((WINDOWWIDTH/2+BRD_SPACER, WINDOWHEIGHT-BUTTON_HEIGHT- 2*BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Back')
+	buttonBack.visible = False
 
 	#Used for displaying storing buttons
 	stillLoggedIn = dict()
@@ -331,6 +344,11 @@ def main():
 	numPadDic['8'] = pygbutton.PygButton((numpadCenter-int(0.5*BUTTON_HEIGHT), WINDOWHEIGHT-3*BUTTON_HEIGHT- 5*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT), '8')
 	numPadDic['9'] = pygbutton.PygButton((numpadCenter +int(0.5*BUTTON_HEIGHT) + BRD_SPACER, WINDOWHEIGHT-3*BUTTON_HEIGHT- 5*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT), '9')
 
+	numPadDic['/'] = pygbutton.PygButton((numpadCenter -(6*int(0.5*BUTTON_HEIGHT)) , WINDOWHEIGHT-4*BUTTON_HEIGHT- 6*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT), '/')
+	numPadDic['-'] = pygbutton.PygButton((numpadCenter -(6*int(0.5*BUTTON_HEIGHT)) , WINDOWHEIGHT-3*BUTTON_HEIGHT- 5*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT), '-')
+	numPadDic['.'] = pygbutton.PygButton((numpadCenter -(6*int(0.5*BUTTON_HEIGHT)) , WINDOWHEIGHT-2*BUTTON_HEIGHT- 4*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT), '.')
+
+
 	#1)Maitenance, 2)Inventory, 3)Quality_Control
 	dwnTimeButtons = dict()
 	dwnTimeButtons['Maitenance'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2-int(0.5*BUTTON_HEIGHT)-BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Maitenance')
@@ -339,7 +357,35 @@ def main():
 	dwnTimeButtons['Break'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2+int(2.5*BUTTON_HEIGHT)+2*BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Break')
 	dwnTimeButtons['Mid_Cancle'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2+int(3.5*BUTTON_HEIGHT)+3*BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Cancel')
 
-	#Itterate over button dictionaries and set there visability to False 
+
+	#Buttons For Filling Sheet
+	fillSheetButtons = dict()
+	fillSheetButtons["Product Name"] = pygbutton.PygButton((WINDOWWIDTH/2+int(2.5*BRD_SPACER)+170,5*BRD_SPACER+55, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["Formula Ref#"] = pygbutton.PygButton((WINDOWWIDTH/2+int(2.5*BRD_SPACER)+170,5*BRD_SPACER+87, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["Exp. Date"] = pygbutton.PygButton((WINDOWWIDTH/2+int(2.5*BRD_SPACER)+170,5*BRD_SPACER+120, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
+
+	#Blank Space... HAAHAHAHAHAHAH
+	fillSheetButtons["Pump#"] = pygbutton.PygButton((WINDOWWIDTH/2+int(2.5*BRD_SPACER)+170,5*BRD_SPACER+217, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["Simplex#"] = pygbutton.PygButton((WINDOWWIDTH/2+int(2.5*BRD_SPACER)+170,5*BRD_SPACER+250, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
+
+	#pos X and pos y
+	x, y, yoffset = 205,375, 32
+
+	fillSheetButtons["FD_Tare"] = pygbutton.PygButton((6 *BRD_SPACER+x,y+BRD_SPACER, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["FD_Volume"] = pygbutton.PygButton((6 *BRD_SPACER+x,yoffset+y+BRD_SPACER, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["FD_Weight"] = pygbutton.PygButton((6 *BRD_SPACER+x,(2*yoffset)+y+BRD_SPACER, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["FD_Cosmetic"] = pygbutton.PygButton((6 *BRD_SPACER+x,(3*yoffset)+y+BRD_SPACER, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
+
+
+	xpo, ypo = WINDOWWIDTH/2 +100, 375
+	fillSheetSwitcherButtons = dict()
+	fillSheetSwitcherButtons["Batch Weights"] = pygbutton.PygButton((xpo,ypo, BUTTON_WIDTH*(2/3.0), BUTTON_HEIGHT), 'Batch Weights')
+	fillSheetSwitcherButtons["Pallet Info"] = pygbutton.PygButton((xpo,ypo+BUTTON_HEIGHT+BRD_SPACER, BUTTON_WIDTH*(2/3.0), BUTTON_HEIGHT), 'Pallet Info')
+	fillSheetSwitcherButtons["QC Samples"] = pygbutton.PygButton((xpo,ypo+(2*(BUTTON_HEIGHT+BRD_SPACER)), BUTTON_WIDTH*(2/3.0), BUTTON_HEIGHT), 'QC Samples')
+	fillSheetSwitcherButtons["Back"] = pygbutton.PygButton((xpo+(BUTTON_WIDTH*(2/3.0))+BRD_SPACER,ypo, BUTTON_WIDTH/2, 3*BUTTON_HEIGHT+2*BRD_SPACER), 'Back')
+	fillSheetSwitcherButtons["Back"].bgcolor = YELLOW
+
+	#Itterate over button dictionaries and set there visability to False
 	for key in dwnTimeButtons.keys():
 		dwnTimeButtons[key].font = fontObjectDefault
 		dwnTimeButtons[key].visible = False
@@ -348,6 +394,13 @@ def main():
 		numPadDic[key].font = fontObjectDefault
 		numPadDic[key].visible = False
 
+	for key in fillSheetSwitcherButtons.keys():
+		fillSheetSwitcherButtons[key].visible = False
+
+	for key in fillSheetButtons.keys():
+		fillSheetButtons[key].bgcolor = BLACK
+		fillSheetButtons[key].fgcolor = RED
+		fillSheetButtons[key].visible = False
 
 	'''
 	----------------------------------------------------------------------------------------------------
@@ -355,7 +408,7 @@ def main():
 	----------------------------------------------------------------------------------------------------
 	'''
 	while True: # main game loop
-		
+
 		#Sets the caption top help identify what the current state is... should change this later
 		pygame.display.set_caption('PQMFG ActivityLogger '+str(GUI_STATE))
 
@@ -378,35 +431,28 @@ def main():
 				GUI_STATE = 8
 
 			for event in pygame.event.get(): # event handling loop
-				
+
 				#Captures events and exicutes code relating to SHUTDOWN BUTTON
 				buttonShutDownEvent = buttonShutdown.handleEvent(event)
 				if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE) or ('click' in buttonShutDownEvent and cur_AL.getCurrentState()[0]==None):
 					print 'Quiting...'
-					
+
 					try:
 						pygame.quit()
-						print 'Quiting Pygame... 3...'
-						time.sleep(1)
-						print '2..'
-						time.sleep(1)
-						print '1...'
-						time.sleep(1)
 
 					finally:
-						pygame.quit()
-
+						print 'Pygame has quit'
 						cur_AL.release()
-						del(cur_AL)		
+						del(cur_AL)
 
-						
+
 						print 'Linelogger State Machine has been destroyed...'
-						print 'killing Everything!!!'				
+						print 'killing Everything!!!'
 						#shutdownPI() #used to kill pi
 						sys.exit() #used to return to comandLine
 
 				#if any other key is press we add it to our Barcode Reader objecect
-				if event.type == KEYDOWN:    
+				if event.type == KEYDOWN:
 					BCreader.add(event.key)
 
 				#check to see if we have any availible strings collected
@@ -436,13 +482,13 @@ def main():
 							else:
 								stillLoggedIn[tmp].bgcolor = DEFAULT_BG
 
-								if tmp in addRemove: 
+								if tmp in addRemove:
 									addRemove.remove(tmp)
 					elif GUI_STATE == 6 or GUI_STATE == 5.5:
 						displayText = [scanVal]
 						scanVal = ''
 
-							 
+
 				elif GUI_STATE ==5 and not scanVal == '':
 					if scanVal == '#MAINTENANCE':
 						dwnReason = 'Maitenance'
@@ -453,7 +499,7 @@ def main():
 					elif scanVal == '#QUALITY_CONTROL':
 						dwnReason = 'Quality_Control'
 						GUI_STATE = 5.5
-					elif scanVal == '#CANCEL': 
+					elif scanVal == '#CANCEL':
 						GUI_STATE = 0
 
 					scanVal = ''
@@ -469,13 +515,35 @@ def main():
 						else:
 							stillLoggedIn[key].bgcolor = DEFAULT_BG
 
-							if key in addRemove: 
+							if key in addRemove:
 								addRemove.remove(key)
+
+
+				for key in fillSheetSwitcherButtons.keys():
+					if 'click' in fillSheetSwitcherButtons[key].handleEvent(event):
+						if fillSheetSwitcherButtons[key].caption == "Back":
+							GUI_STATE = 0
+
+						elif fillSheetSwitcherButtons[key].caption == "Batch Weights":
+							GUI_STATE = 9.2
+
+						elif fillSheetSwitcherButtons[key].caption == "Pallet Info":
+							GUI_STATE = 9.3
+
+						elif fillSheetSwitcherButtons[key].caption == "QC Samples":
+							GUI_STATE = 9.4
+
+
+
+				for key in fillSheetButtons.keys():
+					if 'click' in fillSheetButtons[key].handleEvent(event):
+						GUI_STATE = 9.1
+						beenClicked = key
 
 				#Captures events and exicutes code relating to NUMPAD BUTTONS
 				for key in numPadDic.keys():
 					if 'click' in numPadDic[key].handleEvent(event):
-						
+
 						#If its not a special key append to the display text is empty start new entry
 						if displayText == [] and not key == '&' and not key == 'DEL' and not key == '+/-' and not GUI_STATE ==7.1:
 							displayText.append(key)
@@ -495,10 +563,12 @@ def main():
 							displayText+=[key,'']
 						elif key == 'DEL' and not displayText == []:
 							displayText[-1]=displayText[-1][:-1]
-						
+
 						#just append current displaytext word
-						else:
+						elif not displayText == []:
 							displayText[-1] += key
+						else:
+							displayText = [key]
 
 				#Captures events and exicutes code relating to DWNTIME BUTTONS
 				for key in dwnTimeButtons.keys():
@@ -509,14 +579,28 @@ def main():
 							dwnReason = key
 							GUI_STATE = 5.5
 
+				if 'click' in buttonADD.handleEvent(event):
+					pass
+				if 'click' in buttonBack.handleEvent(event):
+					GUI_STATE = 9.0
 
 				buttonTotalCountEvent = buttonTotalCount.handleEvent(event)
 				buttonBoxCountEvent = buttonBoxCount.handleEvent(event)
 				if 'click' in buttonBoxCountEvent or 'click' in buttonTotalCountEvent:
 					tmp1 = buttonTotalCount.bgcolor
-					tmp2 = buttonBoxCount.bgcolor 
+					tmp2 = buttonBoxCount.bgcolor
 					buttonTotalCount.bgcolor = tmp2
 					buttonBoxCount.bgcolor = tmp1
+
+				buttonPackOffEvent = buttonPackOff.handleEvent(event)
+				if 'click' in buttonPackOffEvent:
+
+					if buttonPackOff.bgcolor == RED:
+						buttonPackOff.bgcolor = GREEN
+						buttonPackOff.caption ="  X  "
+					else:
+						buttonPackOff.bgcolor = RED
+						buttonPackOff.caption ="     "
 
 				#Captures events and exicutes code relating to COMPLETE WORK ORDER BUTTONS
 				buttonCompleteEvent = buttonCompleteWO.handleEvent(event)
@@ -578,7 +662,7 @@ def main():
 				buttonMachineDownEvent = buttonMachineDown.handleEvent(event)
 				if ('click' in buttonMachineDownEvent or scanVal == '#MACHINE_DOWN') and cur_AL.getCurrentState()[1] == True:
 					GUI_STATE = 5
-	 
+
 				#Captures events and exicutes code relating to MACHINE UP BUTTON
 				buttonMachineUpEvent = buttonMachineUp.handleEvent(event)
 				if ('click' in buttonMachineUpEvent or scanVal == '#MACHINE_UP') and cur_AL.getCurrentState()[1] == False:
@@ -592,9 +676,9 @@ def main():
 					displayText =[]
 
 				#Captures events realating to show schedual buttoin
-				ShowSchedualEvent = ShowSchedual.handleEvent(event)
-				if 'click' in ShowSchedualEvent:
-					pass
+				FillSheetEvent = FillSheet.handleEvent(event)
+				if 'click' in FillSheetEvent and not cur_AL.getCurrentState()[0] == None:
+					GUI_STATE = 9
 
 				#Captures events and exicutes code relating to CONFIRM BUTTON
 				buttonConfirmEvent = buttonConfirm.handleEvent(event)
@@ -602,7 +686,7 @@ def main():
 
 					#Figure out what state the GUI is currently in and perform the corrisponding opperations
 					if GUI_STATE  ==2 and not displayText==[] and not cur_AL.getCurrentState()[0]==displayText[0]:
-						
+
 						#IF this goto that... =P
 						if cur_AL.getCurrentState()[0] == None:
 							cur_AL.changeCurrentWO(displayText[0])
@@ -627,6 +711,22 @@ def main():
 
 						displayText=[]
 						GUI_STATE = 3.1
+						scanVal = ''
+
+					elif GUI_STATE == 9.1 and not displayText==[]:
+
+						try:
+							fillSheetButtons[beenClicked].caption = displayText[0]
+							fillSheetButtons[beenClicked].fgcolor = GREEN
+						except Exception, e:
+							print displayText
+
+						cur_AL.fillSheet[beenClicked]= displayText[0]
+
+						beenClicked = None
+						GUI_STATE = 9
+						displayText = []
+						addRemove = []
 						scanVal = ''
 
 					elif GUI_STATE  ==4 and not addRemove==[]:
@@ -673,13 +773,22 @@ def main():
 						GUI_STATE = 0
 						displayText=[]
 
-		
+
 				#Captures events and exicutes code relating to CANCLE BUTTON
 				buttonCancleEvent = buttonCancle.handleEvent(event)
 				if 'click' in buttonCancleEvent or (scanVal == '#CANCEL' and not GUI_STATE ==2.1):
-					GUI_STATE = 0
-					displayText = []
-					scanVal = ''
+
+					if GUI_STATE == 9.1:
+						beenClicked = None
+						GUI_STATE = 9
+						displayText = []
+						addRemove = []
+						scanVal = ''
+
+					else:
+						GUI_STATE = 0
+						displayText = []
+						scanVal = ''
 
 				#Captures events and exicutes code relating to YES BUTTON
 				buttonYesEvent = buttonYes.handleEvent(event)
@@ -758,14 +867,14 @@ def main():
 		--------------------------------------------------------------------------------------------------------------
 		'''
 		#Do This First <--- draws backgroud grey
-		DISPLAYSURFACE.fill(GREY) 
-		
+		DISPLAYSURFACE.fill(GREY)
+
 		#reset after previous itteration
 		dynamicContent = []
 		DyMessageLengths = []
 		Stat2MessageLengths = []
-		
-		#This is is what determines what gets drawn to screen 
+
+		#This is is what determines what gets drawn to screen
 		if not GUI_STATE == 0:
 
 			#Kill all buttons that I dont want
@@ -780,18 +889,28 @@ def main():
 			buttonAdjustCount.visible = False
 			buttonShutdown.visible = False
 			buttonOk.visible = False
-			ShowSchedual.visible = False
+			FillSheet.visible = False
+			buttonPackOff.visible = False
+
+			buttonADD.visible = False
+			buttonBack.visible = False
 
 			buttonTotalCount.visible = False
 			buttonBoxCount.visible = False
 
 			for key in stillLoggedIn.keys():
 				stillLoggedIn[key].visible = False
+
+			for key in fillSheetSwitcherButtons.keys():
+				fillSheetSwitcherButtons[key].visible = False
+
+			for key in fillSheetButtons.keys():
+				fillSheetButtons[key].visible = False
 			#-------------------------------------------------------
 
 			#Here is everything that needs numpad
-			if GUI_STATE == 2 or GUI_STATE == 2.5 or GUI_STATE ==3 or GUI_STATE ==7:
-				
+			if GUI_STATE == 2 or GUI_STATE == 2.5 or GUI_STATE ==3 or GUI_STATE ==7 or GUI_STATE == 9.1:
+
 				#Kill all buttons that I dont want
 				#-------------------------------------------------------
 				buttonYes.visible = False
@@ -807,6 +926,10 @@ def main():
 						pass
 					elif not GUI_STATE == 7 and key =='+/-':
 						pass
+
+					elif (not GUI_STATE==9.1) and (key == '/' or key == '-' or key =='.'):
+						numPadDic[key].visible = False
+
 					else:
 						numPadDic[key].visible = True
 
@@ -816,7 +939,7 @@ def main():
 
 				#Makes BackGround Blue
 				pygame.draw.rect(DISPLAYSURFACE, BLUE, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER)))
-			 
+
 				#Makes textbox
 				screenTopLeftX = numpadCenter+int(1.5*BUTTON_HEIGHT) + 2*BRD_SPACER
 				screenTopLeftY = int(WINDOWHEIGHT-5*BUTTON_HEIGHT-7*BRD_SPACER)
@@ -826,7 +949,7 @@ def main():
 				#Draws text area
 				pygame.draw.rect(DISPLAYSURFACE, GREY, (screenTopLeftX, screenTopLeftY, screenWidth, screenHeight))
 				pygame.draw.rect(DISPLAYSURFACE, DARK_BLUE, (screenTopLeftX+BRD_SPACER, screenTopLeftY+BRD_SPACER, screenWidth-2*BRD_SPACER, screenHeight-2*BRD_SPACER))
-			
+
 				#Figure out what state gui is in and draw the resulting header
 				if GUI_STATE == 2:
 					Header_SO = pygame.font.Font('freesansbold.ttf',36).render("Please Type Or Scan In New WO#",False, WHITE)
@@ -880,6 +1003,24 @@ def main():
 
 					drawText(displayText,25,GREEN,pygame.display.get_surface(), screenTopLeftX+BRD_SPACER, screenTopLeftY+BRD_SPACER, screenWidth-2*BRD_SPACER, screenHeight-2*BRD_SPACER,cur_AL,True)
 
+
+				elif GUI_STATE == 9.1:
+					Header_SO = pygame.font.Font('freesansbold.ttf',36).render("Please Type Or Scan In Valid Input",False, WHITE)
+					Header_Rect = Header_SO.get_rect()
+					Header_Rect.topleft = (WINDOWWIDTH/2 - Header_Rect[2]/2,BRD_SPACER*6)
+
+					Header_SO2 = pygame.font.Font('freesansbold.ttf',36).render("Then Press Confirm",False, WHITE)
+					Header_Rect2 = Header_SO2.get_rect()
+					Header_Rect2.topleft = (WINDOWWIDTH/2 - Header_Rect2[2]/2,BRD_SPACER*7+Header_Rect[3])
+
+					pygame.draw.rect(DISPLAYSURFACE, BLUE, Header_Rect)
+					DISPLAYSURFACE.blit(Header_SO,Header_Rect)
+
+					pygame.draw.rect(DISPLAYSURFACE, BLUE, Header_Rect2)
+					DISPLAYSURFACE.blit(Header_SO2,Header_Rect2)
+
+					drawText(displayText,25,GREEN,pygame.display.get_surface(), screenTopLeftX+BRD_SPACER, screenTopLeftY+BRD_SPACER, screenWidth-2*BRD_SPACER, screenHeight-2*BRD_SPACER,cur_AL,True)
+
 				elif GUI_STATE == 7:
 
 					buttonTotalCount.visible = True
@@ -900,7 +1041,7 @@ def main():
 					DISPLAYSURFACE.blit(Header_SO2,Header_Rect2)
 
 					drawText(displayText,25,GREEN,pygame.display.get_surface(), screenTopLeftX+BRD_SPACER, screenTopLeftY+BRD_SPACER, screenWidth-2*BRD_SPACER, screenHeight-2*BRD_SPACER,cur_AL, None)
-			
+
 			#If we are in remove employee state
 			elif GUI_STATE == 4:
 
@@ -1006,7 +1147,7 @@ def main():
 						Header_Rect4 = Header_SO4.get_rect()
 						Header_Rect4.topleft = (WINDOWWIDTH*2/3 - Header_Rect4[2]/2,WINDOWHEIGHT/2)
 
-					else: 
+					else:
 						Header_SO4 = pygame.font.Font('freesansbold.ttf',44).render('ID: <Please Input>',False, RED)
 						Header_Rect4 = Header_SO4.get_rect()
 						Header_Rect4.topleft = (WINDOWWIDTH*2/3 - Header_Rect4[2]/2,WINDOWHEIGHT/2)
@@ -1091,7 +1232,7 @@ def main():
 					pygame.draw.rect(DISPLAYSURFACE, DARK_GREEN, Header_Rect2)
 					DISPLAYSURFACE.blit(Header_SO2,Header_Rect2)
 
-				elif GUI_STATE == 3.1 or GUI_STATE == 4.1 or GUI_STATE == 7.1: 
+				elif GUI_STATE == 3.1 or GUI_STATE == 4.1 or GUI_STATE == 7.1:
 					pygame.draw.rect(DISPLAYSURFACE, DARK_GREEN, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER)))
 
 					buttonYes.visible = False
@@ -1114,7 +1255,7 @@ def main():
 
 						if not propID == '':
 							Header_SO4 = pygame.font.Font('freesansbold.ttf',44).render('ID: '+cur_AL.getName(propID),False, RED)
-						else: 
+						else:
 							Header_SO4 = pygame.font.Font('freesansbold.ttf',44).render('ID: <Please Input>',False, RED)
 
 						Header_Rect4 = Header_SO4.get_rect()
@@ -1139,7 +1280,7 @@ def main():
 					Header_Rect2 = Header_SO2.get_rect()
 					Header_Rect2.topleft = (WINDOWWIDTH/2 - Header_Rect2[2]/2,BRD_SPACER*5 +Header_Rect[3])
 
-					
+
 
 					pygame.draw.rect(DISPLAYSURFACE, DARK_GREEN, Header_Rect2)
 					DISPLAYSURFACE.blit(Header_SO2,Header_Rect2)
@@ -1149,7 +1290,7 @@ def main():
 
 					y_pos = Header_Rect2[1]+Header_Rect2[3]+BRD_SPACER
 
-					count = 0 
+					count = 0
 
 					for emp in addRemove:
 
@@ -1157,7 +1298,7 @@ def main():
 							count+=1
 							x = fontObjectHeader.render('(+) '+cur_AL.getName(emp),False,BLACK)
 							x_pos = WINDOWWIDTH/2-x.get_rect()[2]/2
-							
+
 							pygame.display.get_surface().blit(x,(x_pos,y_pos))
 							y_pos += x.get_rect()[3]+BRD_SPACER
 
@@ -1165,7 +1306,7 @@ def main():
 							count+=1
 							x = fontObjectHeader.render('(-) '+cur_AL.getName(emp),False,BLACK)
 							x_pos = WINDOWWIDTH/2-x.get_rect()[2]/2
-							
+
 							pygame.display.get_surface().blit(x,(x_pos,y_pos))
 							y_pos += x.get_rect()[3]+BRD_SPACER
 
@@ -1178,7 +1319,7 @@ def main():
 						x = fontObjectHeader.render(str(displayText[0])+' Pieces',False,numPadDic['+/-'].bgcolor)
 						x_pos = WINDOWWIDTH/2-x.get_rect()[2]/2
 						pygame.display.get_surface().blit(x,(x_pos,y_pos))
-			
+
 			elif GUI_STATE == 8:
 
 				pygame.draw.rect(DISPLAYSURFACE, RED, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER)))
@@ -1197,6 +1338,288 @@ def main():
 				pygame.draw.rect(DISPLAYSURFACE, RED, Header_Rect2)
 				DISPLAYSURFACE.blit(Header_SO2,Header_Rect2)
 
+			elif GUI_STATE == 9:
+
+				col_1_Len = []
+				col_2_Len = []
+
+				buttonPackOff.visible = True
+				buttonConfirm.visible = False
+				buttonCancle.visible = False
+
+				for key in fillSheetButtons.keys():
+					fillSheetButtons[key].visible = True
+
+				for key in fillSheetSwitcherButtons.keys():
+					fillSheetSwitcherButtons[key].visible = True
+
+				for key in numPadDic.keys():
+					numPadDic[key].visible = False
+
+				#<<< Header and Backgroun Info --------------------------------------------------------
+				#--------------------------------------------------------------------------------------
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER)))
+
+				Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____PQ Fill Sheet Interface_____",False, LIGHT_BLUE)
+				Header_Rect = Header_SO.get_rect()
+				Header_Rect.topleft = (WINDOWWIDTH/2-Header_Rect[2]/2,BRD_SPACER*2)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, Header_Rect)
+				DISPLAYSURFACE.blit(Header_SO,Header_Rect)
+
+				Header2_SO = pygame.font.Font('freesansbold.ttf',25).render("___Fill Data_______",False, ORANGE)
+				Header2_Rect = Header2_SO.get_rect()
+				Header2_Rect.topleft = (3 *BRD_SPACER,3*BRD_SPACER+Header_Rect[3]+(WINDOWHEIGHT/2- 6*BRD_SPACER)+25)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, Header2_Rect)
+				DISPLAYSURFACE.blit(Header2_SO,Header2_Rect)
+
+				pygame.draw.rect(DISPLAYSURFACE, GREEN, (2 *BRD_SPACER,3*BRD_SPACER+Header_Rect[3],(WINDOWWIDTH/2-int(2.5*BRD_SPACER)),(WINDOWHEIGHT/2- 4*BRD_SPACER)))
+				pygame.draw.rect(DISPLAYSURFACE, GREEN, (WINDOWWIDTH/2+int(0.5*BRD_SPACER),3*BRD_SPACER+Header_Rect[3],(WINDOWWIDTH/2-int(2.5*BRD_SPACER)),(WINDOWHEIGHT/2- 4*BRD_SPACER)))
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, (3 *BRD_SPACER,4*BRD_SPACER+Header_Rect[3],(WINDOWWIDTH/2-int(4.5*BRD_SPACER)),(WINDOWHEIGHT/2- 6*BRD_SPACER)))
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, (WINDOWWIDTH/2+int(1.5*BRD_SPACER),4*BRD_SPACER+Header_Rect[3],(WINDOWWIDTH/2-int(4.5*BRD_SPACER)),(WINDOWHEIGHT/2- 6*BRD_SPACER)))
+
+				#<<< STATIC TEXT FOR GREEN BOX LEFT ---------------------------------------------------
+				#--------------------------------------------------------------------------------------
+
+				nWO_SO = pygame.font.Font('freesansbold.ttf',20).render("WO#:",False, WHITE)
+				nWO_Rect = nWO_SO.get_rect()
+				nWO_Rect.topleft = (4 *BRD_SPACER,5*BRD_SPACER+Header_Rect[3])
+				col_1_Len.append(nWO_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, nWO_Rect)
+				DISPLAYSURFACE.blit(nWO_SO,nWO_Rect)
+
+				nJS_SO = pygame.font.Font('freesansbold.ttf',20).render("Job Start:",False, WHITE)
+				nJS_Rect = nJS_SO.get_rect()
+				nJS_Rect.topleft = (nWO_Rect[0],nWO_Rect[1]+nWO_Rect[3]+BRD_SPACER)
+				col_1_Len.append(nJS_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, nJS_Rect)
+				DISPLAYSURFACE.blit(nJS_SO,nJS_Rect)
+
+				nJE_SO = pygame.font.Font('freesansbold.ttf',20).render("Job End:",False, WHITE)
+				nJE_Rect = nJE_SO.get_rect()
+				nJE_Rect.topleft = (nWO_Rect[0],nJS_Rect[1]+nJS_Rect[3]+BRD_SPACER)
+				col_1_Len.append(nJE_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, nJE_Rect)
+				DISPLAYSURFACE.blit(nJE_SO,nJE_Rect)
+
+				nFS_SO = pygame.font.Font('freesansbold.ttf',20).render("Fill Start:",False, WHITE)
+				nFS_Rect = nFS_SO.get_rect()
+				nFS_Rect.topleft = (nWO_Rect[0],nJE_Rect[1]+nJE_Rect[3]+BRD_SPACER)
+				col_1_Len.append(nFS_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, nFS_Rect)
+				DISPLAYSURFACE.blit(nFS_SO,nFS_Rect)
+
+				nFE_SO = pygame.font.Font('freesansbold.ttf',20).render("Fill End:",False, WHITE)
+				nFE_Rect = nFE_SO.get_rect()
+				nFE_Rect.topleft = (nWO_Rect[0],nFS_Rect[1]+nFS_Rect[3]+BRD_SPACER)
+				col_1_Len.append(nFE_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, nFE_Rect)
+				DISPLAYSURFACE.blit(nFE_SO,nFE_Rect)
+
+				#<<< STATIC TEXT FOR GREEN BOX RIGHT---------------------------------------------------
+				#--------------------------------------------------------------------------------------
+				nPN_SO = pygame.font.Font('freesansbold.ttf',20).render("Product Name:",False, WHITE)
+				nPN_Rect = nPN_SO.get_rect()
+				nPN_Rect.topleft = (WINDOWWIDTH/2+int(2.5*BRD_SPACER),5*BRD_SPACER+Header_Rect[3])
+				col_2_Len.append(nPN_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, nPN_Rect)
+				DISPLAYSURFACE.blit(nPN_SO,nPN_Rect)
+
+				nFR_SO = pygame.font.Font('freesansbold.ttf',20).render("Formula Ref#:",False, WHITE)
+				nFR_Rect = nFR_SO.get_rect()
+				nFR_Rect.topleft = (nPN_Rect[0],nPN_Rect[1]+nPN_Rect[3]+BRD_SPACER)
+				col_2_Len.append(nFR_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, nFR_Rect)
+				DISPLAYSURFACE.blit(nFR_SO,nFR_Rect)
+
+				nED_SO = pygame.font.Font('freesansbold.ttf',20).render("Exp. Date:",False, WHITE)
+				nED_Rect = nED_SO.get_rect()
+				nED_Rect.topleft = (nPN_Rect[0],nFR_Rect[1]+nFR_Rect[3]+BRD_SPACER)
+				col_2_Len.append(nED_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, nED_Rect)
+				DISPLAYSURFACE.blit(nED_SO,nED_Rect)
+
+				nPC_SO = pygame.font.Font('freesansbold.ttf',20).render("Packaging Code:",False, WHITE)
+				nPC_Rect = nPC_SO.get_rect()
+				nPC_Rect.topleft = (nPN_Rect[0],nFR_Rect[1]+nFR_Rect[3]+BRD_SPACER)
+				col_2_Len.append(nPC_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, nPC_Rect)
+				DISPLAYSURFACE.blit(nPC_SO,nPC_Rect)
+
+				nPO_SO = pygame.font.Font('freesansbold.ttf',20).render("Pack-OFF",False, WHITE)
+				nPO_Rect = nPO_SO.get_rect()
+				nPO_Rect.topleft = (nPN_Rect[0]+30,nPC_Rect[1]+nPC_Rect[3]+BRD_SPACER)
+				col_2_Len.append(nPO_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, nPO_Rect)
+				DISPLAYSURFACE.blit(nPO_SO,nPO_Rect)
+
+				EquipHeader_SO = pygame.font.Font('freesansbold.ttf',20).render("________Equipment________",False, ORANGE)
+				EquipHeader_Rect = EquipHeader_SO.get_rect()
+				EquipHeader_Rect.topleft = (nPN_Rect[0],nPO_Rect[1]+nPO_Rect[3]+BRD_SPACER)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, EquipHeader_Rect)
+				DISPLAYSURFACE.blit(EquipHeader_SO,EquipHeader_Rect)
+
+				EquipPump_SO = pygame.font.Font('freesansbold.ttf',20).render("Pump#:",False, WHITE)
+				EquipPump_Rect = EquipPump_SO.get_rect()
+				EquipPump_Rect.topleft = (nPN_Rect[0],EquipHeader_Rect[1]+EquipHeader_Rect[3]+BRD_SPACER)
+				col_2_Len.append(EquipPump_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, EquipPump_Rect)
+				DISPLAYSURFACE.blit(EquipPump_SO,EquipPump_Rect)
+
+				EquipSimplex_SO = pygame.font.Font('freesansbold.ttf',20).render("Simplex#:",False, WHITE)
+				EquipSimplex_Rect = EquipSimplex_SO.get_rect()
+				EquipSimplex_Rect.topleft = (nPN_Rect[0],EquipPump_Rect[1]+EquipPump_Rect[3]+BRD_SPACER)
+				col_2_Len.append(EquipSimplex_Rect[2])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, EquipSimplex_Rect)
+				DISPLAYSURFACE.blit(EquipSimplex_SO,EquipSimplex_Rect)
+
+				#<<< DYNAMIC TEXT FOR GREEN BOX LEFT --------------------------------------------------
+				#--------------------------------------------------------------------------------------
+
+				workOrder = cur_AL.getCurrentState()[0]
+
+				times = cur_AL.getStartTimes()
+
+				Stime = times[0].strftime('%H:%M:%S')
+				Etime = datetime.datetime.now().strftime('%H:%M:%S')
+
+				Ftime = "N/A"
+				FEtime = "N/A"
+				FtimeColor = RED
+
+				if not times[1] == None:
+					Ftime = times[1].strftime('%H:%M:%S')
+					FEtime = times[2].strftime('%H:%M:%S')
+					FtimeColor = GREEN
+
+				ndWO_SO = pygame.font.Font('freesansbold.ttf',20).render(workOrder,False, GREEN)
+				ndWO_Rect = ndWO_SO.get_rect()
+				ndWO_Rect.topleft = (5 *BRD_SPACER+max(col_1_Len),5*BRD_SPACER+Header_Rect[3])
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, ndWO_Rect)
+				DISPLAYSURFACE.blit(ndWO_SO,ndWO_Rect)
+
+				ndJS_SO = pygame.font.Font('freesansbold.ttf',20).render(Stime,False, GREEN)
+				ndJS_Rect = ndJS_SO.get_rect()
+				ndJS_Rect.topleft = (ndWO_Rect[0],ndWO_Rect[1]+ndWO_Rect[3]+BRD_SPACER)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, ndJS_Rect)
+				DISPLAYSURFACE.blit(ndJS_SO,ndJS_Rect)
+
+				ndJE_SO = pygame.font.Font('freesansbold.ttf',20).render(Etime,False, GREEN)
+				ndJE_Rect = ndJE_SO.get_rect()
+				ndJE_Rect.topleft = (ndWO_Rect[0],ndJS_Rect[1]+ndJS_Rect[3]+BRD_SPACER)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, ndJE_Rect)
+				DISPLAYSURFACE.blit(ndJE_SO,ndJE_Rect)
+
+				ndFS_SO = pygame.font.Font('freesansbold.ttf',20).render(Ftime,False, FtimeColor)
+				ndFS_Rect = ndFS_SO.get_rect()
+				ndFS_Rect.topleft = (ndWO_Rect[0],ndJE_Rect[1]+ndJE_Rect[3]+BRD_SPACER)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, ndFS_Rect)
+				DISPLAYSURFACE.blit(ndFS_SO,ndFS_Rect)
+
+				ndFE_SO = pygame.font.Font('freesansbold.ttf',20).render(FEtime,False, FtimeColor)
+				ndFE_Rect = ndFE_SO.get_rect()
+				ndFE_Rect.topleft = (ndWO_Rect[0],ndFS_Rect[1]+ndFS_Rect[3]+BRD_SPACER)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, ndFE_Rect)
+				DISPLAYSURFACE.blit(ndFE_SO,ndFE_Rect)
+
+				#<<< LOWER INFO ---- LEATNESS---------------------------------------------------
+				#--------------------------------------------------------------------------------------
+
+				yoffness = 2
+
+				cWD_SO = pygame.font.Font('freesansbold.ttf',15).render("Container Tare Weight(g):",False, WHITE)
+				cWD_Rect = cWD_SO.get_rect()
+				cWD_Rect.topleft = (6 *BRD_SPACER,Header2_Rect[1]+Header2_Rect[3]+BRD_SPACER)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, cWD_Rect)
+				DISPLAYSURFACE.blit(cWD_SO,cWD_Rect)
+
+				cV_SO = pygame.font.Font('freesansbold.ttf',15).render("Container Volume(ml):",False, WHITE)
+				cV_Rect = cV_SO.get_rect()
+				cV_Rect.topleft = (cWD_Rect[0],yoffness+cWD_Rect[1]+cWD_Rect[3]+BRD_SPACER)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, cV_Rect)
+				DISPLAYSURFACE.blit(cV_SO,cV_Rect)
+
+				cW_SO = pygame.font.Font('freesansbold.ttf',15).render("Container Weight(g):",False, WHITE)
+				cW_Rect = cW_SO.get_rect()
+				cW_Rect.topleft = (cV_Rect[0],(2*yoffness)+cV_Rect[1]+cV_Rect[3]+BRD_SPACER)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, cW_Rect)
+				DISPLAYSURFACE.blit(cW_SO,cW_Rect)
+
+				cC_SO = pygame.font.Font('freesansbold.ttf',15).render("Container Cosmetic(g):",False, WHITE)
+				cC_Rect = cC_SO.get_rect()
+				cC_Rect.topleft = (cW_Rect[0],(3*yoffness)+cW_Rect[1]+cW_Rect[3]+BRD_SPACER)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, cC_Rect)
+				DISPLAYSURFACE.blit(cC_SO,cC_Rect)
+
+			elif GUI_STATE == 9.2 or GUI_STATE == 9.3 or GUI_STATE == 9.4:
+
+				buttonADD.visible = True
+				buttonBack.visible = True
+
+				pygame.draw.rect(DISPLAYSURFACE, BLUE, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER)))
+				curdict = None
+
+				startx,starty = 0,0
+				columbsFont = pygame.font.Font('freesansbold.ttf',15)
+
+
+				if GUI_STATE == 9.2:
+					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO Batch Weights_____",False, WHITE)
+					curdict = cur_AL.BatchInfo
+
+				elif GUI_STATE == 9.3:
+					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO Pallets_____",False, WHITE)
+					curdict = cur_AL.PalletInfo
+
+				elif GUI_STATE == 9.4:
+					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO QC Samples_____",False, WHITE)
+					curdict = cur_AL.QCInfo
+
+ 				count = 1
+				for header in curdict["INIT"]:
+
+					#Used for eyeing allighnment
+					#pygame.draw.rect(DISPLAYSURFACE, GREEN, ((count*((WINDOWWIDTH-(BRD_SPACER*2))/(len(curdict["INIT"])+1)))-(BRD_SPACER/2)+BRD_SPACER,0,(BRD_SPACER),(WINDOWHEIGHT)))
+
+					sub_Header_SO = pygame.font.Font('freesansbold.ttf',15).render("_____"+header+"_____",False, ORANGE)
+					sub_Header_Rect = sub_Header_SO.get_rect()
+					sub_Header_Rect.topleft = ((count*((WINDOWWIDTH-(BRD_SPACER*2))/(len(curdict["INIT"])+1)))-(sub_Header_Rect[2]/2.0),100)
+
+					pygame.draw.rect(DISPLAYSURFACE, BLUE, sub_Header_Rect)
+					DISPLAYSURFACE.blit(sub_Header_SO,sub_Header_Rect)
+
+					count+=1
+
+				Header_Rect = Header_SO.get_rect()
+				Header_Rect.topleft = (WINDOWWIDTH/2-Header_Rect[2]/2,BRD_SPACER*2)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLUE, Header_Rect)
+				DISPLAYSURFACE.blit(Header_SO,Header_Rect)
+
 		else:
 
 			#Kill The buttons here
@@ -1210,8 +1633,12 @@ def main():
 			buttonMachineUp.visible = True
 			buttonAdjustCount.visible = True
 			buttonShutdown.visible = True
-			ShowSchedual.visible = True
+			FillSheet.visible = True
 
+			buttonADD.visible = False
+			buttonBack.visible = False
+
+			buttonPackOff.visible = False
 			buttonTotalCount.visible = False
 			buttonBoxCount.visible = False
 
@@ -1223,7 +1650,13 @@ def main():
 
 			for key in stillLoggedIn.keys():
 				stillLoggedIn[key].visible = False
-			
+
+			for key in fillSheetButtons.keys():
+				fillSheetButtons[key].visible = False
+
+			for key in fillSheetSwitcherButtons.keys():
+				fillSheetSwitcherButtons[key].visible = False
+
 			buttonConfirm.visible = False
 			buttonCancle.visible = False
 			buttonYes.visible = False
@@ -1235,17 +1668,17 @@ def main():
 			pygame.draw.rect(DISPLAYSURFACE, BLACK, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER))) #<--- Overlay Black Text Area
 
 			#Draw Top Left Box
-			pygame.draw.rect(DISPLAYSURFACE, GREY, (BRD_SPACER,BRD_SPACER, IDSIZE + BRD_SPACER, ((WINDOWHEIGHT-(2*BRD_SPACER))/5)-2*BRD_SPACER))
-			pygame.draw.rect(DISPLAYSURFACE, BLACK, (BRD_SPACER,BRD_SPACER, IDSIZE, ((WINDOWHEIGHT-(2*BRD_SPACER))/5)-3*BRD_SPACER))
+			pygame.draw.rect(DISPLAYSURFACE, GREY, (BRD_SPACER, BRD_SPACER, IDSIZE + BRD_SPACER, ((WINDOWHEIGHT-(2*BRD_SPACER))/6)-2*BRD_SPACER))
+			pygame.draw.rect(DISPLAYSURFACE, BLACK, (BRD_SPACER, BRD_SPACER, IDSIZE, ((WINDOWHEIGHT-(2*BRD_SPACER))/6)-3*BRD_SPACER))
 
 			#Machine ID Number (Shown in top left corner)
 			if cur_AL.getCurrentState()[1] == None or not cur_AL.getCurrentState()[1]:
-				#Paint it Red	
+				#Paint it Red
 				MachineID_SO = fontObjectMN.render(str(cur_AL.getMachineID()),False, RED)
 			else:
 				#Paint it Green
 				MachineID_SO = fontObjectMN.render(str(cur_AL.getMachineID()),False, GREEN)
-			
+
 			#Creates and draws ID Numbers
 			MachineID_Rect = MachineID_SO.get_rect()
 			MachineID_Rect.topleft = (BRD_SPACER+((IDSIZE/2)-(MachineID_Rect[2]/2)),BRD_SPACER)
@@ -1261,7 +1694,7 @@ def main():
 					box_msg = str(sum(counts[2]))+'('+str(counts[3])+')'
 				else:
 					box_msg = str(sum(counts[2]))
-					
+
 				fail_msg = str(counts[1])
 
 			else:
@@ -1273,7 +1706,7 @@ def main():
 			TotalParts_DyMSG_SO = fontObjectDefault.render(total_msg,False, countColor)
 			TotalParts_DyMSG_Rect = TotalParts_DyMSG_SO.get_rect()
 			TotalParts_DyMSG_Rect.topleft = (TotalBoxs_MSG_Rect[0]+TotalBoxs_MSG_Rect[2]+TXT_SPACER,MachineStatus_Rect[1]+MachineStatus_Rect[3]+TXT_SPACER)
-			
+
 			dynamicContent.append((TotalParts_DyMSG_SO,TotalParts_DyMSG_Rect))
 
 			TotalBoxs_DyMSG_SO = fontObjectDefault.render(box_msg,False, countColor)
@@ -1337,7 +1770,7 @@ def main():
 			DY_MachinCurWO_SO = fontObjectDefault.render(wo_msg,False, DyTxtColor)
 			DY_MachinCurWO_Rect = DY_MachinCurWO_SO.get_rect()
 			DY_MachinCurWO_Rect.topleft = (DynamicStartPos,MachineTag_Rect[1]+MachineTag_Rect[3]+TXT_SPACER)
-			
+
 			DyMessageLengths.append(DY_MachinCurWO_Rect[0]+DY_MachinCurWO_Rect[2])
 			dynamicContent.append((DY_MachinCurWO_SO,DY_MachinCurWO_Rect))
 
@@ -1345,7 +1778,7 @@ def main():
 			DY_MachineRun_SO = fontObjectDefault.render(runTime_msg,False, DyTxtColor)
 			DY_MachineRun_Rect = DY_MachineRun_SO.get_rect()
 			DY_MachineRun_Rect.topleft = (DynamicStartPos,DY_MachinCurWO_Rect[1]+DY_MachinCurWO_Rect[3])
-			
+
 			#<<<<<<<<<<<<<<<<<<<<<<
 			DyMessageLengths.append(DY_MachineRun_Rect[0]+DY_MachineRun_Rect[2])
 			dynamicContent.append((DY_MachineRun_SO,DY_MachineRun_Rect))
@@ -1354,7 +1787,7 @@ def main():
 			DY_MachineStatus_SO = fontObjectDefault.render(curState_msg,False, DyTxtColor)
 			DY_MachineStatus_Rect = DY_MachineStatus_SO.get_rect()
 			DY_MachineStatus_Rect.topleft = (DynamicStartPos,DY_MachineRun_Rect[1]+DY_MachineRun_Rect[3])
-			
+
 			DyMessageLengths.append(DY_MachineStatus_Rect[0]+DY_MachineStatus_Rect[2])
 			dynamicContent.append((DY_MachineStatus_SO,DY_MachineStatus_Rect))
 
@@ -1362,14 +1795,14 @@ def main():
 			DY_Hour_PPM_MSG_SO = fontObjectDefault.render(HourPPM_msg,False, GREEN)
 			DY_Hour_PPM_MSG_Rect = DY_Hour_PPM_MSG_SO.get_rect()
 			DY_Hour_PPM_MSG_Rect.topleft = (DynamicStartPos,DY_MachineStatus_Rect[1]+DY_MachineStatus_Rect[3]+TXT_SPACER)
-			
+
 			DyMessageLengths.append(DY_Hour_PPM_MSG_Rect[0]+DY_Hour_PPM_MSG_Rect[2])
 			dynamicContent.append((DY_Hour_PPM_MSG_SO,DY_Hour_PPM_MSG_Rect))
 
 			DY_AVG_PPM_MSG_SO = fontObjectDefault.render(AvgPPM,False, GREEN)
 			DY_AVG_PPM_MSG_Rect = DY_AVG_PPM_MSG_SO.get_rect()
 			DY_AVG_PPM_MSG_Rect.topleft = (DynamicStartPos,DY_Hour_PPM_MSG_Rect[1]+DY_Hour_PPM_MSG_Rect[3])
-			
+
 			DyMessageLengths.append(DY_AVG_PPM_MSG_Rect[0]+DY_AVG_PPM_MSG_Rect[2])
 			dynamicContent.append((DY_AVG_PPM_MSG_SO,DY_AVG_PPM_MSG_Rect))
 
@@ -1511,7 +1944,7 @@ def main():
 			elif dwnTimeReason == 'Break':
 				BreakColor = RED
 				totalColor = RED
-			
+
 			#dynamic maintanance downtime totals
 			Dy_MainDwnTime_SO = fontObjectDefault.render(Maintainance_msg,False, mainColor)
 			Dy_MainDwnTime_Rect = Dy_MainDwnTime_SO.get_rect()
@@ -1552,8 +1985,8 @@ def main():
 			BELOW IS WHERE CURRENT STAFF GET READ IN AND PLACE ON SCREEN
 			--------------------------------------------------------------------------------------------------------------
 			'''
-				
-			count = len(cur_AL.stillLoggedOn()) 
+
+			count = len(cur_AL.stillLoggedOn())
 			staffGap = 10
 			colWidth = []
 			colHeight = []
@@ -1569,7 +2002,7 @@ def main():
 			dynamicContent.append((CStaffTag_SO,CStaffTag_Rect))
 
 			Pos = CStaffTag_Rect[0]+TXT_SPACER, CStaffTag_Rect[1] + CStaffTag_Rect[3]+TXT_SPACER
-			
+
 			for position,curColor in positions:
 				for staff in cur_AL.stillLoggedOn():
 					if staff[1]== position:
@@ -1631,7 +2064,10 @@ def main():
 		buttonOk.draw(DISPLAYSURFACE)
 		buttonTotalCount.draw(DISPLAYSURFACE)
 		buttonBoxCount.draw(DISPLAYSURFACE)
-		ShowSchedual.draw(DISPLAYSURFACE)
+		FillSheet.draw(DISPLAYSURFACE)
+		buttonPackOff.draw(DISPLAYSURFACE)
+		buttonADD.draw(DISPLAYSURFACE)
+		buttonBack.draw(DISPLAYSURFACE)
 
 		#only for remove pane
 		for key in stillLoggedIn.keys():
@@ -1640,6 +2076,12 @@ def main():
 		#Only for bring machine down pain
 		for key in dwnTimeButtons.keys():
 			dwnTimeButtons[key].draw(DISPLAYSURFACE)
+
+		for key in fillSheetButtons.keys():
+			fillSheetButtons[key].draw(DISPLAYSURFACE)
+
+		for key in fillSheetSwitcherButtons.keys():
+			fillSheetSwitcherButtons[key].draw(DISPLAYSURFACE)
 
 		#Draw numpad
 		for key in numPadDic.keys():
