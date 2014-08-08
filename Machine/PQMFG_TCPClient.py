@@ -1,4 +1,6 @@
+import os
 import socket
+import pickle
 from threading import Thread
 from StateMachine import *
 
@@ -175,25 +177,36 @@ class ThreadedTCPNetworkAgent(Thread):
 		#close the damn pipe from this side
 		clientsock.close()
 
-	def sendToServer(self, data, splitter = '////'):
+	def sendToServer(self, data):
 		succsesss = False
 		try:
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			s.connect((self.FserverIP, self.FserverPort))
 
-			for message in data:
-				#print message
-				s.send(message)
-				s.send(splitter)
+			s.send(pickle.dumps(data))
 
 			s.close()
 			succsesss = True
 		except socket.error:
+
 			succsesss = False
-			print "<<<<<<<<<<<<<<<Could not connect to server>>>>>>>>>>>>>>."
-			for message in data:
-				print message
-			print '<<<<<<<<<<<<<<<END>>>>>>>>>>>>>>>>>>>>'
+
+			_fileDirectory = "Logs/"+datetime.datetime.now().strftime("%B_%d_%Y/")
+			_fileName = data[0]["WO"]
+
+			print "__Could not connect to server___"
+			print "Wrote file to: ", _fileDirectory, _fileName
+
+
+
+			if not os.path.isdir(_fileDirectory):
+				os.makedirs(_fileDirectory)
+
+			with open(_fileDirectory+ _fileName + '.pkl', 'wb') as f:
+				pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+
+
+
 		return succsesss
 
 	def getSchedual(self):

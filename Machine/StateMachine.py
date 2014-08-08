@@ -747,149 +747,30 @@ class ActivityLogger:
 	def getFormatedLog(self, stillRunning = False):
 
 		#Initializes the log array as None (will be used in return later)
-		log = []
+		log = None
 
-		#Checks to see that there is actually a work order being run, before we create the log
 		if not self.current_WO == None:
 
-			#Assighnment of first attribute spots
-			log = [self.current_WO, self.MachineID, self.WO_StartTime.strftime('(%D) @ %H:%M:%S')]
+			_machineVars = {"WO": self.current_WO,
+											"Time Log Created" : datetime.datetime.now(),
+											"Machine ID": self.MachineID,
+											"WO StartTime": self.WO_StartTime,
+											"Total Count": self.totalCount,
+											"Fail Count": self.failCount,
+											"Box Count": self.boxCount,
+											"Peaces Per Box": self.peacesPerBox,
+											"Fill Start": self.FillStart,
+											"Fill End": self.FillEnd,
+											"Line Var Adjustments": self.adjustments,
+											"Maintanance Down Times": self.MaintananceDwnTime,
+											"Inventory Down Time": self.InventoryDwnTime,
+											"Quality Control Down Time": self.QualityControlDwnTime,
+											"Break Down Time": self.BreakDownTime}
 
-			now = datetime.datetime.now()
-
-			#if machine is running Declare, otherwise assume W/O is finished
-			if stillRunning and not self.current_WO == None:
-				log += ['Running '+str(self.currentState)+" "+str((now-self.WO_StartTime).seconds)]
-			else:
-				log += ['Finished: '+now.strftime('(%D) @ %H:%M:%S')]
-
-			#add it to the current return log
-			log +=[str(sum(self.totalCount)), str(self.totalCount),str(sum(self.boxCount)), str(self.boxCount),str(self.failCount)]
-
-			if not self.peacesPerBox == None:
-				log +=[str(self.peacesPerBox),'']
-			else:
-				log +=['null','']
-			#get keys from working employee dictionary
-			empKeys = self.EmpWorkingDic.keys()
-
-			# temporrary storage arrays that help store all employees
-			lineworkers = ['----Line Worker(s)----']
-			lineleaders = ['----Line Leader(s)----']
-			lineMechanics = ['----Mechanic(s)----']
-
-			#heres the methodolagy for itterating over employee dictionary
-			for key in empKeys:
-				if(self.EmpWorkingDic[key][0]=="Line_Leader"):
-					EmployOutputString = "" #key+": "
-					WasActive = False
-					for x,y in self.EmpWorkingDic[key][1]:
-						if y == None:
-							y =  now
-
-						if y > self.WO_StartTime:
-
-							if not WasActive:
-								EmployOutputString = key+": "
-								WasActive = True
-							EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
-
-					if WasActive:
-						lineleaders.append(EmployOutputString)
-
-				elif(self.EmpWorkingDic[key][0]=="Line_Worker"):
-					EmployOutputString = "" #key+": "
-					WasActive = False
-					for x,y in self.EmpWorkingDic[key][1]:
-						if y == None:
-							y =  now
-
-						if y > self.WO_StartTime:
-							if not WasActive:
-								EmployOutputString = key+": "
-								WasActive = True
-							EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
-
-					if WasActive:
-						lineworkers.append(EmployOutputString)
-
-				elif(self.EmpWorkingDic[key][0]=="Mechanic"):
-					EmployOutputString = "" #key+": "
-					WasActive = False
-					for x,y in self.EmpWorkingDic[key][1]:
-						if y == None:
-							y =  now
-
-						if y > self.WO_StartTime:
-							if not WasActive:
-								EmployOutputString = key+": "
-								WasActive = True
-							EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
-					if WasActive:
-						lineMechanics.append(EmployOutputString)
-
-			#add the newly created lis together and append them to the current log file
-			log+= lineleaders+[""]+lineworkers+[""]+lineMechanics+[""]
-
-			dwntime = self.getDwnTimesTotals()
-
-			#(Totals_Maitenance, Totals_Inventory, Totals_Quality_Control, Totals_Break)
-
-			FormattedTotal = self.formatDiffDateTime(sum(dwntime))
-			FormattedMain = self.formatDiffDateTime(dwntime[0])
-			FormattedInv = self.formatDiffDateTime(dwntime[1])
-			FormattedQuality = self.formatDiffDateTime(dwntime[2])
-			FormattedBreak = self.formatDiffDateTime(dwntime[3])
-
-			'''
-			self.MaintananceDwnTime = []
-			self.InventoryDwnTime = []
-			self.QualityControlDwnTime = []
-			self.BreakDownTime = []
-			'''
-
-			adjustMessage=[]
-			for adjCounts in self.adjustments:
-				adjustMessage+= ['('+str(adjCounts[0])+', '+str(adjCounts[1])+', '+str(adjCounts[2])+', '+adjCounts[3].strftime('%H:%M:%S')+')']
-
-			log+=['---Adjustments----']+adjustMessage+['']
+			log = (_machineVars, self.EmpWorkingDic)
 
 
-			maintainMsg = []
-			for start,end in self.MaintananceDwnTime:
-				if not end == None:
-					maintainMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
-				else:
-					maintainMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
 
-			InventoryMsg = []
-			for start,end in self.InventoryDwnTime:
-				if not end == None:
-					InventoryMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
-				else:
-					InventoryMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
-
-			QualityControlMsg = []
-			for start,end in self.QualityControlDwnTime:
-				if not end == None:
-					QualityControlMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
-				else:
-					QualityControlMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
-
-			breakMsg = []
-			for start,end in self.BreakDownTime:
-				if not end == None:
-					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
-				else:
-					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
-
-			log+=['---Down Time----']+['Maintanance> '+str(FormattedMain[0])+':'+str(FormattedMain[1])+':'+str(FormattedMain[2])]+maintainMsg+[""]
-			log+=['Inventory> '+str(FormattedInv[0])+':'+str(FormattedInv[1])+':'+str(FormattedInv[2])]+InventoryMsg+[""]
-			log+=['Quality_Control> '+str(FormattedQuality[0])+':'+str(FormattedQuality[1])+':'+str(FormattedQuality[2])]+QualityControlMsg+[""]
-			log+=['Break> '+str(FormattedBreak[0])+':'+str(FormattedBreak[1])+':'+str(FormattedBreak[2])]+breakMsg+[""]
-			log+=['Total> '+str(FormattedTotal[0])+':'+str(FormattedTotal[1])+':'+str(FormattedTotal[2])]
-		else:
-			log += ["No WO Log Avalible, Machine is Idle"]
 		return log
 
 	def formatDiffDateTime(self, TimeDiff):
