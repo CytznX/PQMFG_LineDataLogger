@@ -11,6 +11,8 @@ import time, datetime, string, socket
 import PQMFG_TCPClient
 import Queue
 
+from threading import Thread
+
 import TextWriter as tw
 
 if rpi:
@@ -479,53 +481,33 @@ class ActivityLogger:
 				self.MaintananceDwnTime.append(((datetime.datetime.now(),ID), None))
 				self.currentReason = Reason
 
-				tw.sendTxtMsg("Machine: "
-											+str(self.MachineID)
-											+" Running Wo: "
-											+str(self.current_WO)
-											+" Went down for: "
-											+ str(Reason)
-											+ " @ "
-											+datetime.datetime.now().strftime('%H:%M:%S'))
+				_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Went down for: " +  str(Reason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
+
+				Thread(target=tw.sendTxtMsg, args=(_args,)).start()
 
 			elif Reason == 'Inventory':
 				self.InventoryDwnTime.append(((datetime.datetime.now(),ID), None))
 				self.currentReason = Reason
 
-				tw.sendTxtMsg("Machine: "
-							+str(self.MachineID)
-							+" Running Wo: "
-							+str(self.current_WO)
-							+" Went down for: "
-							+ str(Reason)
-							+ " @ "
-							+datetime.datetime.now().strftime('%H:%M:%S'))
+				_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Went down for: " +  str(Reason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
+
+				Thread(target=tw.sendTxtMsg, args=(_args,)).start()
 
 			elif Reason == 'Quality_Control':
 				self.QualityControlDwnTime.append(((datetime.datetime.now(),ID), None))
 				self.currentReason = Reason
 
-				tw.sendTxtMsg("Machine: "
-							+str(self.MachineID)
-							+" Running Wo: "
-							+str(self.current_WO)
-							+" Went down for: "
-							+ str(Reason)
-							+ " @ "
-							+datetime.datetime.now().strftime('%H:%M:%S'))
+				_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Went down for: " +  str(Reason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
+
+				Thread(target=tw.sendTxtMsg, args=(_args,)).start()
 
 			elif Reason == 'Break':
 				self.BreakDownTime.append(((datetime.datetime.now(),ID), None))
 				self.currentReason = Reason
 
-				tw.sendTxtMsg("Machine: "
-							+str(self.MachineID)
-							+" Running Wo: "
-							+str(self.current_WO)
-							+" Went down for: "
-							+ str(Reason)
-							+ " @ "
-							+datetime.datetime.now().strftime('%H:%M:%S'))
+				_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Went down for: " +  str(Reason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
+
+				Thread(target=tw.sendTxtMsg, args=(_args,)).start()
 
 		#(if False)
 		elif not self.currentState:
@@ -541,56 +523,36 @@ class ActivityLogger:
 				placeholder = self.MaintananceDwnTime[-1][0]
 				self.MaintananceDwnTime[-1] = (placeholder, (datetime.datetime.now(),ID))
 
-				tw.sendTxtMsg("Machine: "
-							+str(self.MachineID)
-							+" Running Wo: "
-							+str(self.current_WO)
-							+" Came Back Up from: "
-							+ str(self.currentReason)
-							+ " @ "
-							+datetime.datetime.now().strftime('%H:%M:%S'))
+				_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Came Back Up from: " + str(self.currentReason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
+
+				Thread(target=tw.sendTxtMsg, args=(_args,)).start()
 
 			elif self.currentReason == 'Inventory':
 				#Close Inventory Downtime
 				placeholder = self.InventoryDwnTime[-1][0]
 				self.InventoryDwnTime[-1] = (placeholder, (datetime.datetime.now(),ID))
 
-				tw.sendTxtMsg("Machine: "
-							+str(self.MachineID)
-							+" Running Wo: "
-							+str(self.current_WO)
-							+" Came Back Up from: "
-							+ str(self.currentReason)
-							+ " @ "
-							+datetime.datetime.now().strftime('%H:%M:%S'))
+				_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Came Back Up from: " + str(self.currentReason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
+
+				Thread(target=tw.sendTxtMsg, args=(_args,)).start()
 
 			elif self.currentReason == 'Quality_Control':
 				#Close QualityControlDwnTime Downtime
 				placeholder = self.QualityControlDwnTime[-1][0]
 				self.QualityControlDwnTime[-1] = (placeholder, (datetime.datetime.now(),ID))
 
-				tw.sendTxtMsg("Machine: "
-							+str(self.MachineID)
-							+" Running Wo: "
-							+str(self.current_WO)
-							+" Came Back Up from: "
-							+ str(self.currentReason)
-							+ " @ "
-							+datetime.datetime.now().strftime('%H:%M:%S'))
+				_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Came Back Up from: " + str(self.currentReason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
+
+				Thread(target=tw.sendTxtMsg, args=(_args,)).start()
 
 
 			elif self.currentReason == 'Break':
 				placeholder = self.BreakDownTime[-1][0]
 				self.BreakDownTime[-1] = (placeholder, (datetime.datetime.now(),ID))
 
-				tw.sendTxtMsg("Machine: "
-							+str(self.MachineID)
-							+" Running Wo: "
-							+str(self.current_WO)
-							+" Came Back Up from: "
-							+ str(self.currentReason)
-							+ " @ "
-							+datetime.datetime.now().strftime('%H:%M:%S'))
+				_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Came Back Up from: " + str(self.currentReason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
+
+				Thread(target=tw.sendTxtMsg, args=(_args,)).start()
 
 
 			self.currentReason = None
@@ -846,10 +808,15 @@ class ActivityLogger:
 											"Quality Control Down Time": self.QualityControlDwnTime,
 											"Break Down Time": self.BreakDownTime}
 
+			_dwntime = self.getDwnTimesTotals()
+			_dwnTimes = {"FormattedTotal": self.formatDiffDateTime(sum(_dwntime)),
+										"FormattedMain": self.formatDiffDateTime(_dwntime[0]),
+										"FormattedInv": self.formatDiffDateTime(_dwntime[1]),
+										"FormattedQuality": self.formatDiffDateTime(_dwntime[2]),
+										"FormattedBreak": self.formatDiffDateTime(_dwntime[3])}
 
-		log = (_machineVars, self.EmpWorkingDic, self._BatchInfo, self._PalletInfo, self._QCInfo, self.fillSheet)
 
-
+			log = (_machineVars, self.EmpWorkingDic, _dwnTimes, self.fillSheet, self._BatchInfo, self._PalletInfo, self._QCInfo, )
 
 		return log
 
