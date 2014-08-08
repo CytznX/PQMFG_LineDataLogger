@@ -11,6 +11,8 @@ import time, datetime, string, socket
 import PQMFG_TCPClient
 import Queue
 
+import TextWriter as tw
+
 if rpi:
 	import RPi.GPIO as GPIO
 
@@ -477,17 +479,53 @@ class ActivityLogger:
 				self.MaintananceDwnTime.append(((datetime.datetime.now(),ID), None))
 				self.currentReason = Reason
 
+				tw.sendTxtMsg("Machine: "
+											+str(self.MachineID)
+											+" Running Wo: "
+											+str(self.current_WO)
+											+" Went down for: "
+											+ str(Reason)
+											+ " @ "
+											+datetime.datetime.now().strftime('%H:%M:%S'))
+
 			elif Reason == 'Inventory':
 				self.InventoryDwnTime.append(((datetime.datetime.now(),ID), None))
 				self.currentReason = Reason
+
+				tw.sendTxtMsg("Machine: "
+							+str(self.MachineID)
+							+" Running Wo: "
+							+str(self.current_WO)
+							+" Went down for: "
+							+ str(Reason)
+							+ " @ "
+							+datetime.datetime.now().strftime('%H:%M:%S'))
 
 			elif Reason == 'Quality_Control':
 				self.QualityControlDwnTime.append(((datetime.datetime.now(),ID), None))
 				self.currentReason = Reason
 
+				tw.sendTxtMsg("Machine: "
+							+str(self.MachineID)
+							+" Running Wo: "
+							+str(self.current_WO)
+							+" Went down for: "
+							+ str(Reason)
+							+ " @ "
+							+datetime.datetime.now().strftime('%H:%M:%S'))
+
 			elif Reason == 'Break':
 				self.BreakDownTime.append(((datetime.datetime.now(),ID), None))
 				self.currentReason = Reason
+
+				tw.sendTxtMsg("Machine: "
+							+str(self.MachineID)
+							+" Running Wo: "
+							+str(self.current_WO)
+							+" Went down for: "
+							+ str(Reason)
+							+ " @ "
+							+datetime.datetime.now().strftime('%H:%M:%S'))
 
 		#(if False)
 		elif not self.currentState:
@@ -503,19 +541,57 @@ class ActivityLogger:
 				placeholder = self.MaintananceDwnTime[-1][0]
 				self.MaintananceDwnTime[-1] = (placeholder, (datetime.datetime.now(),ID))
 
+				tw.sendTxtMsg("Machine: "
+							+str(self.MachineID)
+							+" Running Wo: "
+							+str(self.current_WO)
+							+" Came Back Up from: "
+							+ str(self.currentReason)
+							+ " @ "
+							+datetime.datetime.now().strftime('%H:%M:%S'))
+
 			elif self.currentReason == 'Inventory':
 				#Close Inventory Downtime
 				placeholder = self.InventoryDwnTime[-1][0]
 				self.InventoryDwnTime[-1] = (placeholder, (datetime.datetime.now(),ID))
+
+				tw.sendTxtMsg("Machine: "
+							+str(self.MachineID)
+							+" Running Wo: "
+							+str(self.current_WO)
+							+" Came Back Up from: "
+							+ str(self.currentReason)
+							+ " @ "
+							+datetime.datetime.now().strftime('%H:%M:%S'))
 
 			elif self.currentReason == 'Quality_Control':
 				#Close QualityControlDwnTime Downtime
 				placeholder = self.QualityControlDwnTime[-1][0]
 				self.QualityControlDwnTime[-1] = (placeholder, (datetime.datetime.now(),ID))
 
+				tw.sendTxtMsg("Machine: "
+							+str(self.MachineID)
+							+" Running Wo: "
+							+str(self.current_WO)
+							+" Came Back Up from: "
+							+ str(self.currentReason)
+							+ " @ "
+							+datetime.datetime.now().strftime('%H:%M:%S'))
+
+
 			elif self.currentReason == 'Break':
 				placeholder = self.BreakDownTime[-1][0]
 				self.BreakDownTime[-1] = (placeholder, (datetime.datetime.now(),ID))
+
+				tw.sendTxtMsg("Machine: "
+							+str(self.MachineID)
+							+" Running Wo: "
+							+str(self.current_WO)
+							+" Came Back Up from: "
+							+ str(self.currentReason)
+							+ " @ "
+							+datetime.datetime.now().strftime('%H:%M:%S'))
+
 
 			self.currentReason = None
 
