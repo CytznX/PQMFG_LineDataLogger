@@ -58,7 +58,45 @@ GREY = (200, 200, 200)
 
 _fullscreen = False
 
-#FullScreen
+_24X24_arrow = (               # sized 24x24
+	"XX                      ",
+	"XXX                     ",
+	"XXXX                    ",
+	"XX.XX                   ",
+	"XX..XX                  ",
+	"XX...XX                 ",
+	"XX....XX                ",
+	"XX.....XX               ",
+	"XX......XX              ",
+	"XX.......XX             ",
+	"XX........XX            ",
+	"XX........XXX           ",
+	"XX......XXXXX           ",
+	"XX.XXX..XX              ",
+	"XXXX XX..XX             ",
+	"XX   XX..XX             ",
+	"     XX..XX             ",
+	"      XX..XX            ",
+	"      XX..XX            ",
+	"       XXXX             ",
+	"       XX               ",
+	"                        ",
+	"                        ",
+	"                        ")
+
+_8x8_Dot_arrow = (              # sized 8x8
+	"        ",
+	"        ",
+	"        ",
+	"        ",
+	"        ",
+	"        ",
+	"        ",
+	"        ",)
+
+
+
+#FullScreen... turns out... i didnt need it
 def toggle_fullscreen():
 	screen = pygame.display.get_surface()
 	tmp = screen.convert()
@@ -172,6 +210,15 @@ def main():
 	#Sets screen resolution and title
 	DISPLAYSURFACE = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 	pygame.display.set_caption('PQMFG ActivityLogger ')
+
+	#_x = pygame.mouse.get_cursor()
+	#pygame.mouse.set_cursor( None, None, None, None,)
+	#pygame.cursors.load_xbm("blank.xbm")
+
+
+	_HCURS, _HMASK = pygame.cursors.compile(_8x8_Dot_arrow, black="X", white=".", xor="o")
+	_CURSOR = ((8, 8), (5, 1), _HCURS, _HMASK)
+	pygame.mouse.set_cursor(*_CURSOR)
 
 	if _fullscreen:
 		toggle_fullscreen()
@@ -1626,7 +1673,7 @@ def main():
 					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO QC Samples_____",False, WHITE)
 					curdict = cur_AL.QCInfo
 
- 				count = 1
+				count = 1
 				for header in curdict["INIT"]:
 
 					#Used for eyeing allighnment

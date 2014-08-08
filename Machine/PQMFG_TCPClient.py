@@ -3,8 +3,8 @@ from threading import Thread
 from StateMachine import *
 
 class ThreadedTCPNetworkAgent(Thread):
-	
-	'''Default constructor... Much Love''' 
+
+	'''Default constructor... Much Love'''
 	def __init__(self, ActivityLogger,FserverIP, FserverPort,portNum, BuffSize=1024):
 
 		#Initialize myself as thread... =P
@@ -63,21 +63,21 @@ class ThreadedTCPNetworkAgent(Thread):
 
 				elif command[0] == "#ADD":
 					for x in range(1,len(command)):
-						self.CurLogger.addEmployee(command[x]) 
+						self.CurLogger.addEmployee(command[x])
 					clientsock.send("AKN\n")
 				elif command[0] == "#ADD_C":
 					for x in range(1,len(command)):
-						self.CurLogger.addEmployee(command[x]) 
+						self.CurLogger.addEmployee(command[x])
 					clientsock.send("AKN\n")
 					break
 
 				elif command[0] == "#REMOVE":
 					for x in range(1,len(command)):
-						self.CurLogger.removeEmployee(command[x]) 
+						self.CurLogger.removeEmployee(command[x])
 					clientsock.send("AKN\n")
 				elif command[0] == "#REMOVE_C":
 					for x in range(1,len(command)):
-						self.CurLogger.removeEmployee(command[x]) 
+						self.CurLogger.removeEmployee(command[x])
 					clientsock.send("AKN\n")
 					break
 
@@ -135,15 +135,15 @@ class ThreadedTCPNetworkAgent(Thread):
 				else:
 					clientsock.send("Try Again\n")
 			else:
-				if not data: 
+				if not data:
 					break
 				elif "#END" == data.rstrip():
 					break
 
-				elif "#STATUS" == data.rstrip(): 
+				elif "#STATUS" == data.rstrip():
 					for x in self.CurLogger.getFormatedLog():
 						clientsock.send(x+"\n")
-				elif "#STATUS_C" == data.rstrip(): 
+				elif "#STATUS_C" == data.rstrip():
 					for x in self.CurLogger.getFormatedLog():
 						clientsock.send(x+"\n")
 					break
@@ -177,7 +177,7 @@ class ThreadedTCPNetworkAgent(Thread):
 
 	def sendToServer(self, data, splitter = '////'):
 		succsesss = False
-		try: 
+		try:
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			s.connect((self.FserverIP, self.FserverPort))
 
@@ -242,4 +242,4 @@ class ThreadedTCPNetworkAgent(Thread):
 
 if __name__=='__main__':
 	a = ThreadedTCPNetworkAgent(None,5006)
-	a.start() 
+	a.start()

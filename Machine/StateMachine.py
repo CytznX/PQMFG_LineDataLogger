@@ -4,7 +4,7 @@ This is Version 2.0 of the PQMFG state machine feature improved as well as simpl
 Created By: Maxwell Seifert
 
 '''
-rpi = False 
+rpi = False
 
 #Import the needed moduals
 import time, datetime, string, socket
@@ -57,7 +57,7 @@ class ActivityLogger:
 
 		self._BatchInfo = dict()
 		self._BatchInfo["INIT"] = ["Batch Code","Fill Weight","Total Weight","Total Wt Range"]
-		
+
 		self._PalletInfo = dict()
 		self._PalletInfo["INIT"] = ["Pallet#","Cases","Pcs/Case","Count","Batch#"]
 
@@ -69,7 +69,7 @@ class ActivityLogger:
 
 		#Used for showing messages to users
 		self.Messages = Queue.Queue()
-		
+
 		#Arraylist of what count adjustments took place and when
 		self.adjustments = []
 
@@ -93,15 +93,15 @@ class ActivityLogger:
 			GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 			GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-			# when a falling edge is detected on port 24, regardless of whatever 
+			# when a falling edge is detected on port 24, regardless of whatever
 			# else is happening in the program, the function my_callback will be run
 			GPIO.add_event_detect(24, GPIO.FALLING, callback=self.modCount, bouncetime=100)
 
-			# when a falling edge is detected on port 23, regardless of whatever 
+			# when a falling edge is detected on port 23, regardless of whatever
 			# else is happening in the program, the function my_callback2 will be run
 			# 'bouncetime=300' includes the bounce control written into interrupts2a.py
 			GPIO.add_event_detect(23, GPIO.FALLING, callback=self.modBoxCount, bouncetime=100)
-	
+
 	def release(self):
 		if rpi:
 			GPIO.cleanup()
@@ -118,7 +118,7 @@ class ActivityLogger:
 		self.Messages.put((message,dispTime))
 
 	def getCounts(self):
-		return self.totalCount, self.failCount, self.boxCount, self.peacesPerBox  
+		return self.totalCount, self.failCount, self.boxCount, self.peacesPerBox
 
 	def getMachineID(self):
 		return self.MachineID
@@ -145,7 +145,7 @@ class ActivityLogger:
 			f.close()#close... <3
 			Readfile = True
 
-				#if for some reason we cant open the file 
+				#if for some reason we cant open the file
 		except IOError, e:
 
 			#writes to ErrorLog.txt
@@ -175,13 +175,13 @@ class ActivityLogger:
 		for line in recievedlines:
 			if line.startswith('MachineNumber'):
 				self.MachineID = line.split()[1]
-			
+
 			elif line.startswith('MachinPort'):
 				try:
 					self.port = int(line.split()[1])
 				except ValueError:
 					self.port = 5005
-			
+
 			elif line.startswith('ServerIP'):
 				self.FserverIP = line.split()[1]
 
@@ -203,14 +203,14 @@ class ActivityLogger:
 			lines = f.readlines()#read
 			f.close()#close... <3
 
-		#if for some reason we cant open the file 
+		#if for some reason we cant open the file
 		except IOError, e:
 
 			#writes to ErrorLog.txt
 			logfile = open("/home/pi/PQMFG/ErrorLog.txt", "a")
 			#Print out an ERROR MESSAGE to the terminal
 			logfile.write( "--WARNING--------------------------")
-			logfile.write( "\nTime: "+ str(datetime.date.today()) +" @ " 
+			logfile.write( "\nTime: "+ str(datetime.date.today()) +" @ "
 									+ str(time.localtime()[3])+":"
 									+ str(time.localtime()[4]))
 
@@ -226,13 +226,13 @@ class ActivityLogger:
 
 		#return the newly created didctionary
 		return returnedDictionary
-	
+
 	'''
 	Add Employee to working dict
 	'''
 	def addEmployee(self, EmployName = '-1' , Id = 'Line_Worker'):
 
-		#used as return to determine succsess of operation 
+		#used as return to determine succsess of operation
 		result = False
 
 		#If the employee is a line leader or mechanic grab the actual name
@@ -246,8 +246,8 @@ class ActivityLogger:
 
 			#Create new key value if none is found
 			self.EmpWorkingDic[EmployName]=(Id,[(datetime.datetime.now(), None)])
-			result = True 
-		
+			result = True
+
 		#if the worker has already been logged in ignore loggin request and return false
 		elif self.EmpWorkingDic[EmployName][1][-1][1] == None:
 
@@ -259,16 +259,16 @@ class ActivityLogger:
 
 			#else add new loggin to dict()
 			self.EmpWorkingDic[EmployName][1].append((datetime.datetime.now(),None))
-			result = True 
+			result = True
 
 		return result
-	
+
 	'''
-	Logs employee out of working dictionary 
+	Logs employee out of working dictionary
 	'''
 	def removeEmployee(self, EmployName = '-1'):
 
-		#used as return to determine succsess of operation 
+		#used as return to determine succsess of operation
 		result = False
 
 		#If the employee is a line leader or mechanic grab the actual name
@@ -288,7 +288,7 @@ class ActivityLogger:
 		return result
 
 	'''
-	Logs employee out of working dictionary 
+	Logs employee out of working dictionary
 	'''
 	def getName(self, ID):
 		if ID in self.EmployeeRef:
@@ -302,7 +302,7 @@ class ActivityLogger:
 		#The current employees that are in dictionary file
 		curentkeys = self.EmpWorkingDic.keys()
 
-		#The ToBeReturned list that will contain all employees that 
+		#The ToBeReturned list that will contain all employees that
 		stillLoggedOn =[]
 
 		#iterates over all employees and looks for the ones with no logout time
@@ -314,7 +314,7 @@ class ActivityLogger:
 		return stillLoggedOn
 
 	'''
-	Used to change the current workorder that is being run on the machine 
+	Used to change the current workorder that is being run on the machine
 	'''
 	def changeCurrentWO(self, WO_Name, SavePrevious = True):
 		connected = False
@@ -324,7 +324,7 @@ class ActivityLogger:
 
 			'''First Send all relivant OLD data via TCP to server'''
 			connected = self.CurrentTCPServer.sendToServer(self.getFormatedLog())
-			
+
 		#Current WO that is being run
 		self.current_WO = WO_Name
 
@@ -341,7 +341,7 @@ class ActivityLogger:
 		self.modCounter = 0
 		self.modBoxCounter = 0
 		self.totalCount = [0]
-		self.failCount = 0		
+		self.failCount = 0
 		self.boxCount = [0]
 		self.peacesPerBox = None
 		self.FillStart = None
@@ -349,7 +349,7 @@ class ActivityLogger:
 
 		self._BatchInfo = dict()
 		self._BatchInfo["INIT"] = ["Batch Code","Fill Weight","Total Weight","Total Wt Range"]
-		
+
 		self._PalletInfo = dict()
 		self._PalletInfo["INIT"] = ["Pallet#","Cases","Pcs/Case","Count","Batch#"]
 
@@ -421,7 +421,7 @@ class ActivityLogger:
 
 			self._BatchInfo = dict()
 			self._BatchInfo["INIT"] = ["Batch Code","Fill Weight","Total Weight","Total Wt Range"]
-		
+
 			self._PalletInfo = dict()
 			self._PalletInfo["INIT"] = ["Pallet#","Cases","Pcs/Case","Count","Batch#"]
 
@@ -481,7 +481,7 @@ class ActivityLogger:
 			elif Reason == 'Quality_Control':
 				self.QualityControlDwnTime.append(((datetime.datetime.now(),ID), None))
 				self.currentReason = Reason
-			
+
 			elif Reason == 'Break':
 				self.BreakDownTime.append(((datetime.datetime.now(),ID), None))
 				self.currentReason = Reason
@@ -509,7 +509,7 @@ class ActivityLogger:
 				#Close QualityControlDwnTime Downtime
 				placeholder = self.QualityControlDwnTime[-1][0]
 				self.QualityControlDwnTime[-1] = (placeholder, (datetime.datetime.now(),ID))
-			
+
 			elif self.currentReason == 'Break':
 				placeholder = self.BreakDownTime[-1][0]
 				self.BreakDownTime[-1] = (placeholder, (datetime.datetime.now(),ID))
@@ -542,7 +542,7 @@ class ActivityLogger:
 			self.modBoxCounter+=1
 			if self.modBoxCounter%2 == 0:
 				self.inc_CurBoxCount(event = event)
-	
+
 	def inc_CurTotalCount(self, event = None, amount = 1, force = False, ID = None):
 
 		incrementSucssful = False
@@ -553,7 +553,7 @@ class ActivityLogger:
 
 				if self.FillStart == None:
 					self.FillStart = datetime.datetime.now()
-					
+
 				self.FillEnd = datetime.datetime.now()
 
 				#If more than a hour has passed start new tally and reset clock
@@ -588,7 +588,7 @@ class ActivityLogger:
 	Used to Increment the current fail count on running work order
 	'''
 	def refreshFailCount(self,  event = None, force = False):
-		
+
 		decrementSucssful = False
 
 		if not self.current_WO == None and (not self.currentState == False or force):
@@ -610,7 +610,7 @@ class ActivityLogger:
 		return decrementSucssful
 
 	def inc_CurBoxCount(self,  event = None, amount =1, force = False, ID = None):
-		
+
 		decrementSucssful = False
 
 		if not self.current_WO == None and (not self.currentState == False or force):
@@ -660,7 +660,7 @@ class ActivityLogger:
 
 		return runTime
 
-	#return the Average PPM of all parts 
+	#return the Average PPM of all parts
 	def getCurrentRunningPassAvg(self, hourly = False):
 
 		curAvg = None
@@ -676,7 +676,7 @@ class ActivityLogger:
 
 					curAvg = peacesPacked/((datetime.datetime.now()-self.hourdecrement).seconds/60.0)
 
-					
+
 				else:
 					if not (self.peacesPerBox == None or self.peacesPerBox == 0):
 						peacesPacked = sum(self.boxCount)*self.peacesPerBox
@@ -740,7 +740,7 @@ class ActivityLogger:
 			else:
 				end = dwnTimes[1][0]
 
-			Totals_Break += (end-start).seconds			
+			Totals_Break += (end-start).seconds
 
 		return (Totals_Maitenance, Totals_Inventory, Totals_Quality_Control, Totals_Break)
 
@@ -772,13 +772,13 @@ class ActivityLogger:
 				log +=['null','']
 			#get keys from working employee dictionary
 			empKeys = self.EmpWorkingDic.keys()
-			
-			# temporrary storage arrays that help store all employees 
+
+			# temporrary storage arrays that help store all employees
 			lineworkers = ['----Line Worker(s)----']
 			lineleaders = ['----Line Leader(s)----']
 			lineMechanics = ['----Mechanic(s)----']
 
-			#heres the methodolagy for itterating over employee dictionary 
+			#heres the methodolagy for itterating over employee dictionary
 			for key in empKeys:
 				if(self.EmpWorkingDic[key][0]=="Line_Leader"):
 					EmployOutputString = "" #key+": "
@@ -788,7 +788,7 @@ class ActivityLogger:
 							y =  now
 
 						if y > self.WO_StartTime:
-							
+
 							if not WasActive:
 								EmployOutputString = key+": "
 								WasActive = True
@@ -850,8 +850,8 @@ class ActivityLogger:
 
 			adjustMessage=[]
 			for adjCounts in self.adjustments:
-				adjustMessage+= ['('+str(adjCounts[0])+', '+str(adjCounts[1])+', '+str(adjCounts[2])+', '+adjCounts[3].strftime('%H:%M:%S')+')'] 
-				
+				adjustMessage+= ['('+str(adjCounts[0])+', '+str(adjCounts[1])+', '+str(adjCounts[2])+', '+adjCounts[3].strftime('%H:%M:%S')+')']
+
 			log+=['---Adjustments----']+adjustMessage+['']
 
 
@@ -859,28 +859,28 @@ class ActivityLogger:
 			for start,end in self.MaintananceDwnTime:
 				if not end == None:
 					maintainMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
-				else: 
+				else:
 					maintainMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
 
 			InventoryMsg = []
 			for start,end in self.InventoryDwnTime:
 				if not end == None:
 					InventoryMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
-				else: 
+				else:
 					InventoryMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
 
 			QualityControlMsg = []
 			for start,end in self.QualityControlDwnTime:
 				if not end == None:
 					QualityControlMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
-				else: 
+				else:
 					QualityControlMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
 
 			breakMsg = []
 			for start,end in self.BreakDownTime:
 				if not end == None:
 					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
-				else: 
+				else:
 					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
 
 			log+=['---Down Time----']+['Maintanance> '+str(FormattedMain[0])+':'+str(FormattedMain[1])+':'+str(FormattedMain[2])]+maintainMsg+[""]
