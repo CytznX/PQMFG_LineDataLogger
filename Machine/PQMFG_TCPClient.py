@@ -197,15 +197,11 @@ class ThreadedTCPNetworkAgent(Thread):
 			print "__Could not connect to server___"
 			print "Wrote file to: ", _fileDirectory, _fileName
 
-
-
 			if not os.path.isdir(_fileDirectory):
 				os.makedirs(_fileDirectory)
 
-			with open(_fileDirectory+ _fileName + '.pkl', 'wb') as f:
+			with open(_fileDirectory + _fileName + '.pkl', 'wb') as f:
 				pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
-
-
 
 		return succsesss
 

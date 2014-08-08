@@ -219,6 +219,8 @@ def main():
 	currentMsgDisp = None
 	beenClicked = None
 
+	FillSheetCurdict = None
+
 	#Sets screen resolution and title
 	DISPLAYSURFACE = pygame.display.set_mode((WINDOWWIDTH, WINDOWHEIGHT))
 	pygame.display.set_caption('PQMFG ActivityLogger ')
@@ -237,10 +239,10 @@ def main():
 
 	#Static Message stings & Deault/header fonts
 	#---------------------------------------------------------------------------------------------------
-	fontObjectSubscript = pygame.font.Font('freesansbold.ttf',10)
-	fontObjectDefault = pygame.font.Font('freesansbold.ttf',16)
-	fontObjectHeader = pygame.font.Font('freesansbold.ttf',22)
-	fontObjectMN = pygame.font.Font('freesansbold.ttf',75)
+	fontObjectSubscript = pygame.font.Font('freesansbold.ttf', 10)
+	fontObjectDefault = pygame.font.Font('freesansbold.ttf', 16)
+	fontObjectHeader = pygame.font.Font('freesansbold.ttf', 22)
+	fontObjectMN = pygame.font.Font('freesansbold.ttf', 75)
 
 	MachinWO_Msg = "Current WO#: "
 	MachineStatus_Msg = "Line Status: "
@@ -434,7 +436,6 @@ def main():
 	numPadDic['-'] = pygbutton.PygButton((numpadCenter -(6*int(0.5*BUTTON_HEIGHT)) , WINDOWHEIGHT-3*BUTTON_HEIGHT- 5*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT), '-')
 	numPadDic['.'] = pygbutton.PygButton((numpadCenter -(6*int(0.5*BUTTON_HEIGHT)) , WINDOWHEIGHT-2*BUTTON_HEIGHT- 4*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT), '.')
 
-
 	#1)Maitenance, 2)Inventory, 3)Quality_Control
 	dwnTimeButtons = dict()
 	dwnTimeButtons['Maitenance'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2-int(0.5*BUTTON_HEIGHT)-BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Maitenance')
@@ -442,7 +443,6 @@ def main():
 	dwnTimeButtons['Quality_Control'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2+int(1.5*BUTTON_HEIGHT)+BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Quality_Control')
 	dwnTimeButtons['Break'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2+int(2.5*BUTTON_HEIGHT)+2*BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Break')
 	dwnTimeButtons['Mid_Cancle'] = pygbutton.PygButton((WINDOWWIDTH/2-BUTTON_WIDTH/2, WINDOWHEIGHT/2+int(3.5*BUTTON_HEIGHT)+3*BRD_SPACER, BUTTON_WIDTH, BUTTON_HEIGHT), 'Cancel')
-
 
 	#Buttons For Filling Sheet
 	fillSheetButtons = dict()
@@ -455,21 +455,28 @@ def main():
 	fillSheetButtons["Simplex#"] = pygbutton.PygButton((WINDOWWIDTH/2+int(2.5*BRD_SPACER)+170,5*BRD_SPACER+250, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
 
 	#pos X and pos y
-	x, y, yoffset = 205,375, 32
+	x, y, yoffset = 275, 460, 38
+	_tmpWidths = BUTTON_WIDTH
 
-	fillSheetButtons["FD_Tare"] = pygbutton.PygButton((6 *BRD_SPACER+x,y+BRD_SPACER, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
-	fillSheetButtons["FD_Volume"] = pygbutton.PygButton((6 *BRD_SPACER+x,yoffset+y+BRD_SPACER, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
-	fillSheetButtons["FD_Weight"] = pygbutton.PygButton((6 *BRD_SPACER+x,(2*yoffset)+y+BRD_SPACER, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
-	fillSheetButtons["FD_Cosmetic"] = pygbutton.PygButton((6 *BRD_SPACER+x,(3*yoffset)+y+BRD_SPACER, BUTTON_WIDTH-20, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["FD_Tare"] = pygbutton.PygButton((6 *BRD_SPACER+x,y+BRD_SPACER, _tmpWidths, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["FD_Volume"] = pygbutton.PygButton((6 *BRD_SPACER+x,yoffset+y+BRD_SPACER, _tmpWidths, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["FD_Weight"] = pygbutton.PygButton((6 *BRD_SPACER+x,(2*yoffset)+y+BRD_SPACER, _tmpWidths, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["FD_Cosmetic"] = pygbutton.PygButton((6 *BRD_SPACER+x,(3*yoffset)+y+BRD_SPACER, _tmpWidths, BUTTON_HEIGHT/2), 'N/A')
 
-
-	xpo, ypo = WINDOWWIDTH/2 +100, 375
+	xpo, ypo = WINDOWWIDTH/2 + 100, 475
+	_3buttonwidth = BUTTON_WIDTH
 	fillSheetSwitcherButtons = dict()
-	fillSheetSwitcherButtons["Batch Weights"] = pygbutton.PygButton((xpo,ypo, BUTTON_WIDTH*(2/3.0), BUTTON_HEIGHT), 'Batch Weights')
-	fillSheetSwitcherButtons["Pallet Info"] = pygbutton.PygButton((xpo,ypo+BUTTON_HEIGHT+BRD_SPACER, BUTTON_WIDTH*(2/3.0), BUTTON_HEIGHT), 'Pallet Info')
-	fillSheetSwitcherButtons["QC Samples"] = pygbutton.PygButton((xpo,ypo+(2*(BUTTON_HEIGHT+BRD_SPACER)), BUTTON_WIDTH*(2/3.0), BUTTON_HEIGHT), 'QC Samples')
-	fillSheetSwitcherButtons["Back"] = pygbutton.PygButton((xpo+(BUTTON_WIDTH*(2/3.0))+BRD_SPACER,ypo, BUTTON_WIDTH/2, 3*BUTTON_HEIGHT+2*BRD_SPACER), 'Back')
+	fillSheetSwitcherButtons["Batch Weights"] = pygbutton.PygButton((xpo,ypo, _3buttonwidth, BUTTON_HEIGHT), 'Batch Weights')
+	fillSheetSwitcherButtons["Pallet Info"] = pygbutton.PygButton((xpo,ypo+BUTTON_HEIGHT+BRD_SPACER, _3buttonwidth, BUTTON_HEIGHT), 'Pallet Info')
+	fillSheetSwitcherButtons["QC Samples"] = pygbutton.PygButton((xpo,ypo+(2*(BUTTON_HEIGHT+BRD_SPACER)), _3buttonwidth, BUTTON_HEIGHT), 'QC Samples')
+	fillSheetSwitcherButtons["Back"] = pygbutton.PygButton((xpo+(_3buttonwidth)+BRD_SPACER,ypo, BUTTON_WIDTH/2, 3*BUTTON_HEIGHT+2*BRD_SPACER), 'Back')
 	fillSheetSwitcherButtons["Back"].bgcolor = YELLOW
+
+	addColToFillSheet = None
+	initialposition = None
+	fillSheetCollumButtons = dict()
+	fillsheetpressbutton = None
+	fillsheetPrevState = GUI_STATE
 
 	#Itterate over button dictionaries and set there visability to False
 	for key in dwnTimeButtons.keys():
@@ -604,6 +611,57 @@ def main():
 							if key in addRemove:
 								addRemove.remove(key)
 
+				_tmpState = GUI_STATE
+				_needToremove = False, None
+				if GUI_STATE in fillSheetCollumButtons.keys():
+					for key in fillSheetCollumButtons[_tmpState].keys():
+						for key2 in fillSheetCollumButtons[_tmpState][key].keys():
+							if'click' in fillSheetCollumButtons[_tmpState][key][key2].handleEvent(event):
+								if not key2 == "LEDE":
+									fillsheetpressbutton =(key, key2)
+									fillsheetPrevState = GUI_STATE
+									GUI_STATE = 9.5
+								else:
+									_needToremove = True, key
+
+				if _needToremove[0]:
+					del(fillSheetCollumButtons[_tmpState][_needToremove[1]])
+					del(FillSheetCurdict[_needToremove[1]])
+
+				if not addColToFillSheet is None:
+					if'click' in addColToFillSheet.handleEvent(event):
+						if not FillSheetCurdict is None:
+
+							if GUI_STATE in fillSheetCollumButtons.keys():
+								_colNum = len(fillSheetCollumButtons[GUI_STATE].keys())+1
+							else:
+								_colNum = 1
+							_Oldspot = addColToFillSheet.rect
+
+							addColToFillSheet.rect = pygame.Rect(initialposition[0], initialposition[1]+((initialposition[3]+BRD_SPACER)*(_colNum)), initialposition[2], initialposition[3])
+
+							if not GUI_STATE in fillSheetCollumButtons.keys():
+								fillSheetCollumButtons[GUI_STATE] = dict()
+
+							FillSheetCurdict[str(_colNum)] = dict()
+							fillSheetCollumButtons[GUI_STATE][str(_colNum)] = dict()
+
+							fillSheetCollumButtons[GUI_STATE][str(_colNum)]["LEDE"] = pygbutton.PygButton(_Oldspot, '-')
+							fillSheetCollumButtons[GUI_STATE][str(_colNum)]["LEDE"].font = pygame.font.Font('freesansbold.ttf', 20)
+							fillSheetCollumButtons[GUI_STATE][str(_colNum)]["LEDE"].bgcolor = RED
+
+							for count, header in enumerate(FillSheetCurdict["INIT"]):
+
+								sub_Header_SO = pygame.font.Font('freesansbold.ttf',15).render("_____"+header+"_____",False, ORANGE)
+								sub_Header_Rect = sub_Header_SO.get_rect()
+
+								_tmpRec = (((count+1)*((WINDOWWIDTH-(BRD_SPACER*2))/(len(FillSheetCurdict["INIT"])+1)))-(sub_Header_Rect[2]/2.0), initialposition[1]+(initialposition[3]+BRD_SPACER)*(_colNum-1), sub_Header_Rect[2], initialposition[3])
+
+								fillSheetCollumButtons[GUI_STATE][str(_colNum)][header] = pygbutton.PygButton(_tmpRec, 'N/A')
+								fillSheetCollumButtons[GUI_STATE][str(_colNum)][header].bgcolor = BLACK
+								fillSheetCollumButtons[GUI_STATE][str(_colNum)][header].fgcolor = RED
+
+								FillSheetCurdict[str(_colNum)][header] = None
 
 				for key in fillSheetSwitcherButtons.keys():
 					if 'click' in fillSheetSwitcherButtons[key].handleEvent(event):
@@ -618,8 +676,6 @@ def main():
 
 						elif fillSheetSwitcherButtons[key].caption == "QC Samples":
 							GUI_STATE = 9.4
-
-
 
 				for key in fillSheetButtons.keys():
 					if 'click' in fillSheetButtons[key].handleEvent(event):
@@ -684,9 +740,12 @@ def main():
 					if buttonPackOff.bgcolor == RED:
 						buttonPackOff.bgcolor = GREEN
 						buttonPackOff.caption ="  X  "
+						cur_AL.fillSheet["Pack Off"] = True
+
 					else:
 						buttonPackOff.bgcolor = RED
 						buttonPackOff.caption ="     "
+						cur_AL.fillSheet["Pack Off"] = False
 
 				#Captures events and exicutes code relating to COMPLETE WORK ORDER BUTTONS
 				buttonCompleteEvent = buttonCompleteWO.handleEvent(event)
@@ -815,6 +874,19 @@ def main():
 						addRemove = []
 						scanVal = ''
 
+					elif GUI_STATE == 9.5 and not displayText==[]:
+
+						fillSheetCollumButtons[fillsheetPrevState][str(fillsheetpressbutton[0])][fillsheetpressbutton[1]].caption = displayText[0]
+						fillSheetCollumButtons[fillsheetPrevState][str(fillsheetpressbutton[0])][fillsheetpressbutton[1]].fgcolor = GREEN
+
+						FillSheetCurdict[str(fillsheetpressbutton[0])][fillsheetpressbutton[1]] = displayText[0]
+
+						beenClicked = None
+						GUI_STATE = fillsheetPrevState
+						displayText = []
+						addRemove = []
+						scanVal = ''
+
 					elif GUI_STATE  ==4 and not addRemove==[]:
 
 						displayText=[]
@@ -867,6 +939,12 @@ def main():
 					if GUI_STATE == 9.1:
 						beenClicked = None
 						GUI_STATE = 9
+						displayText = []
+						addRemove = []
+						scanVal = ''
+
+					elif GUI_STATE == 9.5:
+						GUI_STATE = fillsheetPrevState
 						displayText = []
 						addRemove = []
 						scanVal = ''
@@ -978,6 +1056,9 @@ def main():
 			FillSheet.visible = False
 			buttonPackOff.visible = False
 
+			if not addColToFillSheet is None:
+				addColToFillSheet.visible = False
+
 			buttonADD.visible = False
 			buttonBack.visible = False
 
@@ -992,10 +1073,15 @@ def main():
 
 			for key in fillSheetButtons.keys():
 				fillSheetButtons[key].visible = False
+
+			for key in fillSheetCollumButtons.keys():
+				for key2 in fillSheetCollumButtons[key].keys():
+					for key3 in fillSheetCollumButtons[key][key2].keys():
+						fillSheetCollumButtons[key][key2][key3].visible = False
 			#-------------------------------------------------------
 
 			#Here is everything that needs numpad
-			if GUI_STATE == 2 or GUI_STATE == 2.5 or GUI_STATE ==3 or GUI_STATE ==7 or GUI_STATE == 9.1:
+			if GUI_STATE == 2 or GUI_STATE == 2.5 or GUI_STATE ==3 or GUI_STATE ==7 or GUI_STATE == 9.1 or GUI_STATE == 9.5:
 
 				#Kill all buttons that I dont want
 				#-------------------------------------------------------
@@ -1090,7 +1176,7 @@ def main():
 					drawText(displayText,25,GREEN,pygame.display.get_surface(), screenTopLeftX+BRD_SPACER, screenTopLeftY+BRD_SPACER, screenWidth-2*BRD_SPACER, screenHeight-2*BRD_SPACER,cur_AL,True)
 
 
-				elif GUI_STATE == 9.1:
+				elif GUI_STATE == 9.1 or GUI_STATE == 9.5:
 					Header_SO = pygame.font.Font('freesansbold.ttf',36).render("Please Type Or Scan In Valid Input",False, WHITE)
 					Header_Rect = Header_SO.get_rect()
 					Header_Rect.topleft = (WINDOWWIDTH/2 - Header_Rect[2]/2,BRD_SPACER*6)
@@ -1633,28 +1719,28 @@ def main():
 
 				yoffness = 2
 
-				cWD_SO = pygame.font.Font('freesansbold.ttf',15).render("Container Tare Weight(g):",False, WHITE)
+				cWD_SO = pygame.font.Font('freesansbold.ttf',20).render("Container Tare Weight(g):",False, WHITE)
 				cWD_Rect = cWD_SO.get_rect()
 				cWD_Rect.topleft = (6 *BRD_SPACER,Header2_Rect[1]+Header2_Rect[3]+BRD_SPACER)
 
 				pygame.draw.rect(DISPLAYSURFACE, BLACK, cWD_Rect)
 				DISPLAYSURFACE.blit(cWD_SO,cWD_Rect)
 
-				cV_SO = pygame.font.Font('freesansbold.ttf',15).render("Container Volume(ml):",False, WHITE)
+				cV_SO = pygame.font.Font('freesansbold.ttf',20).render("Container Volume(ml):",False, WHITE)
 				cV_Rect = cV_SO.get_rect()
 				cV_Rect.topleft = (cWD_Rect[0],yoffness+cWD_Rect[1]+cWD_Rect[3]+BRD_SPACER)
 
 				pygame.draw.rect(DISPLAYSURFACE, BLACK, cV_Rect)
 				DISPLAYSURFACE.blit(cV_SO,cV_Rect)
 
-				cW_SO = pygame.font.Font('freesansbold.ttf',15).render("Container Weight(g):",False, WHITE)
+				cW_SO = pygame.font.Font('freesansbold.ttf',20).render("Container Weight(g):",False, WHITE)
 				cW_Rect = cW_SO.get_rect()
 				cW_Rect.topleft = (cV_Rect[0],(2*yoffness)+cV_Rect[1]+cV_Rect[3]+BRD_SPACER)
 
 				pygame.draw.rect(DISPLAYSURFACE, BLACK, cW_Rect)
 				DISPLAYSURFACE.blit(cW_SO,cW_Rect)
 
-				cC_SO = pygame.font.Font('freesansbold.ttf',15).render("Container Cosmetic(g):",False, WHITE)
+				cC_SO = pygame.font.Font('freesansbold.ttf',20).render("Container Cosmetic(g):",False, WHITE)
 				cC_Rect = cC_SO.get_rect()
 				cC_Rect.topleft = (cW_Rect[0],(3*yoffness)+cW_Rect[1]+cW_Rect[3]+BRD_SPACER)
 
@@ -1663,42 +1749,71 @@ def main():
 
 			elif GUI_STATE == 9.2 or GUI_STATE == 9.3 or GUI_STATE == 9.4:
 
-				buttonADD.visible = True
 				buttonBack.visible = True
 
+				for key in numPadDic.keys():
+					numPadDic[key].visible = False
+
+				buttonConfirm.visible = False
+				buttonCancle.visible = False
+
+				if GUI_STATE in fillSheetCollumButtons.keys():
+					for key in fillSheetCollumButtons[GUI_STATE].keys():
+						for key2 in fillSheetCollumButtons[GUI_STATE][key].keys():
+							fillSheetCollumButtons[GUI_STATE][key][key2].visible = True
+
+				if not addColToFillSheet is None:
+					addColToFillSheet.visible = True
+
 				pygame.draw.rect(DISPLAYSURFACE, BLUE, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER)))
-				curdict = None
 
 				startx,starty = 0,0
-				columbsFont = pygame.font.Font('freesansbold.ttf',15)
-
+				columbsFont = pygame.font.Font('freesansbold.ttf', 15)
+				if not FillSheetCurdict is None:
+					if FillSheetCurdict["INIT"] == cur_AL.BatchInfo["INIT"]:
+						cur_AL.BatchInfo = FillSheetCurdict
+					elif FillSheetCurdict["INIT"] == cur_AL.PalletInfo["INIT"]:
+						cur_AL.PalletInfo = FillSheetCurdict
+					elif FillSheetCurdict["INIT"] == cur_AL.QCInfo["INIT"]:
+						cur_AL.QCInfo = FillSheetCurdict
 
 				if GUI_STATE == 9.2:
 					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO Batch Weights_____",False, WHITE)
-					curdict = cur_AL.BatchInfo
+					FillSheetCurdict = cur_AL.BatchInfo
 
 				elif GUI_STATE == 9.3:
 					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO Pallets_____",False, WHITE)
-					curdict = cur_AL.PalletInfo
+					FillSheetCurdict = cur_AL.PalletInfo
 
 				elif GUI_STATE == 9.4:
 					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO QC Samples_____",False, WHITE)
-					curdict = cur_AL.QCInfo
+					FillSheetCurdict = cur_AL.QCInfo
 
-				count = 1
-				for header in curdict["INIT"]:
+				for count, header in enumerate(FillSheetCurdict["INIT"]):
 
 					#Used for eyeing allighnment
-					#pygame.draw.rect(DISPLAYSURFACE, GREEN, ((count*((WINDOWWIDTH-(BRD_SPACER*2))/(len(curdict["INIT"])+1)))-(BRD_SPACER/2)+BRD_SPACER,0,(BRD_SPACER),(WINDOWHEIGHT)))
+					#pygame.draw.rect(DISPLAYSURFACE, GREEN, ((count*((WINDOWWIDTH-(BRD_SPACER*2))/(len(FillSheetCurdict["INIT"])+1)))-(BRD_SPACER/2)+BRD_SPACER,0,(BRD_SPACER),(WINDOWHEIGHT)))
 
 					sub_Header_SO = pygame.font.Font('freesansbold.ttf',15).render("_____"+header+"_____",False, ORANGE)
 					sub_Header_Rect = sub_Header_SO.get_rect()
-					sub_Header_Rect.topleft = ((count*((WINDOWWIDTH-(BRD_SPACER*2))/(len(curdict["INIT"])+1)))-(sub_Header_Rect[2]/2.0),100)
+					sub_Header_Rect.topleft = (((count+1)*((WINDOWWIDTH-(BRD_SPACER*2))/(len(FillSheetCurdict["INIT"])+1)))-(sub_Header_Rect[2]/2.0),100)
 
 					pygame.draw.rect(DISPLAYSURFACE, BLUE, sub_Header_Rect)
 					DISPLAYSURFACE.blit(sub_Header_SO,sub_Header_Rect)
 
-					count+=1
+				_ColButtonsTopLeft = ((WINDOWWIDTH-(BRD_SPACER*2))/(len(FillSheetCurdict["INIT"])+1)-(sub_Header_Rect[2]/2.0), sub_Header_Rect[1] + sub_Header_Rect[3]+BRD_SPACER)
+
+				if addColToFillSheet is None:
+					initialposition = ((_ColButtonsTopLeft[0]/2)-(BUTTON_HEIGHT/2), _ColButtonsTopLeft[1], BUTTON_HEIGHT, BUTTON_HEIGHT)
+					addColToFillSheet = pygbutton.PygButton(initialposition, '+')
+					addColToFillSheet.font = pygame.font.Font('freesansbold.ttf', 20)
+					addColToFillSheet.bgcolor = GREEN
+				else:
+					if GUI_STATE in fillSheetCollumButtons.keys():
+						_colNum = len(fillSheetCollumButtons[GUI_STATE].keys())
+					else:
+							_colNum = 0
+					addColToFillSheet.rect = pygame.Rect(initialposition[0], initialposition[1]+((initialposition[3]+BRD_SPACER)*(_colNum)), initialposition[2], initialposition[3])
 
 				Header_Rect = Header_SO.get_rect()
 				Header_Rect.topleft = (WINDOWWIDTH/2-Header_Rect[2]/2,BRD_SPACER*2)
@@ -1721,6 +1836,9 @@ def main():
 			buttonShutdown.visible = True
 			FillSheet.visible = True
 
+			if not addColToFillSheet is None:
+				addColToFillSheet.visible = False
+
 			buttonADD.visible = False
 			buttonBack.visible = False
 
@@ -1742,6 +1860,11 @@ def main():
 
 			for key in fillSheetSwitcherButtons.keys():
 				fillSheetSwitcherButtons[key].visible = False
+
+			for key in fillSheetCollumButtons.keys():
+				for key2 in fillSheetCollumButtons[key].keys():
+					for key3 in fillSheetCollumButtons[key][key2].keys():
+						fillSheetCollumButtons[key][key2][key3].visible = False
 
 			buttonConfirm.visible = False
 			buttonCancle.visible = False
@@ -2154,6 +2277,14 @@ def main():
 		buttonPackOff.draw(DISPLAYSURFACE)
 		buttonADD.draw(DISPLAYSURFACE)
 		buttonBack.draw(DISPLAYSURFACE)
+
+		if not addColToFillSheet is None:
+			addColToFillSheet.draw(DISPLAYSURFACE)
+
+			for key in fillSheetCollumButtons.keys():
+				for key2 in fillSheetCollumButtons[key].keys():
+					for key3 in fillSheetCollumButtons[key][key2].keys():
+						fillSheetCollumButtons[key][key2][key3].draw(DISPLAYSURFACE)
 
 		#only for remove pane
 		for key in stillLoggedIn.keys():

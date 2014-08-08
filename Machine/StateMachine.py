@@ -55,14 +55,11 @@ class ActivityLogger:
 		self.FillStart = None
 		self.FillEnd = None
 
-		self._BatchInfo = dict()
-		self._BatchInfo["INIT"] = ["Batch Code","Fill Weight","Total Weight","Total Wt Range"]
+		self._BatchInfo = {"INIT": ["Batch Code", "Fill Weight", "Total Weight", "Total Wt Range"]}
 
-		self._PalletInfo = dict()
-		self._PalletInfo["INIT"] = ["Pallet#","Cases","Pcs/Case","Count","Batch#"]
+		self._PalletInfo = {"INIT": ["Pallet#", "Cases", "Pcs/Case", "Count", "Batch#"]}
 
-		self._QCInfo = dict()
-		self._QCInfo["INIT"] =["Batch#","Stability","Begins","Middle","Ends","Re-Sample","Initials"]
+		self._QCInfo = {"INIT": ["Batch#","Stability","Begins","Middle","Ends","Re-Sample","Initials"]}
 
 		self.fillSheet = dict()
 
@@ -370,18 +367,24 @@ class ActivityLogger:
 
 	def _getQC(self):
 		return self._QCInfo
-	def _setQC(self, newCol):
-		self._QCInfo = newCol
+
+	def _setQC(self, newCol, loc=None):
+		if loc is None: loc = str(len(self._QCInfo))
+		self._QCInfo[loc] = newCol
 
 	def _getPallet(self):
 		return self._PalletInfo
-	def _setPallet(self, newCol):
-		self._PalletInfo = newCol
+
+	def _setPallet(self, newCol, loc=None):
+		if loc is None: loc = str(len(self._QCInfo))
+		self._PalletInfo[loc] = newCol
 
 	def _getBatch(self):
 		return self._BatchInfo
-	def _setBatch(self, newCol):
-		self._BatchInfo = newCol
+
+	def _setBatch(self, newCol, loc=None):
+		if loc is None: loc = str(len(self._QCInfo))
+		self._BatchInfo[loc] = newCol
 
 	def changePeacesPerBox(self, ppb):
 		self.peacesPerBox = ppb
@@ -531,19 +534,19 @@ class ActivityLogger:
 	'''
 	Used to Increment the current pass count on running work order
 	'''
-	def modCount(self, event = None):
-		if not self.modCounter == None:
-			self.modCounter+=1
-			if self.modCounter%2 == 0:
-				self.inc_CurTotalCount(event = event)
+	def modCount(self, event=None):
+		if not self.modCounter is None:
+			self.modCounter += 1
+			if self.modCounter % 2 == 0:
+				self.inc_CurTotalCount(event=event)
 
-	def modBoxCount(self, event = None):
-		if not self.modBoxCounter == None:
-			self.modBoxCounter+=1
-			if self.modBoxCounter%2 == 0:
-				self.inc_CurBoxCount(event = event)
+	def modBoxCount(self, event=None):
+		if not self.modBoxCounter is None:
+			self.modBoxCounter += 1
+			if self.modBoxCounter % 2 == 0:
+				self.inc_CurBoxCount(event=event)
 
-	def inc_CurTotalCount(self, event = None, amount = 1, force = False, ID = None):
+	def inc_CurTotalCount(self, event=None, amount=1, force=False, ID=None):
 
 		incrementSucssful = False
 		if not self.current_WO == None and (not self.currentState == False or force):
@@ -767,7 +770,8 @@ class ActivityLogger:
 											"Quality Control Down Time": self.QualityControlDwnTime,
 											"Break Down Time": self.BreakDownTime}
 
-			log = (_machineVars, self.EmpWorkingDic)
+
+		log = (_machineVars, self.EmpWorkingDic, self._BatchInfo, self._PalletInfo, self._QCInfo, self.fillSheet)
 
 
 
@@ -779,6 +783,8 @@ class ActivityLogger:
 		sec = (TimeDiff-(hours*3600)-(minutes*60))
 		return hours, minutes, sec
 
+
+	#YAY!!! PROPERTYIES
 	BatchInfo = property(_getBatch, _setBatch)
 	PalletInfo = property(_getPallet, _setPallet)
 	QCInfo = property(_getQC, _setQC)
