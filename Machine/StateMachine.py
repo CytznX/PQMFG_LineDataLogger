@@ -816,7 +816,7 @@ class ActivityLogger:
 										"FormattedBreak": self.formatDiffDateTime(_dwntime[3])}
 
 
-			log = (_machineVars, self.EmpWorkingDic, _dwnTimes, self.fillSheet, self._BatchInfo, self._PalletInfo, self._QCInfo, )
+			log = (_machineVars, self.EmpWorkingDic, _dwnTimes, self.fillSheet, self._BatchInfo, self._PalletInfo, self._QCInfo)
 
 		return log
 
