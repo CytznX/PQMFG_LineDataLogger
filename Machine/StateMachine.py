@@ -424,16 +424,13 @@ class ActivityLogger:
 			self.FillStart = None
 			self.FillEnd = None
 
-			self._BatchInfo = dict()
-			self._BatchInfo["INIT"] = ["Batch Code","Fill Weight","Total Weight","Total Wt Range"]
+			self._BatchInfo = {"INIT": ["Batch Code", "Fill Weight", "Total Weight", "Total Wt Range"]}
 
-			self._PalletInfo = dict()
-			self._PalletInfo["INIT"] = ["Pallet#","Cases","Pcs/Case","Count","Batch#"]
+			self._PalletInfo = {"INIT": ["Pallet#", "Cases", "Pcs/Case", "Count", "Batch#"]}
 
-			self._QCInfo = dict()
-			self._QCInfo["INIT"] =["Batch#","Stability","Begins","Middle","Ends","Re-Sample","Initials"]
+			self._QCInfo = {"INIT": ["Batch#","Stability","Begins","Middle","Ends","Re-Sample","Initials"]}
 
-
+			self.fillSheet = dict()
 
 			#Keeps Track of count adjustments
 			self.adjustments = []

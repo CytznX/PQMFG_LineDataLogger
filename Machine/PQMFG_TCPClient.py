@@ -31,7 +31,7 @@ class ThreadedTCPNetworkAgent(Thread):
 		try:
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			s.connect((self.FserverIP, self.FserverPort))
-			s.send('#CONNECT '+str(self.CurLogger.MachineID))
+			#s.send('#CONNECT '+str(self.CurLogger.MachineID))
 			s.close()
 		except socket.error:
 			print "\nSERVER IS NOT UP\n", self.FserverIP, self.FserverPort

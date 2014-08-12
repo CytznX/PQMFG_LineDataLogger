@@ -626,7 +626,7 @@ def main():
 
 				if _needToremove[0]:
 					del(fillSheetCollumButtons[_tmpState][_needToremove[1]])
-					del(FillSheetCurdict[_needToremove[1]])
+					del(FillSheetCurdict[_needToremove[1 ]])
 
 				if not addColToFillSheet is None:
 					if'click' in addColToFillSheet.handleEvent(event):
@@ -751,6 +751,10 @@ def main():
 				buttonCompleteEvent = buttonCompleteWO.handleEvent(event)
 				if ('click' in buttonCompleteEvent or scanVal == '#COMPLETE_WO') and not cur_AL.getCurrentState()[0]==None:
 					GUI_STATE = 1
+					addColToFillSheet = None
+					initialposition = None
+					fillSheetCollumButtons = dict()
+					fillsheetpressbutton = None
 
 				#Captures events and exicutes code relating to CHANGE WORK ORDER BUTTONS
 				buttonChangeEvent = buttonChangeWO.handleEvent(event)

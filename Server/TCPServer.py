@@ -152,138 +152,6 @@ class ThreadedTCPNetworkAgent(Thread):
 				headerSheet['F5'] = unPickledData[0]["Fail Count"]
 				headerSheet.set_style('F5', styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 
-				FirstSheet = wb.create_sheet()
-				FirstSheet.title = 'Run#1'
-
-
-				_preOrderedKeys = ["Machine ID", "WO", "WO StartTime", "Time Log Created", "Total Count", "Fail Count", "Box Count", "Peaces Per Box", "Fill Start", "Fill End"]
-
-				_LastColumb = 1
-				for key in _preOrderedKeys:
-					if not key == "Line Var Adjustments" and not key == "Maintanance Down Times" and not key == "Inventory Down Time" and not key == "Break Down Time":
-
-						FirstSheet['A'+str(_LastColumb)] = key
-						FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
-
-						try:
-							FirstSheet['B'+str(_LastColumb)] = unPickledData[0][key]
-							FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
-
-						except ValueError, e:
-
-							FirstSheet['B'+str(_LastColumb)] = sum(unPickledData[0][key])
-							FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
-							_LastColumb += 1
-
-							FirstSheet['A'+str(_LastColumb)] = "^^^Hrly"
-							FirstSheet.set_style('A'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
-
-							FirstSheet['B'+str(_LastColumb)] = str(unPickledData[0][key])
-							FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
-							_LastColumb += 1
-
-						_LastColumb += 1
-				_LastColumb += 1
-
-				#get keys from working employee dictionary
-				empKeys = unPickledData[1].keys()
-				_Postitions = ["Line_Leader", "Line_Worker", "Mechanic"]
-
-				#heres the methodolagy for itterating over employee dictionary
-				for pos in _Postitions:
-
-					FirstSheet['A'+str(_LastColumb)] = '----'+pos+'(s)----'
-					FirstSheet   .set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_RIGHT)))
-					_LastColumb += 1
-
-					for key in empKeys:
-						if(unPickledData[1][key][0]==pos):
-
-							EmployOutputString = "" #key+": "
-							WasActive = False
-							for x,y in unPickledData[1][key][1]:
-								if y == None:
-									y = unPickledData[0]["Time Log Created"]
-
-								if y > unPickledData[0]["WO StartTime"]:
-
-									if not WasActive:
-										EmployOutputString = key+": "
-										WasActive = True
-									EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
-
-							if WasActive:
-								FirstSheet['A'+str(_LastColumb)] = EmployOutputString
-								_LastColumb += 1
-
-					_LastColumb += 1
-
-				_LastColumb += 1
-				FirstSheet['A'+str(_LastColumb)] = '---Adjustments----'
-				headerSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
-				_LastColumb += 1
-
-				for adjCounts in unPickledData[0]["Line Var Adjustments"]:
-					FirstSheet['A'+str(_LastColumb)] = '('+str(adjCounts[0])+', '+str(adjCounts[1])+', '+str(adjCounts[2])+', '+adjCounts[3].strftime('%H:%M:%S')+')'
-					_LastColumb += 1
-
-				_LastColumb += 1
-				FirstSheet['A'+str(_LastColumb)] = '---Down Time----'
-				headerSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
-				_LastColumb += 1
-
-				maintainMsg = ""
-				for start,end in unPickledData[0]["Maintanance Down Times"]:
-					if not end == None:
-						maintainMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) '
-					else:
-						maintainMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) '
-
-				FirstSheet['A'+str(_LastColumb)] = 'Maintanance> '+str(unPickledData[2]["FormattedMain"][0])+':'+str(unPickledData[2]["FormattedMain"][1])+':'+str(unPickledData[2]["FormattedMain"][2])
-				_LastColumb+=1
-				FirstSheet['A'+str(_LastColumb)] = maintainMsg
-				_LastColumb+=2
-
-				InventoryMsg = ""
-				for start,end in unPickledData[0]["Inventory Down Time"]:
-					if not end == None:
-						InventoryMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) '
-					else:
-						InventoryMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) '
-
-				FirstSheet['A'+str(_LastColumb)] = 'Inventory> '+str(unPickledData[2]["FormattedInv"][0])+':'+str(unPickledData[2]["FormattedInv"][1])+':'+str(unPickledData[2]["FormattedInv"][2])
-				_LastColumb+=1
-				FirstSheet['A'+str(_LastColumb)] = InventoryMsg
-				_LastColumb+=2
-
-				QualityControlMsg = ""
-				for start,end in unPickledData[0]["Quality Control Down Time"]:
-					if not end == None:
-						QualityControlMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) '
-					else:
-						QualityControlMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) '
-
-				FirstSheet['A'+str(_LastColumb)] = 'Quality_Control> '+str(unPickledData[2]["FormattedQuality"][0])+':'+str(unPickledData[2]["FormattedQuality"][1])+':'+str(unPickledData[2]["FormattedQuality"][2])
-				_LastColumb+=1
-				FirstSheet['A'+str(_LastColumb)] = InventoryMsg
-				_LastColumb+=2
-
-				breakMsg = []
-				for start,end in unPickledData[0]["Break Down Time"]:
-					if not end == None:
-						breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
-					else:
-						breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
-
-				FirstSheet['A'+str(_LastColumb)] = 'Break> '+str(unPickledData[2]["FormattedBreak"][0])+':'+str(unPickledData[2]["FormattedBreak"][1])+':'+str(unPickledData[2]["FormattedBreak"][2])
-				_LastColumb+=1
-				FirstSheet['A'+str(_LastColumb)] = InventoryMsg
-				_LastColumb+=2
-
-				FirstSheet['A'+str(_LastColumb)] = 'Total> '+str(unPickledData[2]["FormattedTotal"][0])+':'+str(unPickledData[2]["FormattedTotal"][1])+':'+str(unPickledData[2]["FormattedTotal"][2])
-				headerSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
-				_LastColumb+=2
-
 				headerSheet.column_dimensions["A"].width = 15.0
 				headerSheet.column_dimensions["B"].width = 30.0
 				headerSheet.column_dimensions["C"].width = 30.0
@@ -293,87 +161,260 @@ class ThreadedTCPNetworkAgent(Thread):
 
 				headerSheet.row_dimensions[1].height = 40
 
-				FirstSheet.column_dimensions["A"].width = 30.0
-				FirstSheet.column_dimensions["B"].width = 30.0
+				FirstSheet = wb.create_sheet()
+				FirstSheet.title = 'Run#1'
 
 				FirstFillSheet = wb.create_sheet()
 				FirstFillSheet.title = 'FillSheet#1'
 
-
-				FirstFillSheet['A1'] = "WO#: "
-				FirstFillSheet['B1'] = w0
-				FirstFillSheet['C1'] = "Fill SHEET "
-				FirstFillSheet.row_dimensions[1].height = 40
-
-				FirstFillSheet.set_style('A1', styles.Style(font=Font(size=20, bold=True, )))
-				FirstFillSheet.set_style('B1', styles.Style(font=Font(size=20, bold=True, )))
-				FirstFillSheet.set_style('C1', styles.Style(font=Font(size=20, bold=True, )))
-
-				_counter=2
-				for fillSheetItems in unPickledData[3].keys():
-					FirstFillSheet['A'+str(_counter)] = fillSheetItems
-					FirstFillSheet['B'+str(_counter)] = unPickledData[3][fillSheetItems]
-					FirstFillSheet.set_style('A'+str(_counter), styles.Style(font=Font(size=20, bold=True, )))
-					_counter+=1
-				_counter+=1
-
-				_RowLetter = "A"
-				for batchHeaders in unPickledData[4]["INIT"]:
-					FirstFillSheet[_RowLetter+str(_counter)] = batchHeaders
-					FirstFillSheet.set_style(_RowLetter+str(_counter), styles.Style(font=Font(size=20, bold=True, )))
-					_RowLetter = chr(ord(_RowLetter)+1)
-				FirstFillSheet.row_dimensions[_counter].height = 40
-				_counter+=1
-
-				_RowLetter = "A"
-				for batchInfoItems in unPickledData[4].keys():
-					if not batchInfoItems == "INIT":
-						for batch2ndHeaders in unPickledData[4][batchInfoItems]:
-							FirstFillSheet[_RowLetter+str(_counter)] = unPickledData[4][batchInfoItems][batch2ndHeaders]
-							_RowLetter = chr(ord(_RowLetter)+1)
-						_counter+=1
-				_counter+=1
-
-				_RowLetter = "A"
-				for palletHeaders in unPickledData[5]["INIT"]:
-					FirstFillSheet[_RowLetter+str(_counter)] = palletHeaders
-					FirstFillSheet.set_style(_RowLetter+str(_counter), styles.Style(font=Font(size=20, bold=True, )))
-					_RowLetter = chr(ord(_RowLetter)+1)
-				FirstFillSheet.row_dimensions[_counter].height = 40
-				_counter+=1
-
-				_RowLetter = "A"
-				for palletInfoItems in unPickledData[5].keys():
-					if not palletInfoItems == "INIT":
-						for batch2ndHeaders in unPickledData[5][palletInfoItems]:
-							FirstFillSheet[_RowLetter+str(_counter)] = unPickledData[5][palletInfoItems][batch2ndHeaders]
-							_RowLetter = chr(ord(_RowLetter)+1)
-						_counter+=1
-				_counter+=1
-
-				_RowLetter = "A"
-				for QCHeaders in unPickledData[6]["INIT"]:
-					FirstFillSheet[_RowLetter+str(_counter)] = QCHeaders
-					FirstFillSheet.set_style(_RowLetter+str(_counter), styles.Style(font=Font(size=20, bold=True, )))
-					_RowLetter = chr(ord(_RowLetter)+1)
-				FirstFillSheet.row_dimensions[_counter].height = 40
-				_counter+=1
-
-				_RowLetter = "A"
-				for QCInfoItems in unPickledData[6].keys():
-					if not QCInfoItems == "INIT":
-						for batch2ndHeaders in unPickledData[6][QCInfoItems]:
-							FirstFillSheet[_RowLetter+str(_counter)] = unPickledData[6][QCInfoItems][batch2ndHeaders]
-							_RowLetter = chr(ord(_RowLetter)+1)
-						_counter+=1
-				_counter+=1
-
-
-
-				wb.save(self.WO_LogFolder+w0+".xlsx")#<<<<<<<<<<<<<<<<<<<<-------------------------------------------- Save the file
-				print "Saved new Log: ", self.WO_LogFolder+w0+".xlsx", " Run: ", 1
 			else:
-				pass
+
+				wb = load_workbook(self.WO_LogFolder+w0+'.xlsx')
+
+				headerSheet = wb.get_sheet_by_name("Work Order Sumary")
+
+				curNumRuns = (len(wb.get_sheet_names())-1)/2
+
+				headerSheet['A'+str(5+curNumRuns)] = str(curNumRuns+1)
+				headerSheet.set_style('A'+str(5+curNumRuns), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
+				headerSheet['B'+str(5+curNumRuns)] = unPickledData[0]["WO StartTime"].strftime('(%D) @ %H:%M:%S')
+				headerSheet.set_style('B'+str(5+curNumRuns), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
+				headerSheet['C'+str(5+curNumRuns)] = unPickledData[0]["Time Log Created"].strftime('(%D) @ %H:%M:%S')
+				headerSheet.set_style('C'+str(5+curNumRuns), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
+				headerSheet['D'+str(5+curNumRuns)] = sum(unPickledData[0]["Total Count"])
+				headerSheet.set_style('D'+str(5+curNumRuns), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
+				headerSheet['E'+str(5+curNumRuns)] = sum(unPickledData[0]["Box Count"])
+				headerSheet.set_style('E'+str(5+curNumRuns), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
+				headerSheet['F'+str(5+curNumRuns)] = unPickledData[0]["Fail Count"]
+				headerSheet.set_style('F'+str(5+curNumRuns), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
+				FirstSheet = wb.create_sheet()
+				FirstSheet.title = 'Run#'+str(curNumRuns+1)
+
+				FirstFillSheet = wb.create_sheet()
+				FirstFillSheet.title = 'FillSheet#'+str(curNumRuns+1)
+
+			_preOrderedKeys = ["Machine ID", "WO", "WO StartTime", "Time Log Created", "Total Count", "Box Count", "Fail Count", "Peaces Per Box", "Fill Start", "Fill End"]
+
+			_LastColumb = 1
+			for key in _preOrderedKeys:
+				if not key == "WO StartTime" and not key == "Time Log Created":
+
+					FirstSheet['A'+str(_LastColumb)] = key
+					FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
+
+					try:
+						FirstSheet['B'+str(_LastColumb)] = unPickledData[0][key]
+						FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
+					except ValueError, e:
+
+						FirstSheet['B'+str(_LastColumb)] = sum(unPickledData[0][key])
+						FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+						_LastColumb += 1
+
+						FirstSheet['A'+str(_LastColumb)] = "^^^Hrly"
+						FirstSheet.set_style('A'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
+
+						FirstSheet['B'+str(_LastColumb)] = str(unPickledData[0][key])
+						FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
+				else:
+					FirstSheet['A'+str(_LastColumb)] = key
+					FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
+
+					FirstSheet['B'+str(_LastColumb)] = unPickledData[0][key].strftime('(%D) @ %H:%M:%S')
+					FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
+				_LastColumb += 1
+			_LastColumb += 1
+
+			#get keys from working employee dictionary
+			empKeys = unPickledData[1].keys()
+			_Postitions = ["Line_Leader", "Line_Worker", "Mechanic"]
+
+			#heres the methodolagy for itterating over employee dictionary
+			for pos in _Postitions:
+
+				FirstSheet['A'+str(_LastColumb)] = '----'+pos+'(s)----'
+				FirstSheet   .set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
+				_LastColumb += 1
+
+				for key in empKeys:
+					if(unPickledData[1][key][0]==pos):
+
+						EmployOutputString = "" #key+": "
+						WasActive = False
+						for x,y in unPickledData[1][key][1]:
+							if y == None:
+								y = unPickledData[0]["Time Log Created"]
+
+							if y > unPickledData[0]["WO StartTime"]:
+
+								if not WasActive:
+									EmployOutputString = key+": "
+									WasActive = True
+								EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
+
+						if WasActive:
+							FirstSheet['A'+str(_LastColumb)] = EmployOutputString
+							_LastColumb += 1
+
+				_LastColumb += 1
+
+			_LastColumb += 1
+			FirstSheet['A'+str(_LastColumb)] = '---Adjustments----'
+			FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
+			_LastColumb += 1
+
+			for adjCounts in unPickledData[0]["Line Var Adjustments"]:
+				FirstSheet['A'+str(_LastColumb)] = '('+str(adjCounts[0])+', '+str(adjCounts[1])+', '+str(adjCounts[2])+', '+adjCounts[3].strftime('%H:%M:%S')+')'
+				_LastColumb += 1
+
+			_LastColumb += 1
+			FirstSheet['A'+str(_LastColumb)] = '---Down Time----'
+			FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
+			_LastColumb += 1
+
+			maintainMsg = ""
+			for start,end in unPickledData[0]["Maintanance Down Times"]:
+				if not end == None:
+					maintainMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) '
+				else:
+					maintainMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) '
+
+			FirstSheet['A'+str(_LastColumb)] = 'Maintanance> '+str(unPickledData[2]["FormattedMain"][0])+':'+str(unPickledData[2]["FormattedMain"][1])+':'+str(unPickledData[2]["FormattedMain"][2])
+			_LastColumb+=1
+			FirstSheet['A'+str(_LastColumb)] = maintainMsg
+			_LastColumb+=2
+
+			InventoryMsg = ""
+			for start,end in unPickledData[0]["Inventory Down Time"]:
+				if not end == None:
+					InventoryMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) '
+				else:
+					InventoryMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) '
+
+			FirstSheet['A'+str(_LastColumb)] = 'Inventory> '+str(unPickledData[2]["FormattedInv"][0])+':'+str(unPickledData[2]["FormattedInv"][1])+':'+str(unPickledData[2]["FormattedInv"][2])
+			_LastColumb+=1
+			FirstSheet['A'+str(_LastColumb)] = InventoryMsg
+			_LastColumb+=2
+
+			QualityControlMsg = ""
+			for start,end in unPickledData[0]["Quality Control Down Time"]:
+				if not end == None:
+					QualityControlMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) '
+				else:
+					QualityControlMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) '
+
+			FirstSheet['A'+str(_LastColumb)] = 'Quality_Control> '+str(unPickledData[2]["FormattedQuality"][0])+':'+str(unPickledData[2]["FormattedQuality"][1])+':'+str(unPickledData[2]["FormattedQuality"][2])
+			_LastColumb+=1
+			FirstSheet['A'+str(_LastColumb)] = InventoryMsg
+			_LastColumb+=2
+
+			breakMsg = []
+			for start,end in unPickledData[0]["Break Down Time"]:
+				if not end == None:
+					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
+				else:
+					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
+
+			FirstSheet['A'+str(_LastColumb)] = 'Break> '+str(unPickledData[2]["FormattedBreak"][0])+':'+str(unPickledData[2]["FormattedBreak"][1])+':'+str(unPickledData[2]["FormattedBreak"][2])
+			_LastColumb+=1
+			FirstSheet['A'+str(_LastColumb)] = InventoryMsg
+			_LastColumb+=2
+
+			FirstSheet['A'+str(_LastColumb)] = 'Total> '+str(unPickledData[2]["FormattedTotal"][0])+':'+str(unPickledData[2]["FormattedTotal"][1])+':'+str(unPickledData[2]["FormattedTotal"][2])
+			FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
+			_LastColumb+=2
+
+			FirstSheet.column_dimensions["A"].width = 30.0
+			FirstSheet.column_dimensions["B"].width = 30.0
+
+			FirstFillSheet['A1'] = "WO#: "
+			FirstFillSheet['B1'] = w0
+			FirstFillSheet['C1'] = "Fill SHEET "
+			FirstFillSheet.row_dimensions[1].height = 40
+
+			FirstFillSheet.set_style('A1', styles.Style(font=Font(size=20, bold=True, ), alignment=Alignment(horizontal=alignment.HORIZONTAL_RIGHT)))
+			FirstFillSheet.set_style('B1', styles.Style(font=Font(size=20, bold=True, ), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+			FirstFillSheet.set_style('C1', styles.Style(font=Font(size=20, bold=True, ), alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
+
+			_counter = 2
+			for fillSheetItems in unPickledData[3].keys():
+				FirstFillSheet['A'+str(_counter)] = fillSheetItems
+				FirstFillSheet['B'+str(_counter)] = unPickledData[3][fillSheetItems]
+				FirstFillSheet.set_style('A'+str(_counter), styles.Style(font=Font(bold=True, )))
+				_counter += 1
+			_counter += 1
+
+			_RowLetter = "A"
+			for batchHeaders in unPickledData[4]["INIT"]:
+				FirstFillSheet[_RowLetter+str(_counter)] = batchHeaders
+				FirstFillSheet.set_style(_RowLetter+str(_counter), styles.Style(font=Font(size=15, bold=True, )))
+				_RowLetter = chr(ord(_RowLetter)+1)
+			FirstFillSheet.row_dimensions[_counter].height = 40
+			_counter += 1
+
+			_RowLetter = "A"
+			for batchInfoItems in unPickledData[4].keys():
+				if not batchInfoItems == "INIT":
+					for batch2ndHeaders in unPickledData[4][batchInfoItems]:
+						FirstFillSheet[_RowLetter+str(_counter)] = unPickledData[4][batchInfoItems][batch2ndHeaders]
+						_RowLetter = chr(ord(_RowLetter)+1)
+					_counter += 1
+			_counter += 1
+
+			_RowLetter = "A"
+			for palletHeaders in unPickledData[5]["INIT"]:
+				FirstFillSheet[_RowLetter+str(_counter)] = palletHeaders
+				FirstFillSheet.set_style(_RowLetter+str(_counter), styles.Style(font=Font(size=15, bold=True, )))
+				_RowLetter = chr(ord(_RowLetter)+1)
+			FirstFillSheet.row_dimensions[_counter].height = 40
+			_counter+=1
+
+			_RowLetter = "A"
+			for palletInfoItems in unPickledData[5].keys():
+				if not palletInfoItems == "INIT":
+					for batch2ndHeaders in unPickledData[5][palletInfoItems]:
+						FirstFillSheet[_RowLetter+str(_counter)] = unPickledData[5][palletInfoItems][batch2ndHeaders]
+						_RowLetter = chr(ord(_RowLetter)+1)
+					_counter+=1
+			_counter+=1
+
+			_RowLetter = "A"
+			for QCHeaders in unPickledData[6]["INIT"]:
+				FirstFillSheet[_RowLetter+str(_counter)] = QCHeaders
+				FirstFillSheet.set_style(_RowLetter+str(_counter), styles.Style(font=Font(size=15, bold=True, )))
+				_RowLetter = chr(ord(_RowLetter)+1)
+			FirstFillSheet.row_dimensions[_counter].height = 40
+			_counter+=1
+
+			_RowLetter = "A"
+			for QCInfoItems in unPickledData[6].keys():
+				if not QCInfoItems == "INIT":
+					for batch2ndHeaders in unPickledData[6][QCInfoItems]:
+						FirstFillSheet[_RowLetter+str(_counter)] = unPickledData[6][QCInfoItems][batch2ndHeaders]
+						_RowLetter = chr(ord(_RowLetter)+1)
+					_counter+=1
+			_counter+=1
+
+			FirstFillSheet.column_dimensions["A"].width = 30.0
+			FirstFillSheet.column_dimensions["B"].width = 30.0
+			FirstFillSheet.column_dimensions["C"].width = 30.0
+			FirstFillSheet.column_dimensions["D"].width = 30.0
+			FirstFillSheet.column_dimensions["E"].width = 30.0
+			FirstFillSheet.column_dimensions["F"].width = 30.0
+
+			FirstFillSheet.row_dimensions[1].height = 40
+
+			wb.save(self.WO_LogFolder+w0+".xlsx")#<<<<<<<<<<<<<<<<<<<<-------------------------------------------- Save the file
+			print "Saved new Log: ", self.WO_LogFolder+w0+".xlsx", " Run: ", (len(wb.get_sheet_names())-1)/2
 
 		except IndexError, e:
 			print "index error??????\n", e
