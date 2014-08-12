@@ -6,7 +6,7 @@ import pickle
 
 from threading import Thread
 from openpyxl import *
-from openpyxl.styles import Font, Color
+from openpyxl.styles import *
 
 class ThreadedTCPNetworkAgent(Thread):
 
@@ -102,136 +102,121 @@ class ThreadedTCPNetworkAgent(Thread):
 				headerSheet['A1'] = "WO#: "
 				headerSheet['B1'] = w0
 
-				headerSheet.set_style('A1', styles.Style(font=Font(size=20, bold=True, )))
-				headerSheet.set_style('B1', styles.Style(font=Font(size=20, bold=True, )))
+				headerSheet.set_style('A1', styles.Style(font=Font(size=20, bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_RIGHT)))
+				headerSheet.set_style('B1', styles.Style(font=Font(size=20, bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
 
 				#Creates Headers For Data Columbs
 				headerSheet['A3'] = "Run#"
-				headerSheet.set_style('A3', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('A3', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 				headerSheet['B3'] = "Start Time"
-				headerSheet.set_style('B3', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('B3', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 				headerSheet['C3'] = "EndTime Time"
-				headerSheet.set_style('C3', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('C3', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 				headerSheet['D3'] = "Total Count"
-				headerSheet.set_style('D3', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('D3', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 				headerSheet['E3'] = "Total Box"
-				headerSheet.set_style('E3', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('E3', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 				headerSheet['F3'] = "Total Fail"
-				headerSheet.set_style('F3', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('F3', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 
 				headerSheet['A4'] = "------------"
-				headerSheet.set_style('A4', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('A4', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 				headerSheet['B4'] = "------------"
-				headerSheet.set_style('B4', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('B4', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 				headerSheet['C4'] = "------------"
-				headerSheet.set_style('C4', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('C4', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 				headerSheet['D4'] = "------------"
-				headerSheet.set_style('D4', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('D4', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 				headerSheet['E4'] = "------------"
-				headerSheet.set_style('E4', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('E4', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 				headerSheet['F4'] = "------------"
-				headerSheet.set_style('F4', styles.Style(font=Font(bold=True)))
+				headerSheet.set_style('F4', styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 
 				#1"Run#" 2"Start Time" 3"EndTime Time" 4"Total Count" 5"Total Box" 6"Total Tossed"
 
 				headerSheet['A5'] = "1"
+				headerSheet.set_style('A5', styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
 				headerSheet['B5'] = unPickledData[0]["WO StartTime"].strftime('(%D) @ %H:%M:%S')
+				headerSheet.set_style('B5', styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
 				headerSheet['C5'] = unPickledData[0]["Time Log Created"].strftime('(%D) @ %H:%M:%S')
+				headerSheet.set_style('C5', styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
 				headerSheet['D5'] = sum(unPickledData[0]["Total Count"])
+				headerSheet.set_style('D5', styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
 				headerSheet['E5'] = sum(unPickledData[0]["Box Count"])
+				headerSheet.set_style('E5', styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
 				headerSheet['F5'] = unPickledData[0]["Fail Count"]
+				headerSheet.set_style('F5', styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 
 				FirstSheet = wb.create_sheet()
 				FirstSheet.title = 'Run#1'
 
+
+				_preOrderedKeys = ["Machine ID", "WO", "WO StartTime", "Time Log Created", "Total Count", "Fail Count", "Box Count", "Peaces Per Box", "Fill Start", "Fill End"]
+
 				_LastColumb = 1
-				for key in unPickledData[0].keys():
+				for key in _preOrderedKeys:
 					if not key == "Line Var Adjustments" and not key == "Maintanance Down Times" and not key == "Inventory Down Time" and not key == "Break Down Time":
+
 						FirstSheet['A'+str(_LastColumb)] = key
-						headerSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
+						FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
+
 						try:
 							FirstSheet['B'+str(_LastColumb)] = unPickledData[0][key]
+							FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
 						except ValueError, e:
+
 							FirstSheet['B'+str(_LastColumb)] = sum(unPickledData[0][key])
-							_LastColumb += 1
-							FirstSheet['A'+str(_LastColumb)] = "^^^Hrly"
-							FirstSheet['B'+str(_LastColumb)] = str(unPickledData[0][key])
+							FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 							_LastColumb += 1
 
+							FirstSheet['A'+str(_LastColumb)] = "^^^Hrly"
+							FirstSheet.set_style('A'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
+
+							FirstSheet['B'+str(_LastColumb)] = str(unPickledData[0][key])
+							FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+							_LastColumb += 1
 
 						_LastColumb += 1
 				_LastColumb += 1
 
 				#get keys from working employee dictionary
 				empKeys = unPickledData[1].keys()
+				_Postitions = ["Line_Leader", "Line_Worker", "Mechanic"]
 
 				#heres the methodolagy for itterating over employee dictionary
-				for key in empKeys:
-					if(unPickledData[1][key][0]=="Line_Leader"):
+				for pos in _Postitions:
 
-						FirstSheet['A'+str(_LastColumb)] = '----Line Leader(s)----'
-						headerSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
-						_LastColumb += 1
+					FirstSheet['A'+str(_LastColumb)] = '----'+pos+'(s)----'
+					FirstSheet   .set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_RIGHT)))
+					_LastColumb += 1
 
-						EmployOutputString = "" #key+": "
-						WasActive = False
-						for x,y in unPickledData[1][key][1]:
-							if y == None:
-								y = unPickledData[0]["Time Log Created"]
+					for key in empKeys:
+						if(unPickledData[1][key][0]==pos):
 
-							if y > unPickledData[0]["WO StartTime"]:
+							EmployOutputString = "" #key+": "
+							WasActive = False
+							for x,y in unPickledData[1][key][1]:
+								if y == None:
+									y = unPickledData[0]["Time Log Created"]
 
-								if not WasActive:
-									EmployOutputString = key+": "
-									WasActive = True
-								EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
+								if y > unPickledData[0]["WO StartTime"]:
 
-						if WasActive:
-							FirstSheet['A'+str(_LastColumb)] = EmployOutputString
-							_LastColumb += 1
+									if not WasActive:
+										EmployOutputString = key+": "
+										WasActive = True
+									EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
 
-					elif(unPickledData[1][key][0]=="Line_Worker"):
+							if WasActive:
+								FirstSheet['A'+str(_LastColumb)] = EmployOutputString
+								_LastColumb += 1
 
-						FirstSheet['A'+str(_LastColumb)] = '----Line Worker(s)----'
-						headerSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
-						_LastColumb += 1
-
-						EmployOutputString = "" #key+": "
-						WasActive = False
-						for x,y in unPickledData[1][key][1]:
-							if y == None:
-								y =  unPickledData[0]["Time Log Created"]
-
-							if y > unPickledData[0]["WO StartTime"]:
-								if not WasActive:
-									EmployOutputString = key+": "
-									WasActive = True
-								EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
-
-						if WasActive:
-							FirstSheet['A'+str(_LastColumb)] = EmployOutputString
-							_LastColumb += 1
-
-					elif(unPickledData[1][key][0]=="Mechanic"):
-
-						FirstSheet['A'+str(_LastColumb)] = '----Mechanic(s)----'
-						headerSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
-						_LastColumb += 1
-
-						EmployOutputString = "" #key+": "
-						WasActive = False
-						for x,y in unPickledData[1][key][1]:
-							if y == None:
-								y =  unPickledData[0]["Time Log Created"]
-
-							if y > unPickledData[0]["WO StartTime"]:
-								if not WasActive:
-									EmployOutputString = key+": "
-									WasActive = True
-								EmployOutputString += ' ('+x.strftime('%H:%M:%S')+','+y.strftime('%H:%M:%S') +') '
-						if WasActive:
-							FirstSheet['A'+str(_LastColumb)] = EmployOutputString
-							_LastColumb += 1
+					_LastColumb += 1
 
 				_LastColumb += 1
 				FirstSheet['A'+str(_LastColumb)] = '---Adjustments----'

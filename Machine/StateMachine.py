@@ -309,7 +309,7 @@ class ActivityLogger:
 		#iterates over all employees and looks for the ones with no logout time
 		for key in curentkeys:
 			if self.EmpWorkingDic[key][1][-1][1] == None:
-				stillLoggedOn.append((key,self.EmpWorkingDic[key][0]))
+				stillLoggedOn.append((key, self.EmpWorkingDic[key][0]))
 
 		#returns a list[]
 		return stillLoggedOn
@@ -318,13 +318,12 @@ class ActivityLogger:
 	Used to change the current workorder that is being run on the machine
 	'''
 	def changeCurrentWO(self, WO_Name, SavePrevious = True):
-		connected = False
 
 		#If the machine has just started or in standby every thing is set to None so just initialize
 		if not(self.current_WO == None) and SavePrevious:
 
 			'''First Send all relivant OLD data via TCP to server'''
-			connected = self.CurrentTCPServer.sendToServer(self.getFormatedLog())
+			Thread(target=self.CurrentTCPServer.sendToServer, args=(self.getFormatedLog())).start()
 
 		#Current WO that is being run
 		self.current_WO = WO_Name
@@ -367,8 +366,6 @@ class ActivityLogger:
 		self.QualityControlDwnTime = []
 		self.BreakDownTime = []
 
-		return connected
-
 	def _getQC(self):
 		return self._QCInfo
 
@@ -401,7 +398,8 @@ class ActivityLogger:
 		if not self.currentState == None:
 
 			'''Create TCP Client and make it send shit '''
-			finishSuccsess = self.CurrentTCPServer.sendToServer(self.getFormatedLog())
+
+			Thread(target=self.CurrentTCPServer.sendToServer, args=(self.getFormatedLog())).start()
 
 			#Current WO that is being run
 			self.current_WO = None
