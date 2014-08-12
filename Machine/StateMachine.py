@@ -323,7 +323,7 @@ class ActivityLogger:
 		if not(self.current_WO == None) and SavePrevious:
 
 			'''First Send all relivant OLD data via TCP to server'''
-			Thread(target=self.CurrentTCPServer.sendToServer, args=(self.getFormatedLog())).start()
+			Thread(target=self.CurrentTCPServer.sendToServer, args=(self.getFormatedLog(),)).start()
 
 		#Current WO that is being run
 		self.current_WO = WO_Name
@@ -399,7 +399,7 @@ class ActivityLogger:
 
 			'''Create TCP Client and make it send shit '''
 
-			Thread(target=self.CurrentTCPServer.sendToServer, args=(self.getFormatedLog())).start()
+			Thread(target=self.CurrentTCPServer.sendToServer, args=(self.getFormatedLog(),)).start()
 
 			#Current WO that is being run
 			self.current_WO = None

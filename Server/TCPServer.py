@@ -18,7 +18,7 @@ class ThreadedTCPNetworkAgent(Thread):
 
 		#setup some class variables
 		self.running = True
-		self.DefaultClientPort= 5005
+		self.DefaultClientPort = 5005
 		self._BuffSize = BuffSize
 		self.Addr = ('', portNum)
 
