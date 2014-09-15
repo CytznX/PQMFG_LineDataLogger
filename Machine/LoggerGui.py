@@ -1625,7 +1625,7 @@ def main():
 				pygame.draw.rect(DISPLAYSURFACE, BLACK, nFR_Rect)
 				DISPLAYSURFACE.blit(nFR_SO,nFR_Rect)
 
-				nED_SO = pygame.font.Font('freesansbold.ttf',20).render("Exp. Date:",False, WHITE)
+				nED_SO = pygame.font.Font('freesansbold.ttf', 20).render("Exp. Date:", False, WHITE)
 				nED_Rect = nED_SO.get_rect()
 				nED_Rect.topleft = (nPN_Rect[0],nFR_Rect[1]+nFR_Rect[3]+BRD_SPACER)
 				col_2_Len.append(nED_Rect[2])
@@ -1885,6 +1885,24 @@ def main():
 			buttonOk.visible = True
 			#------------------------------------------------------------
 
+
+			#Gets and formates Data
+			Totals_ChngOvr = cur_AL.getDwnTimesTotals()[4]
+
+			Totals_ChngOvr = cur_AL.formatDiffDateTime(Totals_ChngOvr)
+
+			ChngOverTime_msg =''
+
+			for ttime in Totals_ChngOvr:
+				if ttime <= 9:
+					ChngOverTime_msg+='0'+str(ttime)
+				else:
+					ChngOverTime_msg+=str(ttime)
+				ChngOverTime_msg+=':'
+
+			ChngOverTime_msg =ChngOverTime_msg[:-1]
+
+
 			#Makes Background Black
 			pygame.draw.rect(DISPLAYSURFACE, BLACK, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER))) #<--- Overlay Black Text Area
 
@@ -1896,11 +1914,19 @@ def main():
 			Header_Rect2 = Header_SO2.get_rect()
 			Header_Rect2.topleft = (WINDOWWIDTH/2 - Header_Rect2[2]/2,BRD_SPACER*7+Header_Rect[3])
 
+			Header_SO3 = pygame.font.Font('freesansbold.ttf',36).render(ChngOverTime_msg,False, GREEN)
+			Header_Rect3 = Header_SO3.get_rect()
+			Header_Rect3.topleft = (WINDOWWIDTH/2 - Header_Rect3[2]/2,WINDOWHEIGHT/2 - Header_Rect3[3]/2)
+
 			pygame.draw.rect(DISPLAYSURFACE, BLACK, Header_Rect)
 			DISPLAYSURFACE.blit(Header_SO,Header_Rect)
 
 			pygame.draw.rect(DISPLAYSURFACE, BLACK, Header_Rect2)
 			DISPLAYSURFACE.blit(Header_SO2,Header_Rect2)
+
+			pygame.draw.rect(DISPLAYSURFACE, BLACK, Header_Rect3)
+			DISPLAYSURFACE.blit(Header_SO3,Header_Rect3)
+
 
 		else:
 
