@@ -583,15 +583,15 @@ class ActivityLogger:
 	'''
 	def modCount(self, event=None):
 		if not self.modCounter is None:
-			self.modCounter += 1
-			if self.modCounter % 2 == 0:
-				self.inc_CurTotalCount(event=event)
+			#self.modCounter += 1
+			#if self.modCounter % 2 == 0:
+			self.inc_CurTotalCount(event=event)
 
 	def modBoxCount(self, event=None):
 		if not self.modBoxCounter is None:
-			self.modBoxCounter += 1
-			if self.modBoxCounter % 2 == 0:
-				self.inc_CurBoxCount(event=event)
+			#self.modBoxCounter += 1
+			#if self.modBoxCounter % 2 == 0:
+			self.inc_CurBoxCount(event=event)
 
 	def inc_CurTotalCount(self, event=None, amount=1, force=False, ID=None):
 
