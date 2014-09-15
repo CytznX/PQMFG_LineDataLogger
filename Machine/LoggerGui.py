@@ -1535,7 +1535,7 @@ def main():
 				#<<< Header and Backgroun Info --------------------------------------------------------
 				#--------------------------------------------------------------------------------------
 
-				pygame.draw.rect(DISPLAYSURFACE, BLACK, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER)))
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, (BRD_SPACER, BRD_SPACER, (WINDOWWIDTH-2*BRD_SPACER), (WINDOWHEIGHT- 2*BRD_SPACER)))
 
 				Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____PQ Fill Sheet Interface_____",False, LIGHT_BLUE)
 				Header_Rect = Header_SO.get_rect()

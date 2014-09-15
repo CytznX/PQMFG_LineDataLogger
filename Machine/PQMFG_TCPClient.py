@@ -28,14 +28,6 @@ class ThreadedTCPNetworkAgent(Thread):
 		self.serversock.bind(self.Addr)
 		self.serversock.listen(5)
 
-		try:
-			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			s.connect((self.FserverIP, self.FserverPort))
-			#s.send('#CONNECT '+str(self.CurLogger.MachineID))
-			s.close()
-		except socket.error:
-			print "\nSERVER IS NOT UP\n", self.FserverIP, self.FserverPort
-
 
 	'''Heres where we spawn a minin thread that manages a individual connection to this machine'''
 	def miniThread(self,clientsock,addr):
@@ -181,6 +173,7 @@ class ThreadedTCPNetworkAgent(Thread):
 		succsesss = False
 		try:
 			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			s.settimeout(5)
 			s.connect((self.FserverIP, self.FserverPort))
 
 			s.send(pickle.dumps(data))
@@ -189,7 +182,7 @@ class ThreadedTCPNetworkAgent(Thread):
 			succsesss = True
 		except socket.error:
 
-			succsesss = False
+			self.CurLogger.pushMessage("Could not connect To server... Data Saved to disk: "+data[0]["WO"]+".pkl", 15)
 
 			_fileDirectory = "Logs/"+datetime.datetime.now().strftime("%B_%d_%Y/")
 			_fileName = data[0]["WO"]
@@ -210,16 +203,6 @@ class ThreadedTCPNetworkAgent(Thread):
 		pass
 
 	def stop(self):
-
-		#Sending Shutdown Sig
-		try:
-			s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			s.connect((self.FserverIP, self.FserverPort))
-			s.send('#SHUTTING_DOWN')
-			s.close()
-		except socket.error:
-			print "Cant connect to server... Failed to send shutdown msg"
-
 
 		#set runflag to False
 		self.running = False

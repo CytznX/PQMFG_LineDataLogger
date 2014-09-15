@@ -74,6 +74,9 @@ class ActivityLogger:
 		#Arraylist of what count adjustments took place and when
 		self.adjustments = []
 
+		#Keeeps Track of Change over time
+		self.ChangeOverTime = []
+
 		#Keeps Track of total down time
 		self.MaintananceDwnTime = []
 		self.InventoryDwnTime = []
@@ -360,6 +363,9 @@ class ActivityLogger:
 		#Keeps Track of count adjustments
 		self.adjustments = []
 
+		#Keeeps track of changeover time
+		self.ChangeOverTime = []
+
 		#Keeps Track of total down time
 		self.MaintananceDwnTime = []
 		self.InventoryDwnTime = []
@@ -435,6 +441,8 @@ class ActivityLogger:
 			#Keeps Track of count adjustments
 			self.adjustments = []
 
+			self.ChangeOverTime = []
+
 			#Keeps Track of total down time
 			self.MaintananceDwnTime = []
 			self.InventoryDwnTime = []
@@ -504,6 +512,9 @@ class ActivityLogger:
 
 				Thread(target=tw.sendTxtMsg, args=(_args,)).start()
 
+			elif Reason == 'ChangeOver':
+				self.ChangeOverTime.append(((datetime.datetime.now(),ID), None))
+
 		#(if False)
 		elif not self.currentState:
 			#Change the State of the machine
@@ -549,6 +560,9 @@ class ActivityLogger:
 
 				Thread(target=tw.sendTxtMsg, args=(_args,)).start()
 
+			elif Reason =='ChangeOver':
+				placeholder = self.ChangeOverTime[-1][0]
+				self.ChangeOverTime[-1] = (placeholder, (datetime.datetime.now(),ID))
 
 			self.currentReason = None
 
@@ -739,6 +753,7 @@ class ActivityLogger:
 		Totals_Inventory  = 0
 		Totals_Quality_Control = 0
 		Totals_Break = 0
+		Totals_ChangeOver = 0
 
 		for dwnTimes in self.MaintananceDwnTime:
 			start = dwnTimes[0][0]
@@ -778,6 +793,15 @@ class ActivityLogger:
 
 			Totals_Break += (end-start).seconds
 
+		for dwnTimes in self.ChangeOverTime:
+			start = dwnTimes[0][0]
+			if dwnTimes[1] == None:
+				end = datetime.datetime.now()
+			else:
+				end = dwnTimes[1][0]
+
+			Totals_ChangeOver += (end-start).seconds
+
 		return (Totals_Maitenance, Totals_Inventory, Totals_Quality_Control, Totals_Break)
 
 	def getFormatedLog(self, stillRunning = False):
@@ -801,7 +825,8 @@ class ActivityLogger:
 											"Maintanance Down Times": self.MaintananceDwnTime,
 											"Inventory Down Time": self.InventoryDwnTime,
 											"Quality Control Down Time": self.QualityControlDwnTime,
-											"Break Down Time": self.BreakDownTime}
+											"Break Down Time": self.BreakDownTime,
+											"ChangeOver Time": self.ChangeOverTime}
 
 			_dwntime = self.getDwnTimesTotals()
 			_dwnTimes = {"FormattedTotal": self.formatDiffDateTime(sum(_dwntime)),
