@@ -802,7 +802,7 @@ class ActivityLogger:
 
 			Totals_ChangeOver += (end-start).seconds
 
-		return (Totals_Maitenance, Totals_Inventory, Totals_Quality_Control, Totals_Break)
+		return (Totals_Maitenance, Totals_Inventory, Totals_Quality_Control, Totals_Break, Totals_ChangeOver)
 
 	def getFormatedLog(self, stillRunning = False):
 

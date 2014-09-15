@@ -282,7 +282,6 @@ def main():
 	messageLengths.append(MachineRun_Rect[0]+MachineRun_Rect[2])
 	initStaticText.append((MachineRun_SO,MachineRun_Rect))
 
-
 	#STATUS message
 	MachineStatus_SO = fontObjectDefault.render(MachineStatus_Msg,False, WHITE)
 	MachineStatus_Rect = MachineStatus_SO.get_rect()
@@ -839,8 +838,9 @@ def main():
 						#IF this goto that... =P
 						if cur_AL.getCurrentState()[0] == None:
 							cur_AL.changeCurrentWO(displayText[0])
+							cur_AL.changeState("000", "ChangeOver")
 							displayText=[]
-							GUI_STATE = 0
+							GUI_STATE = 0.5
 						else:
 							GUI_STATE = 2.1
 
@@ -963,8 +963,9 @@ def main():
 				if 'click' in buttonYesEvent or (scanVal == '#CONFIRM' and (not GUI_STATE ==3.1 or not GUI_STATE ==4.1)):
 					if GUI_STATE ==2.1:
 						cur_AL.changeCurrentWO(displayText[0])
+						cur_AL.changeState("000", "ChangeOver")
 						displayText=[]
-						GUI_STATE = 0
+						GUI_STATE = 0.5
 						scanVal = ''
 
 					elif GUI_STATE ==1:
@@ -1024,6 +1025,13 @@ def main():
 						GUI_STATE = 0
 						scanVal = ''
 
+					elif GUI_STATE == 0.5:
+						GUI_STATE = 0
+						cur_AL.changeState("000","ChangeOver")
+						displayText = []
+						addRemove = []
+						scanVal = ''
+
 					else:
 						GUI_STATE = 0
 						displayText = []
@@ -1043,7 +1051,7 @@ def main():
 		Stat2MessageLengths = []
 
 		#This is is what determines what gets drawn to screen
-		if not GUI_STATE == 0:
+		if not GUI_STATE == 0 and not GUI_STATE == 0.5:
 
 			#Kill all buttons that I dont want
 			#-------------------------------------------------------
@@ -1825,6 +1833,75 @@ def main():
 				pygame.draw.rect(DISPLAYSURFACE, BLUE, Header_Rect)
 				DISPLAYSURFACE.blit(Header_SO,Header_Rect)
 
+
+		elif GUI_STATE == 0.5:
+			#Kill The buttons here
+			#--------------------------------------------------------------
+			buttonChangeWO.visible = False #true or flase
+			buttonCompleteWO.visible = False
+			buttonSetBoxCount.visible = False
+			buttonAddEmployee.visible = False
+			buttonRemoveEmployee.visible = False
+			buttonMachineDown.visible = False
+			buttonMachineUp.visible = False
+			buttonAdjustCount.visible = False
+			buttonShutdown.visible = False
+			FillSheet.visible = False
+
+			if not addColToFillSheet is None:
+				addColToFillSheet.visible = False
+
+			buttonADD.visible = False
+			buttonBack.visible = False
+
+			buttonPackOff.visible = False
+			buttonTotalCount.visible = False
+			buttonBoxCount.visible = False
+
+			for key in dwnTimeButtons.keys():
+				dwnTimeButtons[key].visible = False
+
+			for key in numPadDic.keys():
+				numPadDic[key].visible = False
+
+			for key in stillLoggedIn.keys():
+				stillLoggedIn[key].visible = False
+
+			for key in fillSheetButtons.keys():
+				fillSheetButtons[key].visible = False
+
+			for key in fillSheetSwitcherButtons.keys():
+				fillSheetSwitcherButtons[key].visible = False
+
+			for key in fillSheetCollumButtons.keys():
+				for key2 in fillSheetCollumButtons[key].keys():
+					for key3 in fillSheetCollumButtons[key][key2].keys():
+						fillSheetCollumButtons[key][key2][key3].visible = False
+
+			buttonConfirm.visible = False
+			buttonCancle.visible = False
+			buttonYes.visible = False
+			buttonNo.visible = False
+			buttonOk.visible = True
+			#------------------------------------------------------------
+
+			#Makes Background Black
+			pygame.draw.rect(DISPLAYSURFACE, BLACK, (BRD_SPACER,BRD_SPACER,(WINDOWWIDTH-2*BRD_SPACER),(WINDOWHEIGHT- 2*BRD_SPACER))) #<--- Overlay Black Text Area
+
+			Header_SO = pygame.font.Font('freesansbold.ttf',36).render("Machine Is currently Being Changed Over",False, RED)
+			Header_Rect = Header_SO.get_rect()
+			Header_Rect.topleft = (WINDOWWIDTH/2 - Header_Rect[2]/2,BRD_SPACER*6)
+
+			Header_SO2 = pygame.font.Font('freesansbold.ttf',18).render("Please Cosult Mechanic before pressing Okay to Continue",False, RED)
+			Header_Rect2 = Header_SO2.get_rect()
+			Header_Rect2.topleft = (WINDOWWIDTH/2 - Header_Rect2[2]/2,BRD_SPACER*7+Header_Rect[3])
+
+			pygame.draw.rect(DISPLAYSURFACE, BLACK, Header_Rect)
+			DISPLAYSURFACE.blit(Header_SO,Header_Rect)
+
+			pygame.draw.rect(DISPLAYSURFACE, BLACK, Header_Rect2)
+			DISPLAYSURFACE.blit(Header_SO2,Header_Rect2)
+
 		else:
 
 			#Kill The buttons here
@@ -2065,7 +2142,7 @@ def main():
 
 			#dynamicContent.append((Seperator_SO,Seperator_Rect))
 
-			#Static totola dwn time msg
+			#Static totol dwn time msg
 			TotalDwnTime_SO = fontObjectDefault.render('Total DwnTime:',False, WHITE)
 			TotalDwnTime_Rect = TotalDwnTime_SO.get_rect()
 			TotalDwnTime_Rect.topleft = (staticR2StartPos,DY_Hour_PPM_MSG_Rect[1]+DY_Hour_PPM_MSG_Rect[3])
@@ -2074,6 +2151,12 @@ def main():
 			dynamicContent.append((TotalDwnTime_SO,TotalDwnTime_Rect))
 
 
+			#Static totol dwn time msg
+			TotalChngTime_SO = fontObjectDefault.render('Change Over:',False, WHITE)
+			TotalChngTime_Rect = TotalChngTime_SO.get_rect()
+			TotalChngTime_Rect.topleft = (staticR2StartPos, DY_Hour_PPM_MSG_Rect[1]+2*DY_Hour_PPM_MSG_Rect[3])
+
+			dynamicContent.append((TotalChngTime_SO,TotalChngTime_Rect))
 			'''
 			HERE IS WHERE I CREATE THE SECOND ROW STATIC CONTENT
 			--------------------------------------------------------------------------------------------------------------
@@ -2082,12 +2165,13 @@ def main():
 			dynamicR2StartPos = max(Stat2MessageLengths)+TXT_SPACER
 
 			#Gets and formates Data
-			Totals_Maitenance, Totals_Inventory, Totals_Quality_Control, Totals_Break = cur_AL.getDwnTimesTotals()
+			Totals_Maitenance, Totals_Inventory, Totals_Quality_Control, Totals_Break, Totals_ChngOvr = cur_AL.getDwnTimesTotals()
 			TotalDwnTime = cur_AL.formatDiffDateTime(Totals_Maitenance+Totals_Inventory+Totals_Quality_Control+Totals_Break)
 
 			Totals_Maitenance = cur_AL.formatDiffDateTime(Totals_Maitenance)
 			Totals_Inventory = cur_AL.formatDiffDateTime(Totals_Inventory)
 			Totals_Quality_Control = cur_AL.formatDiffDateTime(Totals_Quality_Control)
+			Totals_ChngOvr = cur_AL.formatDiffDateTime(Totals_ChngOvr)
 			Totals_Break = cur_AL.formatDiffDateTime(Totals_Break)
 
 			Maintainance_msg = ''
@@ -2095,6 +2179,7 @@ def main():
 			QC_msg = ''
 			Break_msg = ''
 			TotalDwnTime_msg =''
+			ChngOverTime_msg =''
 
 			for ttime in Totals_Maitenance:
 				if ttime <= 9:
@@ -2131,10 +2216,18 @@ def main():
 					TotalDwnTime_msg+=str(ttime)
 				TotalDwnTime_msg+=':'
 
+			for ttime in Totals_ChngOvr:
+				if ttime <= 9:
+					ChngOverTime_msg+='0'+str(ttime)
+				else:
+					ChngOverTime_msg+=str(ttime)
+				ChngOverTime_msg+=':'
+
 			Maintainance_msg = Maintainance_msg[:-1]
 			Inventory_msg = Inventory_msg[:-1]
 			QC_msg = QC_msg[:-1]
 			Break_msg = Break_msg[:-1]
+			ChngOverTime_msg =ChngOverTime_msg[:-1]
 			TotalDwnTime_msg=TotalDwnTime_msg[:-1]
 
 
@@ -2194,6 +2287,14 @@ def main():
 			dynamicContent.append((Dy_TotalDwnTime_SO,Dy_TotalDwnTime_Rect))
 			Stat2MessageLengths.append(Dy_TotalDwnTime_Rect[0]+Dy_TotalDwnTime_Rect[2])
 
+
+
+			Dy_Chngeime_SO = fontObjectDefault.render(ChngOverTime_msg, False, GREEN)
+			Dy_Chngeime_Rect = Dy_Chngeime_SO.get_rect()
+			Dy_Chngeime_Rect.topleft = (dynamicR2StartPos,DY_Hour_PPM_MSG_Rect[1]+2*DY_Hour_PPM_MSG_Rect[3])
+
+			dynamicContent.append((Dy_Chngeime_SO,Dy_Chngeime_Rect))
+
 			'''
 			BELOW IS WHERE CURRENT STAFF GET READ IN AND PLACE ON SCREEN
 			--------------------------------------------------------------------------------------------------------------
@@ -2210,7 +2311,7 @@ def main():
 			else:
 				CStaffTag_SO = fontObjectHeader.render("____________Current Staff Logged-On_("+str(count)+")_________________",False, ORANGE)
 			CStaffTag_Rect = MachineTag_SO.get_rect()
-			CStaffTag_Rect.topleft = (2*BRD_SPACER,175)
+			CStaffTag_Rect.topleft = (2*BRD_SPACER,200)
 
 			dynamicContent.append((CStaffTag_SO,CStaffTag_Rect))
 
