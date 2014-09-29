@@ -39,6 +39,9 @@ class ActivityLogger:
 		#Current WO that is being run
 		self.current_WO = None
 
+		self.TotalDoubleCount = False
+		self.BoxDoubleCount = True
+
 		#Keeps Track Of current State
 		self.currentState = None
 		self.currentReason = None
@@ -58,6 +61,7 @@ class ActivityLogger:
 		self.modBoxCounter = None
 		self.FillStart = None
 		self.FillEnd = None
+		self.isBulk = False
 
 		self._BatchInfo = {"INIT": ["Batch Code", "Fill Weight", "Total Weight", "Total Wt Range"]}
 
@@ -122,7 +126,12 @@ class ActivityLogger:
 		self.Messages.put((message,dispTime))
 
 	def getCounts(self):
-		return self.totalCount, self.failCount, self.boxCount, self.peacesPerBox
+		returns = None
+		if self.isBulk:
+			returns = (self.totalCount, 0, self.boxCount, self.peacesPerBox)
+		else:
+			returns = (self.totalCount, self.failCount, self.boxCount, self.peacesPerBox)
+		return returns
 
 	def getMachineID(self):
 		return self.MachineID
@@ -350,6 +359,8 @@ class ActivityLogger:
 		self.FillStart = None
 		self.FillEnd = None
 
+		self.isBulk = False
+
 		self._BatchInfo = dict()
 		self._BatchInfo["INIT"] = ["Batch Code","Fill Weight","Total Weight","Total Wt Range"]
 
@@ -429,6 +440,8 @@ class ActivityLogger:
 			self.peacesPerBox = None
 			self.FillStart = None
 			self.FillEnd = None
+
+			self.isBulk = False
 
 			self._BatchInfo = {"INIT": ["Batch Code", "Fill Weight", "Total Weight", "Total Wt Range"]}
 
@@ -580,18 +593,26 @@ class ActivityLogger:
 
 	'''
 	Used to Increment the current pass count on running work order
+	self.TotalDoubleCount = False
+	self.BoxDoubleCount = False
 	'''
 	def modCount(self, event=None):
 		if not self.modCounter is None:
-			#self.modCounter += 1
-			#if self.modCounter % 2 == 0:
-			self.inc_CurTotalCount(event=event)
+			if self.TotalDoubleCount:
+				self.modCounter += 1
+				if self.modCounter % 2 == 0:
+					self.inc_CurTotalCount(event=event)
+			else:
+				self.inc_CurTotalCount(event=event)
 
 	def modBoxCount(self, event=None):
 		if not self.modBoxCounter is None:
-			#self.modBoxCounter += 1
-			#if self.modBoxCounter % 2 == 0:
-			self.inc_CurBoxCount(event=event)
+			if self.BoxDoubleCount:
+				self.modBoxCounter += 1
+				if self.modBoxCounter % 2 == 0:
+					self.inc_CurBoxCount(event=event)
+			else:
+				self.inc_CurTotalCount(event=event)
 
 	def inc_CurTotalCount(self, event=None, amount=1, force=False, ID=None):
 
@@ -719,7 +740,7 @@ class ActivityLogger:
 			try:
 
 				if hourly:
-					if not (self.peacesPerBox == None or self.peacesPerBox == 0):
+					if not (self.peacesPerBox == None or self.peacesPerBox == 0 or self.isBulk):
 						peacesPacked = self.boxCount[-1]*self.peacesPerBox
 					else:
 						peacesPacked = self.totalCount[-1]
@@ -728,7 +749,7 @@ class ActivityLogger:
 
 
 				else:
-					if not (self.peacesPerBox == None or self.peacesPerBox == 0):
+					if not (self.peacesPerBox == None or self.peacesPerBox == 0 or self.isBulk):
 						peacesPacked = sum(self.boxCount)*self.peacesPerBox
 					else:
 						peacesPacked = sum(self.totalCount)
@@ -812,6 +833,7 @@ class ActivityLogger:
 		if not self.current_WO == None:
 
 			_machineVars = {"WO": self.current_WO,
+											"Bulk Wo" : self.isBulk,
 											"Time Log Created" : datetime.datetime.now(),
 											"Machine ID": self.MachineID,
 											"WO StartTime": self.WO_StartTime,

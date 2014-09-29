@@ -342,6 +342,15 @@ def main():
 	buttonCompleteWO.font = pygame.font.Font('freesansbold.ttf',13)
 	buttonCompleteWO.bgcolor = GREEN
 
+	#Main screen buttons
+	buttonTotalDubCount = pygbutton.PygButton((2*BRD_SPACER, 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT/2), 'T')
+	buttonTotalDubCount.font = pygame.font.Font('freesansbold.ttf',13)
+	buttonTotalDubCount.bgcolor = RED
+
+	buttonBoxDubCount = pygbutton.PygButton((3*BRD_SPACER+BUTTON_HEIGHT, 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT/2), 'B')
+	buttonBoxDubCount.font = pygame.font.Font('freesansbold.ttf',13)
+	buttonBoxDubCount.bgcolor = GREEN
+
 	buttonSetBoxCount = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 3*BRD_SPACER+BUTTON_HEIGHT, BUTTON_WIDTH/2 -(BRD_SPACER/2), BUTTON_HEIGHT), 'Set PPB')
 	buttonSetBoxCount.font = fontObjectDefault
 
@@ -398,6 +407,11 @@ def main():
 	buttonBoxCount = pygbutton.PygButton(((WINDOWWIDTH/6)-BUTTON_WIDTH/4, 80+WINDOWHEIGHT/2+BRD_SPACER/2, BUTTON_WIDTH/2, BUTTON_HEIGHT), 'BoxCount')
 	buttonBoxCount.font = fontObjectDefault
 
+	#Bulck Button for when u cant set PPB
+	buttonBulk = pygbutton.PygButton(((WINDOWWIDTH/6)-BUTTON_WIDTH/4, 80+WINDOWHEIGHT/2-BUTTON_HEIGHT-BRD_SPACER/2, BUTTON_WIDTH/2, BUTTON_HEIGHT), 'Bulk Order')
+	buttonBulk.font = fontObjectDefault
+	buttonBulk.bgcolor = RED
+
 	#FILL SHEET BUTTONS
 	buttonPackOff = pygbutton.PygButton((WINDOWWIDTH/2+int(2.5*BRD_SPACER),5*BRD_SPACER+153, 24, 25), '     ')
 	buttonPackOff.font = fontObjectDefault
@@ -434,6 +448,22 @@ def main():
 	numPadDic['/'] = pygbutton.PygButton((numpadCenter -(6*int(0.5*BUTTON_HEIGHT)) , WINDOWHEIGHT-4*BUTTON_HEIGHT- 6*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT), '/')
 	numPadDic['-'] = pygbutton.PygButton((numpadCenter -(6*int(0.5*BUTTON_HEIGHT)) , WINDOWHEIGHT-3*BUTTON_HEIGHT- 5*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT), '-')
 	numPadDic['.'] = pygbutton.PygButton((numpadCenter -(6*int(0.5*BUTTON_HEIGHT)) , WINDOWHEIGHT-2*BUTTON_HEIGHT- 4*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT), '.')
+
+
+	#Creates Letter Keys For Batch Numbers
+	batchKeys = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "M", "P"]
+
+	batchColumLength = len(batchKeys)*(BUTTON_HEIGHT+BRD_SPACER)
+	BatchXStart = WINDOWWIDTH/2 - (batchColumLength/2)
+
+
+	batchPadDict = dict()
+	for key in batchKeys:
+		batchPadDict[key] =  pygbutton.PygButton((BatchXStart,  WINDOWHEIGHT-6*BUTTON_HEIGHT- 9*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT), key)
+		batchPadDict[key].font = fontObjectDefault
+		batchPadDict[key].visible = False
+
+		BatchXStart += BUTTON_HEIGHT + BRD_SPACER
 
 	#1)Maitenance, 2)Inventory, 3)Quality_Control
 	dwnTimeButtons = dict()
@@ -711,6 +741,14 @@ def main():
 						else:
 							displayText = [key]
 
+				for key in batchPadDict.keys():
+					if 'click' in batchPadDict[key].handleEvent(event):
+						#just append current displaytext word
+						if not displayText == []:
+							displayText[-1] += key
+						else:
+							displayText = [key]
+
 				#Captures events and exicutes code relating to DWNTIME BUTTONS
 				for key in dwnTimeButtons.keys():
 					if 'click' in dwnTimeButtons[key].handleEvent(event):
@@ -732,6 +770,15 @@ def main():
 					tmp2 = buttonBoxCount.bgcolor
 					buttonTotalCount.bgcolor = tmp2
 					buttonBoxCount.bgcolor = tmp1
+
+
+				if 'click' in buttonBulk.handleEvent(event):
+					if buttonBulk.bgcolor == GREEN:
+						buttonBulk.bgcolor = RED
+						cur_AL.isBulk = False
+					else:
+						buttonBulk.bgcolor = GREEN
+						cur_AL.isBulk = True
 
 				buttonPackOffEvent = buttonPackOff.handleEvent(event)
 				if 'click' in buttonPackOffEvent:
@@ -760,6 +807,21 @@ def main():
 				if 'click' in buttonChangeEvent or scanVal == '#CHANGE_WO':
 					GUI_STATE = 2
 					displayText = []
+
+					#buttonTotalDubCount, buttonBoxDubCount
+				if 'click' in buttonTotalDubCount.handleEvent(event):
+					cur_AL.TotalDoubleCount = not cur_AL.TotalDoubleCount
+					if buttonTotalDubCount.bgcolor == RED:
+						buttonTotalDubCount.bgcolor = GREEN
+					else:
+						buttonTotalDubCount.bgcolor = RED
+
+				if 'click' in buttonBoxDubCount.handleEvent(event):
+					cur_AL.BoxDoubleCount = not cur_AL.BoxDoubleCount
+					if buttonBoxDubCount.bgcolor == RED:
+						buttonBoxDubCount.bgcolor = GREEN
+					else:
+						buttonBoxDubCount.bgcolor = RED
 
 				buttonBoxEvent = buttonSetBoxCount.handleEvent(event)
 				if ('click' in buttonBoxEvent or scanVal == '#CHANGE_PPB') and not cur_AL.getCurrentState()[0] == None:
@@ -1068,6 +1130,9 @@ def main():
 			FillSheet.visible = False
 			buttonPackOff.visible = False
 
+			buttonTotalDubCount.visible=False
+			buttonBoxDubCount.visible =False
+
 			if not addColToFillSheet is None:
 				addColToFillSheet.visible = False
 
@@ -1075,7 +1140,11 @@ def main():
 			buttonBack.visible = False
 
 			buttonTotalCount.visible = False
+			buttonBulk.visible = False
 			buttonBoxCount.visible = False
+
+			for key in batchPadDict:
+				batchPadDict[key].visible = False
 
 			for key in stillLoggedIn.keys():
 				stillLoggedIn[key].visible = False
@@ -1153,6 +1222,8 @@ def main():
 					drawText(displayText,25,GREEN,pygame.display.get_surface(), screenTopLeftX+BRD_SPACER, screenTopLeftY+BRD_SPACER, screenWidth-2*BRD_SPACER, screenHeight-2*BRD_SPACER,cur_AL, None)
 
 				elif GUI_STATE == 2.5:
+					buttonBulk.visible = True
+
 					Header_SO = pygame.font.Font('freesansbold.ttf',36).render("Please Type Or Scan In The Pieces Per Box",False, WHITE)
 					Header_Rect = Header_SO.get_rect()
 					Header_Rect.topleft = (WINDOWWIDTH/2 - Header_Rect[2]/2,BRD_SPACER*6)
@@ -1189,6 +1260,10 @@ def main():
 
 
 				elif GUI_STATE == 9.1 or GUI_STATE == 9.5:
+
+					for key in batchPadDict:
+						batchPadDict[key].visible = True
+
 					Header_SO = pygame.font.Font('freesansbold.ttf',36).render("Please Type Or Scan In Valid Input",False, WHITE)
 					Header_Rect = Header_SO.get_rect()
 					Header_Rect.topleft = (WINDOWWIDTH/2 - Header_Rect[2]/2,BRD_SPACER*6)
@@ -1848,6 +1923,9 @@ def main():
 			buttonShutdown.visible = False
 			FillSheet.visible = False
 
+			buttonTotalDubCount.visible=False
+			buttonBoxDubCount.visible =False
+
 			if not addColToFillSheet is None:
 				addColToFillSheet.visible = False
 
@@ -1856,7 +1934,11 @@ def main():
 
 			buttonPackOff.visible = False
 			buttonTotalCount.visible = False
+			buttonBulk.visible = False
 			buttonBoxCount.visible = False
+
+			for key in batchPadDict:
+				batchPadDict[key].visible = False
 
 			for key in dwnTimeButtons.keys():
 				dwnTimeButtons[key].visible = False
@@ -1943,6 +2025,9 @@ def main():
 			buttonShutdown.visible = True
 			FillSheet.visible = True
 
+			buttonTotalDubCount.visible=True
+			buttonBoxDubCount.visible =True
+
 			if not addColToFillSheet is None:
 				addColToFillSheet.visible = False
 
@@ -1951,7 +2036,11 @@ def main():
 
 			buttonPackOff.visible = False
 			buttonTotalCount.visible = False
+			buttonBulk.visible = False
 			buttonBoxCount.visible = False
+
+			for key in batchPadDict:
+				batchPadDict[key].visible = False
 
 			for key in dwnTimeButtons.keys():
 				dwnTimeButtons[key].visible = False
@@ -2390,6 +2479,8 @@ def main():
 		#we always draw buttons because visibility is a method function handled in the events
 		buttonCompleteWO.draw(DISPLAYSURFACE)
 		buttonChangeWO.draw(DISPLAYSURFACE)
+		buttonTotalDubCount.draw(DISPLAYSURFACE)
+		buttonBoxDubCount.draw(DISPLAYSURFACE)
 		buttonSetBoxCount.draw(DISPLAYSURFACE)
 		buttonAddEmployee.draw(DISPLAYSURFACE)
 		buttonRemoveEmployee.draw(DISPLAYSURFACE)
@@ -2403,6 +2494,7 @@ def main():
 		buttonNo.draw(DISPLAYSURFACE)
 		buttonOk.draw(DISPLAYSURFACE)
 		buttonTotalCount.draw(DISPLAYSURFACE)
+		buttonBulk.draw(DISPLAYSURFACE)
 		buttonBoxCount.draw(DISPLAYSURFACE)
 		FillSheet.draw(DISPLAYSURFACE)
 		buttonPackOff.draw(DISPLAYSURFACE)
@@ -2434,6 +2526,9 @@ def main():
 		#Draw numpad
 		for key in numPadDic.keys():
 			numPadDic[key].draw(DISPLAYSURFACE)
+
+		for key in batchPadDict:
+			batchPadDict[key].draw(DISPLAYSURFACE)
 
 		pygame.display.update()
 		FPSCLOCK.tick(FPS)

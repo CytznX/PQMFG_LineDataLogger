@@ -199,11 +199,12 @@ class ThreadedTCPNetworkAgent(Thread):
 				FirstFillSheet = wb.create_sheet()
 				FirstFillSheet.title = 'FillSheet#'+str(curNumRuns+1)
 
-			_preOrderedKeys = ["Machine ID", "WO", "WO StartTime", "Time Log Created", "Total Count", "Box Count", "Fail Count", "Peaces Per Box", "Fill Start", "Fill End"]
+			_preOrderedKeys = ["Machine ID", "WO", "Bulk Wo", "WO StartTime", "Time Log Created", "Total Count", "Box Count", "Fail Count", "Peaces Per Box", "Fill Start", "Fill End"]
+			_TimedKeys = ["WO StartTime", "Time Log Created", "Fill Start", "Fill End"]
 
 			_LastColumb = 1
 			for key in _preOrderedKeys:
-				if not key == "WO StartTime" and not key == "Time Log Created":
+				if not key in _TimedKeys:
 
 					FirstSheet['A'+str(_LastColumb)] = key
 					FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
@@ -211,6 +212,9 @@ class ThreadedTCPNetworkAgent(Thread):
 					try:
 						FirstSheet['B'+str(_LastColumb)] = unPickledData[0][key]
 						FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+
+					except KeyError,e:
+						print "Woopc... Passed dictionary didnt contain Key: ",key
 
 					except ValueError, e:
 
@@ -225,11 +229,17 @@ class ThreadedTCPNetworkAgent(Thread):
 						FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
 
 				else:
-					FirstSheet['A'+str(_LastColumb)] = key
-					FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
+					try:
+						FirstSheet['A'+str(_LastColumb)] = key
+						FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True), alignment=Alignment(horizontal=alignment.HORIZONTAL_LEFT)))
 
-					FirstSheet['B'+str(_LastColumb)] = unPickledData[0][key].strftime('(%D) @ %H:%M:%S')
-					FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+						if not unPickledData[0][key] == None:
+							FirstSheet['B'+str(_LastColumb)] = unPickledData[0][key].strftime('(%D) @ %H:%M:%S')
+						else:
+							FirstSheet['B'+str(_LastColumb)] = "N/A"
+						FirstSheet.set_style('B'+str(_LastColumb), styles.Style(alignment=Alignment(horizontal=alignment.HORIZONTAL_CENTER)))
+					except:
+						print "uh oh something went wrong...", key
 
 				_LastColumb += 1
 			_LastColumb += 1
@@ -281,53 +291,59 @@ class ThreadedTCPNetworkAgent(Thread):
 			FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
 			_LastColumb += 1
 
-			maintainMsg = ""
+			FirstSheet['A'+str(_LastColumb)] = 'Maintanance> '+str(unPickledData[2]["FormattedMain"][0])+':'+str(unPickledData[2]["FormattedMain"][1])+':'+str(unPickledData[2]["FormattedMain"][2])
+			_LastColumb+=1
+
 			for start,end in unPickledData[0]["Maintanance Down Times"]:
+				maintainMsg = ""
 				if not end == None:
 					maintainMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) '
 				else:
 					maintainMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) '
 
-			FirstSheet['A'+str(_LastColumb)] = 'Maintanance> '+str(unPickledData[2]["FormattedMain"][0])+':'+str(unPickledData[2]["FormattedMain"][1])+':'+str(unPickledData[2]["FormattedMain"][2])
+				FirstSheet['A'+str(_LastColumb)] = maintainMsg
+				_LastColumb+=1
 			_LastColumb+=1
-			FirstSheet['A'+str(_LastColumb)] = maintainMsg
-			_LastColumb+=2
 
-			InventoryMsg = ""
+			FirstSheet['A'+str(_LastColumb)] = 'Inventory> '+str(unPickledData[2]["FormattedInv"][0])+':'+str(unPickledData[2]["FormattedInv"][1])+':'+str(unPickledData[2]["FormattedInv"][2])
+			_LastColumb+=1
+
 			for start,end in unPickledData[0]["Inventory Down Time"]:
+				InventoryMsg = ""
 				if not end == None:
 					InventoryMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) '
 				else:
 					InventoryMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) '
 
-			FirstSheet['A'+str(_LastColumb)] = 'Inventory> '+str(unPickledData[2]["FormattedInv"][0])+':'+str(unPickledData[2]["FormattedInv"][1])+':'+str(unPickledData[2]["FormattedInv"][2])
+				FirstSheet['A'+str(_LastColumb)] = InventoryMsg
+				_LastColumb+=1
 			_LastColumb+=1
-			FirstSheet['A'+str(_LastColumb)] = InventoryMsg
-			_LastColumb+=2
 
-			QualityControlMsg = ""
+			FirstSheet['A'+str(_LastColumb)] = 'Quality_Control> '+str(unPickledData[2]["FormattedQuality"][0])+':'+str(unPickledData[2]["FormattedQuality"][1])+':'+str(unPickledData[2]["FormattedQuality"][2])
+			_LastColumb+=1
 			for start,end in unPickledData[0]["Quality Control Down Time"]:
+				QualityControlMsg = ""
 				if not end == None:
 					QualityControlMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) '
 				else:
 					QualityControlMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) '
 
-			FirstSheet['A'+str(_LastColumb)] = 'Quality_Control> '+str(unPickledData[2]["FormattedQuality"][0])+':'+str(unPickledData[2]["FormattedQuality"][1])+':'+str(unPickledData[2]["FormattedQuality"][2])
+				FirstSheet['A'+str(_LastColumb)] = InventoryMsg
+				_LastColumb+=1
 			_LastColumb+=1
-			FirstSheet['A'+str(_LastColumb)] = InventoryMsg
-			_LastColumb+=2
-
-			breakMsg = []
-			for start,end in unPickledData[0]["Break Down Time"]:
-				if not end == None:
-					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) ']
-				else:
-					breakMsg += ['(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) ']
 
 			FirstSheet['A'+str(_LastColumb)] = 'Break> '+str(unPickledData[2]["FormattedBreak"][0])+':'+str(unPickledData[2]["FormattedBreak"][1])+':'+str(unPickledData[2]["FormattedBreak"][2])
 			_LastColumb+=1
-			FirstSheet['A'+str(_LastColumb)] = InventoryMsg
-			_LastColumb+=2
+
+			for start,end in unPickledData[0]["Break Down Time"]:
+				breakMsg = ""
+				if not end == None:
+					breakMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+end[0].strftime('%H:%M:%S')+' '+str(end[1])+')) '
+				else:
+					breakMsg += '(('+start[0].strftime('%H:%M:%S')+' '+str(start[1])+'),('+now.strftime('%H:%M:%S')+' N/A)) '
+				FirstSheet['A'+str(_LastColumb)] = breakMsg
+				_LastColumb+=1
+			_LastColumb+=1
 
 			FirstSheet['A'+str(_LastColumb)] = 'Total> '+str(unPickledData[2]["FormattedTotal"][0])+':'+str(unPickledData[2]["FormattedTotal"][1])+':'+str(unPickledData[2]["FormattedTotal"][2])
 			FirstSheet.set_style('A'+str(_LastColumb), styles.Style(font=Font(bold=True)))
