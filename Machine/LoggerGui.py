@@ -657,6 +657,12 @@ def main():
 					del(fillSheetCollumButtons[_tmpState][_needToremove[1]])
 					del(FillSheetCurdict[_needToremove[1 ]])
 
+					StartHeight = sub_Header_Rect[1] + sub_Header_Rect[3]+BRD_SPACER
+					for key in sorted(fillSheetCollumButtons[_tmpState].keys()):
+						for key2 in fillSheetCollumButtons[_tmpState][key].keys():
+							fillSheetCollumButtons[_tmpState][key][key2].rect = pygame.Rect(fillSheetCollumButtons[_tmpState][key][key2].rect[0], StartHeight, fillSheetCollumButtons[_tmpState][key][key2].rect[2], fillSheetCollumButtons[_tmpState][key][key2].rect[3])
+						StartHeight = StartHeight+(BUTTON_HEIGHT+BRD_SPACER)
+
 				if not addColToFillSheet is None:
 					if'click' in addColToFillSheet.handleEvent(event):
 						if not FillSheetCurdict is None:
