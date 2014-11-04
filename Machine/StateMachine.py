@@ -2,7 +2,7 @@
 This is Version 2.0 of the PQMFG state machine feature improved as well as simplified functionality
 
 Created By: Maxwell Seifert
-
+Biarritz
 '''
 rpi = False
 
@@ -126,9 +126,28 @@ class ActivityLogger:
 		self.Messages.put((message,dispTime))
 
 	def getCounts(self):
+
+		#self._PalletInfo = {"INIT": ["Pallet#", "Cases", "Pcs/Case", "Count", "Batch#"]}
+
 		returns = None
 		if self.isBulk:
 			returns = (self.totalCount, 0, self.boxCount, self.peacesPerBox)
+		elif len(self._PalletInfo.keys())>1:
+
+			tmpBoxed = 0
+			tmpFail = 0
+
+			for key in self._PalletInfo.keys():
+				if not key == "INIT":
+					print self._PalletInfo[key]
+					try:
+						tmpBoxed += int(self._PalletInfo[key]['Cases'])
+						tmpFail += int(self._PalletInfo[key]['Cases'])*int(self._PalletInfo[key]['Pcs/Case'])
+					except ValueError,e:
+						self.pushMessage("Value Error in Pallet info, Deleted bad Line... Please make sure all necisary values are integers")
+						del (self._PalletInfo[key])
+
+			returns = (self.totalCount, sum(self.totalCount)-tmpFail, [tmpBoxed], self.peacesPerBox)
 		else:
 			returns = (self.totalCount, self.failCount, self.boxCount, self.peacesPerBox)
 		return returns
@@ -746,7 +765,6 @@ class ActivityLogger:
 						peacesPacked = self.totalCount[-1]
 
 					curAvg = peacesPacked/((datetime.datetime.now()-self.hourdecrement).seconds/60.0)
-
 
 				else:
 					if not (self.peacesPerBox == None or self.peacesPerBox == 0 or self.isBulk):

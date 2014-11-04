@@ -315,7 +315,7 @@ def main():
 
 	initStaticText.append((TotalParts_MSG_SO,TotalParts_MSG_Rect))
 
-	TotalBoxs_MSG_SO = fontObjectDefault.render("Boxes:",False, WHITE)
+	TotalBoxs_MSG_SO = fontObjectDefault.render("Cases:",False, WHITE)
 	TotalBoxs_MSG_Rect = TotalBoxs_MSG_SO.get_rect()
 	TotalBoxs_MSG_Rect.topleft = (BRD_SPACER+TXT_SPACER,TotalParts_MSG_Rect[1]+TotalParts_MSG_Rect[3])
 
@@ -487,10 +487,13 @@ def main():
 	x, y, yoffset = 275, 460, 38
 	_tmpWidths = BUTTON_WIDTH
 
+
+	#finddME
 	fillSheetButtons["FD_Tare"] = pygbutton.PygButton((6 *BRD_SPACER+x,y+BRD_SPACER, _tmpWidths, BUTTON_HEIGHT/2), 'N/A')
 	fillSheetButtons["FD_Volume"] = pygbutton.PygButton((6 *BRD_SPACER+x,yoffset+y+BRD_SPACER, _tmpWidths, BUTTON_HEIGHT/2), 'N/A')
-	fillSheetButtons["FD_Weight"] = pygbutton.PygButton((6 *BRD_SPACER+x,(2*yoffset)+y+BRD_SPACER, _tmpWidths, BUTTON_HEIGHT/2), 'N/A')
-	fillSheetButtons["FD_Cosmetic"] = pygbutton.PygButton((6 *BRD_SPACER+x,(3*yoffset)+y+BRD_SPACER, _tmpWidths, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["FD_SpecGravity"] = pygbutton.PygButton((6 *BRD_SPACER+x,(2*yoffset)+y+BRD_SPACER, _tmpWidths, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["FD_Weight"] = pygbutton.PygButton((6 *BRD_SPACER+x,(3*yoffset)+y+BRD_SPACER, _tmpWidths, BUTTON_HEIGHT/2), 'N/A')
+	fillSheetButtons["FD_Cosmetic"] = pygbutton.PygButton((6 *BRD_SPACER+x,(4*yoffset)+y+BRD_SPACER, _tmpWidths, BUTTON_HEIGHT/2), 'N/A')
 
 	xpo, ypo = WINDOWWIDTH/2 + 100, 475
 	_3buttonwidth = BUTTON_WIDTH
@@ -647,9 +650,10 @@ def main():
 						for key2 in fillSheetCollumButtons[_tmpState][key].keys():
 							if'click' in fillSheetCollumButtons[_tmpState][key][key2].handleEvent(event):
 								if not key2 == "LEDE":
-									fillsheetpressbutton =(key, key2)
-									fillsheetPrevState = GUI_STATE
-									GUI_STATE = 9.5
+									if not key2 == "Fill Weight" and not key2 == "Total Weight"and not key2 == "Total Wt Range":
+										fillsheetpressbutton =(key, key2)
+										fillsheetPrevState = GUI_STATE
+										GUI_STATE = 9.5
 								else:
 									_needToremove = True, key
 
@@ -744,7 +748,7 @@ def main():
 						#just append current displaytext word
 						elif not displayText == []:
 							displayText[-1] += key
-						else:
+						elif not key == 'DEL' and not key == '+/-':
 							displayText = [key]
 
 				for key in batchPadDict.keys():
@@ -934,23 +938,50 @@ def main():
 
 						try:
 							fillSheetButtons[beenClicked].caption = displayText[0]
-							fillSheetButtons[beenClicked].fgcolor = GREEN
 						except Exception, e:
 							print displayText
+						else:
 
-						cur_AL.fillSheet[beenClicked]= displayText[0]
+							if beenClicked == "FD_Volume" or beenClicked == "FD_SpecGravity":
+								cur_AL.fillSheet["FD_Weight"] = "N/A"
+								fillSheetButtons["FD_Weight"].caption = "N/A"
+								fillSheetButtons["FD_Weight"].fgcolor = RED
+								if beenClicked == "FD_Volume":
+									fillSheetButtons["FD_SpecGravity"].caption = "Please Input"
 
-						beenClicked = None
-						GUI_STATE = 9
-						displayText = []
-						addRemove = []
-						scanVal = ''
+
+							elif beenClicked == "FD_Weight":
+								cur_AL.fillSheet["FD_Volume"] = "N/A"
+								fillSheetButtons["FD_Volume"].caption = "N/A"
+								fillSheetButtons["FD_Volume"].fgcolor = RED
+
+								cur_AL.fillSheet["FD_SpecGravity"] = "N/A"
+								fillSheetButtons["FD_SpecGravity"].caption = "N/A"
+								fillSheetButtons["FD_SpecGravity"].fgcolor = RED
+
+							#fillSheetButtons["FD_Tare"]
+							#fillSheetButtons["FD_Volume"]
+							#fillSheetButtons["FD_SpecGravity"]
+							#fillSheetButtons["FD_Weight"]
+							#fillSheetButtons["FD_Cosmetic"]
+
+							cur_AL.fillSheet[beenClicked]= displayText[0]
+							fillSheetButtons[beenClicked].fgcolor = GREEN
+
+						finally:
+							beenClicked = None
+							GUI_STATE = 9
+							displayText = []
+							addRemove = []
+							scanVal = ''
 
 					elif GUI_STATE == 9.5 and not displayText==[]:
+
 
 						fillSheetCollumButtons[fillsheetPrevState][str(fillsheetpressbutton[0])][fillsheetpressbutton[1]].caption = displayText[0]
 						fillSheetCollumButtons[fillsheetPrevState][str(fillsheetpressbutton[0])][fillsheetpressbutton[1]].fgcolor = GREEN
 
+						#fillsheetpressbutton =(key, key2)
 						FillSheetCurdict[str(fillsheetpressbutton[0])][fillsheetpressbutton[1]] = displayText[0]
 
 						beenClicked = None
@@ -1812,35 +1843,50 @@ def main():
 
 				yoffness = 2
 
-				cWD_SO = pygame.font.Font('freesansbold.ttf',20).render("Container Tare Weight(g):",False, WHITE)
+				cWD_SO = pygame.font.Font('freesansbold.ttf',20).render("Tare Weight(g):",False, WHITE)
 				cWD_Rect = cWD_SO.get_rect()
 				cWD_Rect.topleft = (6 *BRD_SPACER,Header2_Rect[1]+Header2_Rect[3]+BRD_SPACER)
 
 				pygame.draw.rect(DISPLAYSURFACE, BLACK, cWD_Rect)
 				DISPLAYSURFACE.blit(cWD_SO,cWD_Rect)
 
-				cV_SO = pygame.font.Font('freesansbold.ttf',20).render("Container Volume(ml):",False, WHITE)
+				cV_SO = pygame.font.Font('freesansbold.ttf',20).render("Volume(ml):",False, WHITE)
 				cV_Rect = cV_SO.get_rect()
 				cV_Rect.topleft = (cWD_Rect[0],yoffness+cWD_Rect[1]+cWD_Rect[3]+BRD_SPACER)
 
 				pygame.draw.rect(DISPLAYSURFACE, BLACK, cV_Rect)
 				DISPLAYSURFACE.blit(cV_SO,cV_Rect)
 
-				cW_SO = pygame.font.Font('freesansbold.ttf',20).render("Container Weight(g):",False, WHITE)
+				cW2_SO = pygame.font.Font('freesansbold.ttf',20).render("    >Specific Gravity:",False, WHITE)
+				cW2_Rect = cW2_SO.get_rect()
+				cW2_Rect.topleft = (cV_Rect[0],(2*yoffness)+cV_Rect[1]+cV_Rect[3]+BRD_SPACER)
+
+				pygame.draw.rect(DISPLAYSURFACE, BLACK, cW2_Rect)
+				DISPLAYSURFACE.blit(cW2_SO,cW2_Rect)
+
+				cW_SO = pygame.font.Font('freesansbold.ttf',20).render("Weight(g):",False, WHITE)
 				cW_Rect = cW_SO.get_rect()
-				cW_Rect.topleft = (cV_Rect[0],(2*yoffness)+cV_Rect[1]+cV_Rect[3]+BRD_SPACER)
+				cW_Rect.topleft = (cW2_Rect[0],(3*yoffness)+cW2_Rect[1]+cW2_Rect[3]+BRD_SPACER)
 
 				pygame.draw.rect(DISPLAYSURFACE, BLACK, cW_Rect)
 				DISPLAYSURFACE.blit(cW_SO,cW_Rect)
 
-				cC_SO = pygame.font.Font('freesansbold.ttf',20).render("Container Cosmetic(g):",False, WHITE)
+				cC_SO = pygame.font.Font('freesansbold.ttf',20).render("Cosmetic(g):",False, WHITE)
 				cC_Rect = cC_SO.get_rect()
-				cC_Rect.topleft = (cW_Rect[0],(3*yoffness)+cW_Rect[1]+cW_Rect[3]+BRD_SPACER)
+				cC_Rect.topleft = (cW_Rect[0],(4*yoffness)+cW_Rect[1]+cW_Rect[3]+BRD_SPACER)
 
 				pygame.draw.rect(DISPLAYSURFACE, BLACK, cC_Rect)
 				DISPLAYSURFACE.blit(cC_SO,cC_Rect)
 
 			elif GUI_STATE == 9.2 or GUI_STATE == 9.3 or GUI_STATE == 9.4:
+
+				#fillSheetButtons["FD_Tare"]
+				#fillSheetButtons["FD_Volume"]
+				#fillSheetButtons["FD_SpecGravity"]
+				#fillSheetButtons["FD_Weight"]
+				#fillSheetButtons["FD_Cosmetic"]
+
+				#cur_AL.fillSheet[]
 
 				buttonBack.visible = True
 
@@ -1850,10 +1896,119 @@ def main():
 				buttonConfirm.visible = False
 				buttonCancle.visible = False
 
+
+				#Here we do exact state speific operations
+				if GUI_STATE == 9.2:
+					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO Batch Weights_____",False, WHITE)
+					FillSheetCurdict = cur_AL.BatchInfo
+
+				elif GUI_STATE == 9.3:
+					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO Pallets_____",False, WHITE)
+					FillSheetCurdict = cur_AL.PalletInfo
+
+				elif GUI_STATE == 9.4:
+					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO QC Samples_____",False, WHITE)
+					FillSheetCurdict = cur_AL.QCInfo
+
+				#Check the buttons
 				if GUI_STATE in fillSheetCollumButtons.keys():
-					for key in fillSheetCollumButtons[GUI_STATE].keys():
+
+					tmeplist = FillSheetCurdict.keys()
+					if "INIT" in tmeplist: tmeplist.remove("INIT")
+
+					for xsKey,key in zip(sorted(tmeplist),sorted(fillSheetCollumButtons[GUI_STATE].keys())):
 						for key2 in fillSheetCollumButtons[GUI_STATE][key].keys():
 							fillSheetCollumButtons[GUI_STATE][key][key2].visible = True
+
+							if key2 == "Count":
+								try:
+									fillSheetCollumButtons[GUI_STATE][key][key2].caption = str(float(FillSheetCurdict[xsKey]["Cases"])*float(FillSheetCurdict[xsKey]["Pcs/Case"]))
+								except ValueError:
+									fillSheetCollumButtons[GUI_STATE][key][key2].caption ="ValueError"
+								except TypeError:
+									fillSheetCollumButtons[GUI_STATE][key][key2].caption ="ValueError"
+								else:
+
+									fillSheetCollumButtons[GUI_STATE][key][key2].fgcolor = GREEN
+									FillSheetCurdict[xsKey][key2] = str(float(FillSheetCurdict[xsKey]["Cases"])*float(FillSheetCurdict[xsKey]["Pcs/Case"]))
+
+
+							if xsKey == max(tmeplist):
+								if key2 == "Fill Weight":
+									if ("FD_Tare" in cur_AL.fillSheet.keys()
+											and (("FD_Volume" in cur_AL.fillSheet.keys() and "FD_SpecGravity"in cur_AL.fillSheet.keys())
+												or "FD_Weight"in cur_AL.fillSheet.keys())
+											and "FD_Cosmetic" in cur_AL.fillSheet.keys()):
+
+										print "Im In"
+
+										if not cur_AL.fillSheet["FD_Weight"] == "N/A":
+											try:
+												fillSheetCollumButtons[GUI_STATE][key][key2].caption = str(float(cur_AL.fillSheet["FD_Weight"])+float(cur_AL.fillSheet["FD_Cosmetic"]))+"(g)"
+											except ValueError:
+												fillSheetCollumButtons[GUI_STATE][key][key2].caption = "ValueError"
+											except TypeError:
+												fillSheetCollumButtons[GUI_STATE][key][key2].caption = "ValueError"
+											else:
+												fillSheetCollumButtons[GUI_STATE][key][key2].fgcolor = GREEN
+
+												#Yuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuup
+												FillSheetCurdict[xsKey][key2] = str(float(cur_AL.fillSheet["FD_Weight"])+float(cur_AL.fillSheet["FD_Cosmetic"]))
+
+										elif  "FD_SpecGravity"in cur_AL.fillSheet.keys():
+											if not cur_AL.fillSheet["FD_Volume"] == "N/A" and not cur_AL.fillSheet["FD_SpecGravity"] == "N/A" and not cur_AL.fillSheet["FD_SpecGravity"] == "Please Input":
+
+												try:
+													fillSheetCollumButtons[GUI_STATE][key][key2].caption = str((float(cur_AL.fillSheet["FD_Volume"])*float(cur_AL.fillSheet["FD_SpecGravity"]))+float(cur_AL.fillSheet["FD_Cosmetic"]))+"(g)"
+												except ValueError:
+													fillSheetCollumButtons[GUI_STATE][key][key2].caption = "ValueError"
+												except TypeError:
+													fillSheetCollumButtons[GUI_STATE][key][key2].caption = "ValueError"
+												else:
+													fillSheetCollumButtons[GUI_STATE][key][key2].fgcolor = GREEN
+
+													#Yuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuup
+													FillSheetCurdict[xsKey][key2] = str((float(cur_AL.fillSheet["FD_Volume"])*float(cur_AL.fillSheet["FD_SpecGravity"]))+float(cur_AL.fillSheet["FD_Cosmetic"]))
+
+									else:
+										fillSheetCollumButtons[GUI_STATE][key][key2].caption = "Unk"
+
+
+								elif key2 == "Total Weight":
+									if "Fill Weight" in FillSheetCurdict[xsKey].keys() and "FD_Tare" in cur_AL.fillSheet.keys():
+										try:
+												fillSheetCollumButtons[GUI_STATE][key][key2].caption = str(float(FillSheetCurdict[xsKey]["Fill Weight"])+float(cur_AL.fillSheet["FD_Tare"]))+"(g)"
+										except ValueError:
+											fillSheetCollumButtons[GUI_STATE][key][key2].caption = "ValueError"
+										except TypeError:
+											fillSheetCollumButtons[GUI_STATE][key][key2].caption = "ValueError"
+										else:
+											fillSheetCollumButtons[GUI_STATE][key][key2].fgcolor = GREEN
+
+											#YUUUUUUUUUUUUUUUUUUUUUUp
+											FillSheetCurdict[xsKey][key2] = str(float(FillSheetCurdict[xsKey]["Fill Weight"])+float(cur_AL.fillSheet["FD_Tare"]))
+
+									else:
+										fillSheetCollumButtons[GUI_STATE][key][key2].caption = "Unk"
+
+								elif key2 == "Total Wt Range":
+
+									if "Total Weight" in FillSheetCurdict[xsKey].keys() and FillSheetCurdict[xsKey]["Total Weight"] is not None:
+
+										try:
+											fillSheetCollumButtons[GUI_STATE][key][key2].caption = FillSheetCurdict[xsKey]["Total Weight"]+"-"+str(float(FillSheetCurdict[xsKey]["Total Weight"])+(0.2*float(FillSheetCurdict[xsKey]["Total Weight"])))+"(g)"
+										except ValueError:
+											fillSheetCollumButtons[GUI_STATE][key][key2].caption = "ValueError"
+										except TypeError:
+											fillSheetCollumButtons[GUI_STATE][key][key2].caption = "ValueError"
+										else:
+											fillSheetCollumButtons[GUI_STATE][key][key2].fgcolor = GREEN
+
+											#YUUUUUUUUUUUUUUUUUUUUUUp
+											FillSheetCurdict[str(key)][xsKey] = FillSheetCurdict[xsKey]["Total Weight"]+"-"+str(float(FillSheetCurdict[xsKey]["Total Weight"])+(0.2*float(FillSheetCurdict[xsKey]["Total Weight"])))
+
+									else:
+										fillSheetCollumButtons[GUI_STATE][key][key2].caption = "Unk"
 
 				if not addColToFillSheet is None:
 					addColToFillSheet.visible = True
@@ -1870,17 +2025,6 @@ def main():
 					elif FillSheetCurdict["INIT"] == cur_AL.QCInfo["INIT"]:
 						cur_AL.QCInfo = FillSheetCurdict
 
-				if GUI_STATE == 9.2:
-					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO Batch Weights_____",False, WHITE)
-					FillSheetCurdict = cur_AL.BatchInfo
-
-				elif GUI_STATE == 9.3:
-					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO Pallets_____",False, WHITE)
-					FillSheetCurdict = cur_AL.PalletInfo
-
-				elif GUI_STATE == 9.4:
-					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO QC Samples_____",False, WHITE)
-					FillSheetCurdict = cur_AL.QCInfo
 
 				for count, header in enumerate(FillSheetCurdict["INIT"]):
 
