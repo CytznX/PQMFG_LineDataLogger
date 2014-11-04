@@ -812,6 +812,10 @@ def main():
 					fillSheetCollumButtons = dict()
 					fillsheetpressbutton = None
 
+					for key in fillSheetButtons.keys():
+						fillSheetButtons[key].caption = "N/A"
+						fillSheetButtons[key].fgcolor = RED
+
 				#Captures events and exicutes code relating to CHANGE WORK ORDER BUTTONS
 				buttonChangeEvent = buttonChangeWO.handleEvent(event)
 				if 'click' in buttonChangeEvent or scanVal == '#CHANGE_WO':
@@ -1939,8 +1943,6 @@ def main():
 											and (("FD_Volume" in cur_AL.fillSheet.keys() and "FD_SpecGravity"in cur_AL.fillSheet.keys())
 												or "FD_Weight"in cur_AL.fillSheet.keys())
 											and "FD_Cosmetic" in cur_AL.fillSheet.keys()):
-
-										print "Im In"
 
 										if not cur_AL.fillSheet["FD_Weight"] == "N/A":
 											try:

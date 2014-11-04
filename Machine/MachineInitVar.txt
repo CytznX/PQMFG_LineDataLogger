@@ -1,4 +1,4 @@
 MachineNumber: 11
 MachinPort: 5005
-ServerIP: 192.168.20.200
+ServerIP: 192.168.20.31
 ServerPort: 5006
