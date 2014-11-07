@@ -141,10 +141,14 @@ class ActivityLogger:
 
 			for key in self._PalletInfo.keys():
 				if not key == "INIT":
-					print self._PalletInfo[key]
+					#print self._PalletInfo[key]
 					try:
 						tmpBoxed += int(self._PalletInfo[key]['Cases'])
 						tmpFail += int(self._PalletInfo[key]['Cases'])*int(self._PalletInfo[key]['Pcs/Case'])
+					except TypeError, e:
+						tmpBoxed += 0
+						tmpFail += 0
+
 					except ValueError,e:
 						self.pushMessage("Value Error in Pallet info, Deleted bad Line... Please make sure all necisary values are integers")
 						del (self._PalletInfo[key])
@@ -382,14 +386,12 @@ class ActivityLogger:
 
 		self.isBulk = False
 
-		self._BatchInfo = dict()
-		self._BatchInfo["INIT"] = ["Batch Code","Fill Weight","Total Weight","Total Wt Range"]
+		self._BatchInfo = {"INIT": ["Batch Code", "Fill Weight", "Total Weight", "Total Wt Range"]}
 
-		self._PalletInfo = dict()
-		self._PalletInfo["INIT"] = ["Pallet#","Cases","Pcs/Case","Count","Batch#"]
+		self._PalletInfo = {"INIT": ["Pallet#", "Cases", "Pcs/Case", "Count", "Batch#"]}
 
-		self._QCInfo = dict()
-		self._QCInfo["INIT"] =["Batch#","Stability","Begins","Middle","Ends","Re-Sample","Initials"]
+		self._QCInfo = {"INIT": ["Batch#","Stability","Begins","Middle","Ends","Re-Sample","Initials"]}
+
 
 
 		#Keeps Track of count adjustments
@@ -548,6 +550,7 @@ class ActivityLogger:
 
 			elif Reason == 'ChangeOver':
 				self.ChangeOverTime.append(((datetime.datetime.now(),ID), None))
+				self.currentReason = Reason
 
 		#(if False)
 		elif not self.currentState:

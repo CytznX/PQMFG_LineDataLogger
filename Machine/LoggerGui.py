@@ -807,14 +807,7 @@ def main():
 				buttonCompleteEvent = buttonCompleteWO.handleEvent(event)
 				if ('click' in buttonCompleteEvent or scanVal == '#COMPLETE_WO') and not cur_AL.getCurrentState()[0]==None:
 					GUI_STATE = 1
-					addColToFillSheet = None
-					initialposition = None
-					fillSheetCollumButtons = dict()
-					fillsheetpressbutton = None
 
-					for key in fillSheetButtons.keys():
-						fillSheetButtons[key].caption = "N/A"
-						fillSheetButtons[key].fgcolor = RED
 
 				#Captures events and exicutes code relating to CHANGE WORK ORDER BUTTONS
 				buttonChangeEvent = buttonChangeWO.handleEvent(event)
@@ -916,7 +909,7 @@ def main():
 							cur_AL.changeCurrentWO(displayText[0])
 							cur_AL.changeState("000", "ChangeOver")
 							displayText=[]
-							GUI_STATE = 0.5
+							GUI_STATE = 0
 						else:
 							GUI_STATE = 2.1
 
@@ -1068,21 +1061,37 @@ def main():
 						cur_AL.changeCurrentWO(displayText[0])
 						cur_AL.changeState("000", "ChangeOver")
 						displayText=[]
-						GUI_STATE = 0.5
+						GUI_STATE = 0
 						scanVal = ''
 
-					elif GUI_STATE ==1:
+					elif GUI_STATE == 1:
 						cur_AL.finishCurrentWO()
+						fillSheetCollumButtons = dict()
+						FillSheetCurdict = None
+
+						addColToFillSheet = None
+						initialposition = None
+						fillsheetpressbutton = None
+
+						for key in fillSheetButtons.keys():
+							fillSheetButtons[key].caption = "N/A"
+							fillSheetButtons[key].fgcolor = RED
+
 						displayText=[]
 						GUI_STATE = 0
 						scanVal = ''
 
 					elif GUI_STATE == 6:
 						if not displayText == []:
-							cur_AL.changeState(cur_AL.getName(displayText[-1]))
+							if cur_AL.getCurrentState()[2] is not "ChangeOver":
+								cur_AL.changeState(cur_AL.getName(displayText[-1]))
+							else:
+								cur_AL.changeState(cur_AL.getName(displayText[-1]), "ChangeOver")
 							displayText = []
 							GUI_STATE = 0
 							scanVal = ''
+						else:
+							print "nope"
 
 					elif GUI_STATE == 5.5:
 						if not displayText == [] or dwnReason == None:
@@ -1433,7 +1442,11 @@ def main():
 					Header_Rect2.topleft = (WINDOWWIDTH/2 - Header_Rect2[2]/2,BRD_SPACER*5 +Header_Rect[3])
 
 					if GUI_STATE == 6:
-						Header_SO3 = fontObjectHeader.render("Currently Down For: "+cur_AL.getCurrentState()[2],False, BLACK)
+						try:
+							Header_SO3 = fontObjectHeader.render("Currently Down For: "+cur_AL.getCurrentState()[2],False, BLACK)
+						except Exception, e:
+							Header_SO3 = fontObjectHeader.render("Currently Down For: Change Over",False, BLACK)
+
 						Header_Rect3 = Header_SO3.get_rect()
 						Header_Rect3.topleft = (WINDOWWIDTH/2 - Header_Rect3[2]/2,BRD_SPACER+Header_Rect2[1]+Header_Rect2[3])
 					else:
@@ -1905,6 +1918,7 @@ def main():
 				if GUI_STATE == 9.2:
 					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO Batch Weights_____",False, WHITE)
 					FillSheetCurdict = cur_AL.BatchInfo
+					#print cur_AL.BatchInfo.keys(), FillSheetCurdict.keys()
 
 				elif GUI_STATE == 9.3:
 					Header_SO = pygame.font.Font('freesansbold.ttf',50).render("_____WO Pallets_____",False, WHITE)
@@ -1916,6 +1930,8 @@ def main():
 
 				#Check the buttons
 				if GUI_STATE in fillSheetCollumButtons.keys():
+
+					#print GUI_STATE, sorted(FillSheetCurdict.keys()),sorted(fillSheetCollumButtons[GUI_STATE].keys())
 
 					tmeplist = FillSheetCurdict.keys()
 					if "INIT" in tmeplist: tmeplist.remove("INIT")
@@ -1937,7 +1953,8 @@ def main():
 									FillSheetCurdict[xsKey][key2] = str(float(FillSheetCurdict[xsKey]["Cases"])*float(FillSheetCurdict[xsKey]["Pcs/Case"]))
 
 
-							if xsKey == max(tmeplist):
+							#if xsKey == max(tmeplist):
+							if xsKey == max(fillSheetCollumButtons[GUI_STATE].keys()):
 								if key2 == "Fill Weight":
 									if ("FD_Tare" in cur_AL.fillSheet.keys()
 											and (("FD_Volume" in cur_AL.fillSheet.keys() and "FD_SpecGravity"in cur_AL.fillSheet.keys())
@@ -1998,7 +2015,7 @@ def main():
 									if "Total Weight" in FillSheetCurdict[xsKey].keys() and FillSheetCurdict[xsKey]["Total Weight"] is not None:
 
 										try:
-											fillSheetCollumButtons[GUI_STATE][key][key2].caption = FillSheetCurdict[xsKey]["Total Weight"]+"-"+str(float(FillSheetCurdict[xsKey]["Total Weight"])+(0.2*float(FillSheetCurdict[xsKey]["Total Weight"])))+"(g)"
+											fillSheetCollumButtons[GUI_STATE][key][key2].caption = FillSheetCurdict[xsKey]["Total Weight"]+"-"+str(float(FillSheetCurdict[xsKey]["Total Weight"])+(0.02*float(FillSheetCurdict[xsKey]["Total Weight"])))+"(g)"
 										except ValueError:
 											fillSheetCollumButtons[GUI_STATE][key][key2].caption = "ValueError"
 										except TypeError:
@@ -2007,7 +2024,7 @@ def main():
 											fillSheetCollumButtons[GUI_STATE][key][key2].fgcolor = GREEN
 
 											#YUUUUUUUUUUUUUUUUUUUUUUp
-											FillSheetCurdict[str(key)][xsKey] = FillSheetCurdict[xsKey]["Total Weight"]+"-"+str(float(FillSheetCurdict[xsKey]["Total Weight"])+(0.2*float(FillSheetCurdict[xsKey]["Total Weight"])))
+											FillSheetCurdict[str(key)][xsKey] = FillSheetCurdict[xsKey]["Total Weight"]+"-"+str(float(FillSheetCurdict[xsKey]["Total Weight"])+(0.02*float(FillSheetCurdict[xsKey]["Total Weight"])))
 
 									else:
 										fillSheetCollumButtons[GUI_STATE][key][key2].caption = "Unk"
@@ -2504,6 +2521,7 @@ def main():
 			QCColor = GREEN
 			BreakColor = GREEN
 			totalColor = GREEN
+			changeColor = GREEN
 
 			if dwnTimeReason == 'Maitenance':
 				mainColor = RED
@@ -2517,6 +2535,8 @@ def main():
 			elif dwnTimeReason == 'Break':
 				BreakColor = RED
 				totalColor = RED
+			elif dwnTimeReason == 'ChangeOver':
+				changeColor = RED
 
 			#dynamic maintanance downtime totals
 			Dy_MainDwnTime_SO = fontObjectDefault.render(Maintainance_msg,False, mainColor)
@@ -2556,7 +2576,7 @@ def main():
 
 
 
-			Dy_Chngeime_SO = fontObjectDefault.render(ChngOverTime_msg, False, GREEN)
+			Dy_Chngeime_SO = fontObjectDefault.render(ChngOverTime_msg, False, changeColor)
 			Dy_Chngeime_Rect = Dy_Chngeime_SO.get_rect()
 			Dy_Chngeime_Rect.topleft = (dynamicR2StartPos,DY_Hour_PPM_MSG_Rect[1]+2*DY_Hour_PPM_MSG_Rect[3])
 
