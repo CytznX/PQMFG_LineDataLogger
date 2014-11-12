@@ -84,7 +84,7 @@ _24X24_arrow = (               # sized 24x24
 	"                        ",
 	"                        ")
 
-
+"""
 _8x8_Dot_arrow = (              # sized 8x8
 	"        ",
 	"        ",
@@ -105,7 +105,7 @@ _8x8_Dot_arrow = (              # sized 8x8
 	"X...    ",
 	"X..     ",
 	"X.      ",)
-"""
+
 
 
 #FullScreen... turns out... i didnt need it
