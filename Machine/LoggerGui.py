@@ -343,13 +343,18 @@ def main():
 	buttonCompleteWO.bgcolor = GREEN
 
 	#Main screen buttons
-	buttonTotalDubCount = pygbutton.PygButton((2*BRD_SPACER, 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT/2), 'T')
+	buttonTotalDubCount = pygbutton.PygButton((2*BRD_SPACER, 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT/2, BUTTON_HEIGHT/2), '+')
 	buttonTotalDubCount.font = pygame.font.Font('freesansbold.ttf',13)
-	buttonTotalDubCount.bgcolor = RED
+	buttonTotalDubCount.bgcolor = GREEN
 
-	buttonBoxDubCount = pygbutton.PygButton((3*BRD_SPACER+BUTTON_HEIGHT, 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT/2), 'B')
+	Middledisplay = pygbutton.PygButton((3*BRD_SPACER+BUTTON_HEIGHT/2, 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT/2), str(cur_AL.get_Dbounce()))
+	Middledisplay.font = pygame.font.Font('freesansbold.ttf',13)
+	Middledisplay.bgcolor = BLACK
+	Middledisplay.fgcolor = GREEN
+
+	buttonBoxDubCount = pygbutton.PygButton((3*BRD_SPACER+((1.66)*BUTTON_HEIGHT), 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT/2, BUTTON_HEIGHT/2), '-')
 	buttonBoxDubCount.font = pygame.font.Font('freesansbold.ttf',13)
-	buttonBoxDubCount.bgcolor = GREEN
+	buttonBoxDubCount.bgcolor = RED
 
 	buttonSetBoxCount = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 3*BRD_SPACER+BUTTON_HEIGHT, BUTTON_WIDTH/2 -(BRD_SPACER/2), BUTTON_HEIGHT), 'Set PPB')
 	buttonSetBoxCount.font = fontObjectDefault
@@ -815,20 +820,19 @@ def main():
 					GUI_STATE = 2
 					displayText = []
 
-					#buttonTotalDubCount, buttonBoxDubCount
+				#buttonTotalDubCount, buttonBoxDubCount
 				if 'click' in buttonTotalDubCount.handleEvent(event):
-					cur_AL.TotalDoubleCount = not cur_AL.TotalDoubleCount
-					if buttonTotalDubCount.bgcolor == RED:
-						buttonTotalDubCount.bgcolor = GREEN
-					else:
-						buttonTotalDubCount.bgcolor = RED
+					tmpDbounce = cur_AL.get_Dbounce()
+					cur_AL.set_New_Dbounce(tmpDbounce+50)
+					Middledisplay.caption = str(tmpDbounce+50)
+					#print "CLICKED: +", tmpDbounce
 
 				if 'click' in buttonBoxDubCount.handleEvent(event):
-					cur_AL.BoxDoubleCount = not cur_AL.BoxDoubleCount
-					if buttonBoxDubCount.bgcolor == RED:
-						buttonBoxDubCount.bgcolor = GREEN
-					else:
-						buttonBoxDubCount.bgcolor = RED
+					tmpDbounce = cur_AL.get_Dbounce()
+					if not tmpDbounce < 50:
+						cur_AL.set_New_Dbounce(tmpDbounce-50)
+						Middledisplay.caption = str(tmpDbounce-50)
+						#print "CLICKED: -", tmpDbounce
 
 				buttonBoxEvent = buttonSetBoxCount.handleEvent(event)
 				if ('click' in buttonBoxEvent or scanVal == '#CHANGE_PPB') and not cur_AL.getCurrentState()[0] == None:
@@ -1181,6 +1185,7 @@ def main():
 			buttonPackOff.visible = False
 
 			buttonTotalDubCount.visible=False
+			Middledisplay.visible = False
 			buttonBoxDubCount.visible =False
 
 			if not addColToFillSheet is None:
@@ -2093,6 +2098,7 @@ def main():
 			FillSheet.visible = False
 
 			buttonTotalDubCount.visible=False
+			Middledisplay.visible = False
 			buttonBoxDubCount.visible =False
 
 			if not addColToFillSheet is None:
@@ -2194,8 +2200,9 @@ def main():
 			buttonShutdown.visible = True
 			FillSheet.visible = True
 
-			buttonTotalDubCount.visible=True
-			buttonBoxDubCount.visible =True
+			buttonTotalDubCount.visible= True
+			Middledisplay.visible = True
+			buttonBoxDubCount.visible = True
 
 			if not addColToFillSheet is None:
 				addColToFillSheet.visible = False
@@ -2652,6 +2659,7 @@ def main():
 		buttonCompleteWO.draw(DISPLAYSURFACE)
 		buttonChangeWO.draw(DISPLAYSURFACE)
 		buttonTotalDubCount.draw(DISPLAYSURFACE)
+		Middledisplay.draw(DISPLAYSURFACE)
 		buttonBoxDubCount.draw(DISPLAYSURFACE)
 		buttonSetBoxCount.draw(DISPLAYSURFACE)
 		buttonAddEmployee.draw(DISPLAYSURFACE)

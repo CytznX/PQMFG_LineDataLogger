@@ -40,7 +40,7 @@ class ActivityLogger:
 
 		#Current WO that is being run
 		self.current_WO = None
-
+		self.CurrentDbounceTime = 400
 		self.TotalDoubleCount = False
 		self.BoxDoubleCount = True
 
@@ -73,7 +73,6 @@ class ActivityLogger:
 
 		self.fillSheet = dict()
 
-
 		#Used for showing messages to users
 		self.Messages = Queue.Queue()
 
@@ -94,6 +93,8 @@ class ActivityLogger:
 		self.EmployeeRef = self.createEmployeeDic()
 
 		if rpi:
+
+
 			#Initialize GPIO mode
 			GPIO.setmode(GPIO.BCM)
 
@@ -105,12 +106,25 @@ class ActivityLogger:
 
 			# when a falling edge is detected on port 24, regardless of whatever
 			# else is happening in the program, the function my_callback will be run
-			GPIO.add_event_detect(24, GPIO.RISING, callback=self.modCount, bouncetime=400)
+			GPIO.add_event_detect(24, GPIO.RISING, callback=self.modCount, bouncetime=self.CurrentDbounceTime)
 
 			# when a falling edge is detected on port 23, regardless of whatever
 			# else is happening in the program, the function my_callback2 will be run
 			# 'bouncetime=300' includes the bounce control written into interrupts2a.py
-			GPIO.add_event_detect(23, GPIO.RISING, callback=self.modBoxCount, bouncetime=400)
+			GPIO.add_event_detect(23, GPIO.RISING, callback=self.modBoxCount, bouncetime=self.CurrentDbounceTime)
+
+	def get_Dbounce(self):
+		return self.CurrentDbounceTime
+
+	def set_New_Dbounce(self, newtime, pin=24):
+
+		self.CurrentDbounceTime = newtime
+		if rpi:
+			GPIO.remove_event_detect(pin)
+			GPIO.add_event_detect(pin, GPIO.RISING, callback=self.modCount, bouncetime=newtime)
+
+
+
 
 	def release(self):
 		if rpi:
