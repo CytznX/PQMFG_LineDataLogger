@@ -29,7 +29,10 @@ class ActivityLogger:
 	def __init__(self, logFolder = 'LogFolder/'):
 
 		#creates class variabls for passed or called constructor Vars
-		self.logfolder = logFolder
+		if rpi:
+			self.logfolder = '/home/pi/'
+		else:
+			self.logfolder = logFolder
 		self.createInitVars()
 
 		#If this isnt being tested on my computer initialize piface
@@ -174,7 +177,7 @@ class ActivityLogger:
 	def getStartTime(self):
 		return self.WO_StartTime
 
-	def createInitVars(self, DefaultFile = 'MachineInitVar.txt', ErrorLog = 'ErrorLog.txt'):
+	def createInitVars(self, DefaultFile = '/home/pi/MachineInitVar.txt', ErrorLog = 'ErrorLog.txt'):
 
 		ErrorLog = self.logfolder+ErrorLog
 
@@ -187,8 +190,11 @@ class ActivityLogger:
 		recievedlines = []
 
 		try:
+			if rpi:
+				f = open(DefaultFile, "r")#open
+			else:
+				f = open('MachineInitVar.txt', "r")#open
 
-			f = open(DefaultFile, "r")#open
 			recievedlines = f.readlines()#read
 			f.close()#close... <3
 			Readfile = True
