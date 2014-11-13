@@ -100,17 +100,17 @@ class ActivityLogger:
 			# GPIO 23 & 24 set up as inputs, pulled up to avoid false detection.
 			# Both ports are wired to connect to GND on button press.
 			# So we'll be setting up falling edge detection for both
-			GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-			GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+			GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+			GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 			# when a falling edge is detected on port 24, regardless of whatever
 			# else is happening in the program, the function my_callback will be run
-			GPIO.add_event_detect(24, GPIO.FALLING, callback=self.modCount, bouncetime=400)
+			GPIO.add_event_detect(24, GPIO.RISING, callback=self.modCount, bouncetime=400)
 
 			# when a falling edge is detected on port 23, regardless of whatever
 			# else is happening in the program, the function my_callback2 will be run
 			# 'bouncetime=300' includes the bounce control written into interrupts2a.py
-			GPIO.add_event_detect(23, GPIO.FALLING, callback=self.modBoxCount, bouncetime=400)
+			GPIO.add_event_detect(23, GPIO.RISING, callback=self.modBoxCount, bouncetime=400)
 
 	def release(self):
 		if rpi:
