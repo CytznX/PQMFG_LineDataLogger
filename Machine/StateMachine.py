@@ -42,7 +42,7 @@ class ActivityLogger:
 		self.current_WO = None
 		self.CurrentDbounceTime = 400
 		self.TotalDoubleCount = False
-		self.BoxDoubleCount = True
+		self.BoxDoubleCount = False
 
 		#Keeps Track Of current State
 		self.currentState = None
@@ -93,7 +93,6 @@ class ActivityLogger:
 		self.EmployeeRef = self.createEmployeeDic()
 
 		if rpi:
-
 
 			#Initialize GPIO mode
 			GPIO.setmode(GPIO.BCM)
@@ -611,6 +610,8 @@ class ActivityLogger:
 			elif Reason =='ChangeOver':
 				placeholder = self.ChangeOverTime[-1][0]
 				self.ChangeOverTime[-1] = (placeholder, (datetime.datetime.now(),ID))
+				self.totalCount = [0]
+				self.modBoxCounter = 0
 
 			self.currentReason = None
 
@@ -651,8 +652,10 @@ class ActivityLogger:
 
 	def inc_CurTotalCount(self, event=None, amount=1, force=False, ID=None):
 
+		# if Reason == 'ChangeOver'
+
 		incrementSucssful = False
-		if not self.current_WO == None and (not self.currentState == False or force):
+		if not self.current_WO == None and (not self.currentState == False or force or Reason == 'ChangeOver'):
 			if amount==1 and ID == None:
 				incrementSucssful = True
 

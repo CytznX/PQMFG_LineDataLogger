@@ -343,18 +343,22 @@ def main():
 	buttonCompleteWO.bgcolor = GREEN
 
 	#Main screen buttons
-	buttonTotalDubCount = pygbutton.PygButton((2*BRD_SPACER, 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT/2, BUTTON_HEIGHT/2), '+')
-	buttonTotalDubCount.font = pygame.font.Font('freesansbold.ttf',13)
-	buttonTotalDubCount.bgcolor = GREEN
+	addDebounceButton = pygbutton.PygButton((2*BRD_SPACER, 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT/2, BUTTON_HEIGHT/2), '+')
+	addDebounceButton.font = pygame.font.Font('freesansbold.ttf',13)
+	addDebounceButton.bgcolor = GREEN
 
 	Middledisplay = pygbutton.PygButton((3*BRD_SPACER+BUTTON_HEIGHT/2, 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT, BUTTON_HEIGHT/2), str(cur_AL.get_Dbounce()))
 	Middledisplay.font = pygame.font.Font('freesansbold.ttf',13)
 	Middledisplay.bgcolor = BLACK
 	Middledisplay.fgcolor = GREEN
 
-	buttonBoxDubCount = pygbutton.PygButton((3*BRD_SPACER+((1.66)*BUTTON_HEIGHT), 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT/2, BUTTON_HEIGHT/2), '-')
-	buttonBoxDubCount.font = pygame.font.Font('freesansbold.ttf',13)
-	buttonBoxDubCount.bgcolor = RED
+	subtractDebounceButton = pygbutton.PygButton((3*BRD_SPACER+((1.66)*BUTTON_HEIGHT), 3*BUTTON_HEIGHT+2*BRD_SPACER, BUTTON_HEIGHT/2, BUTTON_HEIGHT/2), '-')
+	subtractDebounceButton.font = pygame.font.Font('freesansbold.ttf',13)
+	subtractDebounceButton.bgcolor = RED
+
+	doubleCountButton = pygbutton.PygButton((225, 3*BUTTON_HEIGHT, BUTTON_WIDTH/2, BUTTON_HEIGHT/2), 'Double Count')
+	doubleCountButton.font = pygame.font.Font('freesansbold.ttf',13)
+	doubleCountButton.bgcolor = RED
 
 	buttonSetBoxCount = pygbutton.PygButton((WINDOWWIDTH-2*BRD_SPACER-BUTTON_WIDTH, 3*BRD_SPACER+BUTTON_HEIGHT, BUTTON_WIDTH/2 -(BRD_SPACER/2), BUTTON_HEIGHT), 'Set PPB')
 	buttonSetBoxCount.font = fontObjectDefault
@@ -820,19 +824,26 @@ def main():
 					GUI_STATE = 2
 					displayText = []
 
-				#buttonTotalDubCount, buttonBoxDubCount
-				if 'click' in buttonTotalDubCount.handleEvent(event):
+				#addDebounceButton, subtractDebounceButton
+				if 'click' in addDebounceButton.handleEvent(event):
 					tmpDbounce = cur_AL.get_Dbounce()
 					cur_AL.set_New_Dbounce(tmpDbounce+50)
 					Middledisplay.caption = str(tmpDbounce+50)
 					#print "CLICKED: +", tmpDbounce
 
-				if 'click' in buttonBoxDubCount.handleEvent(event):
+				if 'click' in subtractDebounceButton.handleEvent(event):
 					tmpDbounce = cur_AL.get_Dbounce()
 					if not tmpDbounce < 50:
 						cur_AL.set_New_Dbounce(tmpDbounce-50)
 						Middledisplay.caption = str(tmpDbounce-50)
 						#print "CLICKED: -", tmpDbounce
+
+				if 'click' in doubleCountButton.handleEvent(event):
+					cur_AL.TotalDoubleCount = not cur_AL.TotalDoubleCount
+					if doubleCountButton.bgcolor == RED:
+						doubleCountButton.bgcolor = GREEN
+					else:
+						doubleCountButton.bgcolor = RED
 
 				buttonBoxEvent = buttonSetBoxCount.handleEvent(event)
 				if ('click' in buttonBoxEvent or scanVal == '#CHANGE_PPB') and not cur_AL.getCurrentState()[0] == None:
@@ -1184,9 +1195,10 @@ def main():
 			FillSheet.visible = False
 			buttonPackOff.visible = False
 
-			buttonTotalDubCount.visible=False
+			addDebounceButton.visible=False
 			Middledisplay.visible = False
-			buttonBoxDubCount.visible =False
+			subtractDebounceButton.visible =False
+			doubleCountButton.visible = False
 
 			if not addColToFillSheet is None:
 				addColToFillSheet.visible = False
@@ -2097,9 +2109,10 @@ def main():
 			buttonShutdown.visible = False
 			FillSheet.visible = False
 
-			buttonTotalDubCount.visible=False
+			addDebounceButton.visible=False
 			Middledisplay.visible = False
-			buttonBoxDubCount.visible =False
+			subtractDebounceButton.visible =False
+			doubleCountButton.visible = False
 
 			if not addColToFillSheet is None:
 				addColToFillSheet.visible = False
@@ -2200,9 +2213,10 @@ def main():
 			buttonShutdown.visible = True
 			FillSheet.visible = True
 
-			buttonTotalDubCount.visible= True
+			addDebounceButton.visible= True
 			Middledisplay.visible = True
-			buttonBoxDubCount.visible = True
+			subtractDebounceButton.visible = True
+			doubleCountButton.visible = True
 
 			if not addColToFillSheet is None:
 				addColToFillSheet.visible = False
@@ -2658,9 +2672,10 @@ def main():
 		#we always draw buttons because visibility is a method function handled in the events
 		buttonCompleteWO.draw(DISPLAYSURFACE)
 		buttonChangeWO.draw(DISPLAYSURFACE)
-		buttonTotalDubCount.draw(DISPLAYSURFACE)
+		addDebounceButton.draw(DISPLAYSURFACE)
 		Middledisplay.draw(DISPLAYSURFACE)
-		buttonBoxDubCount.draw(DISPLAYSURFACE)
+		subtractDebounceButton.draw(DISPLAYSURFACE)
+		doubleCountButton.draw(DISPLAYSURFACE)
 		buttonSetBoxCount.draw(DISPLAYSURFACE)
 		buttonAddEmployee.draw(DISPLAYSURFACE)
 		buttonRemoveEmployee.draw(DISPLAYSURFACE)
