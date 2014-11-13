@@ -47,3 +47,4 @@ Server/ServerConLogFile.txt
 Client/
 copyPast.py
 Machine/Logs/
+Machine/MachineInitVar.txt
