@@ -101,8 +101,8 @@ class ActivityLogger:
 			# GPIO 23 & 24 set up as inputs, pulled up to avoid false detection.
 			# Both ports are wired to connect to GND on button press.
 			# So we'll be setting up falling edge detection for both
-			GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-			GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+			GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+			GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 			# when a falling edge is detected on port 24, regardless of whatever
 			# else is happening in the program, the function my_callback will be run
@@ -122,9 +122,6 @@ class ActivityLogger:
 		if rpi:
 			GPIO.remove_event_detect(pin)
 			GPIO.add_event_detect(pin, GPIO.RISING, callback=self.modCount, bouncetime=newtime)
-
-
-
 
 	def release(self):
 		if rpi:
