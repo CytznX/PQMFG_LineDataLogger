@@ -575,6 +575,7 @@ class ActivityLogger:
 				#Close Maintanance Downtime
 				placeholder = self.MaintananceDwnTime[-1][0]
 				self.MaintananceDwnTime[-1] = (placeholder, (datetime.datetime.now(),ID))
+				self.currentReason = None
 
 				if twil:
 					_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Came Back Up from: " + str(self.currentReason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
@@ -584,6 +585,7 @@ class ActivityLogger:
 				#Close Inventory Downtime
 				placeholder = self.InventoryDwnTime[-1][0]
 				self.InventoryDwnTime[-1] = (placeholder, (datetime.datetime.now(),ID))
+				self.currentReason = None
 
 				if twil:
 					_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Came Back Up from: " + str(self.currentReason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
@@ -593,6 +595,7 @@ class ActivityLogger:
 				#Close QualityControlDwnTime Downtime
 				placeholder = self.QualityControlDwnTime[-1][0]
 				self.QualityControlDwnTime[-1] = (placeholder, (datetime.datetime.now(),ID))
+				self.currentReason = None
 
 				if twil:
 					_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Came Back Up from: " + str(self.currentReason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
@@ -602,6 +605,7 @@ class ActivityLogger:
 			elif self.currentReason == 'Break':
 				placeholder = self.BreakDownTime[-1][0]
 				self.BreakDownTime[-1] = (placeholder, (datetime.datetime.now(),ID))
+				self.currentReason = None
 
 				if twil:
 					_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Came Back Up from: " + str(self.currentReason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
@@ -612,6 +616,7 @@ class ActivityLogger:
 				self.ChangeOverTime[-1] = (placeholder, (datetime.datetime.now(),ID))
 				self.totalCount = [0]
 				self.modBoxCounter = 0
+				self.currentReason = None
 
 			self.currentReason = None
 
@@ -655,7 +660,7 @@ class ActivityLogger:
 		# if Reason == 'ChangeOver'
 
 		incrementSucssful = False
-		if not self.current_WO == None and (not self.currentState == False or force or Reason == 'ChangeOver'):
+		if not self.current_WO == None and (not self.currentState == False or force or self.currentReason == 'ChangeOver'):
 			if amount==1 and ID == None:
 				incrementSucssful = True
 
