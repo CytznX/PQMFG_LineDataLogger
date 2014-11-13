@@ -59,7 +59,7 @@ class ActivityLogger:
 		self.failCount = None
 		self.boxCount = None
 		self.peacesPerBox = None
-		self.modCounter = None
+		self.modCounter = 0
 		self.modBoxCounter = None
 		self.FillStart = None
 		self.FillEnd = None
@@ -465,7 +465,7 @@ class ActivityLogger:
 			self.hourdecrement = None
 
 			#Keeps Track Of Pass/Fail Count
-			self.modCounter = None
+			self.modCounter = 0
 			self.modBoxCounter = None
 			self.totalCount = None
 			self.failCount = None
@@ -638,11 +638,8 @@ class ActivityLogger:
 	self.BoxDoubleCount = False
 	'''
 	def modCount(self, event=None):
-		if not self.modCounter is None:
 			if self.TotalDoubleCount:
-				self.modCounter += 1
-				if self.modCounter % 2 == 0:
-					self.inc_CurTotalCount(event=event)
+				self.inc_CurTotalCount(event=event, amount=2)
 			else:
 				self.inc_CurTotalCount(event=event)
 
