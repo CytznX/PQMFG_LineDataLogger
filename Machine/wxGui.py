@@ -40,9 +40,14 @@ class AboutBox(wx.Dialog):
         self.CentreOnParent(wx.BOTH)
         self.SetFocus()
 
-class Frame(wx.Frame):
+class MainFrame(wx.Frame):
     def __init__(self, title):
-        wx.Frame.__init__(self, None, title=title, pos=(150,150), size=(350,200))
+
+        # Gets frame
+        self.frameSize = wx.GetDisplaySize()
+
+
+        wx.Frame.__init__(self, None, title=title, pos=(0,0), size=wx.GetDisplaySize())
         self.Bind(wx.EVT_CLOSE, self.OnClose)
 
         menuBar = wx.MenuBar()
@@ -88,6 +93,6 @@ class Frame(wx.Frame):
         dlg.Destroy()
 
 app = wx.App(redirect=True)   # Error messages go to popup window
-top = Frame("<<project>>")
+top = MainFrame("<<project>>")
 top.Show()
 app.MainLoop()
