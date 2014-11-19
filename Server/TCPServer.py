@@ -11,7 +11,7 @@ from openpyxl.styles import *
 class ThreadedTCPNetworkAgent(Thread):
 
 	'''Default constructor... Much Love'''
-	def __init__(self, portNum, Folder= 'WorkOrderExcelLogs',BuffSize=1024):
+	def __init__(self, portNum, Folder= '/media/windowsshare/Operations/WorkOrderExcelLogs',BuffSize=1024):
 
 		#Initialize myself as thread... =P
 		Thread.__init__(self)

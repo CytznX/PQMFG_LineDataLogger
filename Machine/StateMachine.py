@@ -664,7 +664,7 @@ class ActivityLogger:
 
 		incrementSucssful = False
 		if not self.current_WO == None and (not self.currentState == False or force or self.currentReason == 'ChangeOver'):
-			if amount==1 and ID == None:
+			if (amount==1 or (self.TotalDoubleCount and amount == 2)) and ID == None:
 				incrementSucssful = True
 
 
@@ -683,9 +683,7 @@ class ActivityLogger:
 				else:
 					self.totalCount[-1] += amount
 
-
-
-			elif (not amount == 1) or (not ID == None):
+			else:
 				self.adjustments.append((ID ,'Total', amount, datetime.datetime.now()))
 				incrementSucssful = True
 
