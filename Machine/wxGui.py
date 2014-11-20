@@ -1,98 +1,87 @@
-#!/usr/bin/python
-# -*- coding: <<encoding>> -*-
-#-------------------------------------------------------------------------------
-#   <<project>>
-#
-#-------------------------------------------------------------------------------
+"""!/usr/bin/python2.7----------------------------------------------------------
+Third itteration of the Data Aquistion gui(Hopefully the last)
 
-import wxversion
-wxversion.select("2.8")
+Written by: Max Seifert AKA cytznx
+-------------------------------------------------------------------------------"""
 import wx, wx.html
 import sys
 
-aboutText = """<p>Sorry, there is no information about this program. It is
-running on version %(wxpy)s of <b>wxPython</b> and %(python)s of <b>Python</b>.
-See <a href="http://wiki.wxpython.org">wxPython Wiki</a></p>"""
-
-class HtmlWindow(wx.html.HtmlWindow):
-    def __init__(self, parent, id, size=(600,400)):
-        wx.html.HtmlWindow.__init__(self,parent, id, size=size)
-        if "gtk2" in wx.PlatformInfo:
-            self.SetStandardFonts()
-
-    def OnLinkClicked(self, link):
-        wx.LaunchDefaultBrowser(link.GetHref())
-
-class AboutBox(wx.Dialog):
-    def __init__(self):
-        wx.Dialog.__init__(self, None, -1, "About <<project>>",
-            style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|wx.RESIZE_BORDER|
-                wx.TAB_TRAVERSAL)
-        hwin = HtmlWindow(self, -1, size=(400,200))
-        vers = {}
-        vers["python"] = sys.version.split()[0]
-        vers["wxpy"] = wx.VERSION_STRING
-        hwin.SetPage(aboutText % vers)
-        btn = hwin.FindWindowById(wx.ID_OK)
-        irep = hwin.GetInternalRepresentation()
-        hwin.SetSize((irep.GetWidth()+25, irep.GetHeight()+10))
-        self.SetClientSize(hwin.GetSize())
-        self.CentreOnParent(wx.BOTH)
-        self.SetFocus()
+from wxMainScreen import mainScreenButtonPanel
+from wxMainScreen import mainScreenInfoPanel
 
 class MainFrame(wx.Frame):
-    def __init__(self, title):
+	def __init__(self, title, fps = 30):
 
-        # Gets frame
-        self.frameSize = wx.GetDisplaySize()
+		# Gets frame size and stores it
+		self.frameSize = wx.GetDisplaySize()
+
+		wx.Frame.__init__(self, None, title=title, pos=(0,0), size=wx.GetDisplaySize())
+
+		# Configure a timer to update the display screen
+		self.timer = wx.Timer(self)
+		self.timer.Start(1000. / fps)
+
+		#Creates Menu Bar At Top of Screen
+		menuBar = wx.MenuBar()
+
+		#Creates Status Bar For Instructions At bottom of Screen
+		self.statusbar = self.CreateStatusBar()
+
+		menu = wx.Menu()
+		m_exit = menu.Append(wx.ID_EXIT, "E&xit To Terminal\tAlt-X", "Exit To Terminal.")
+		m_restart = menu.Append(wx.ID_REDO, "R&estart", "Restart Machine To pull Down new Updates")
+		m_shutDown = menu.Append(wx.ID_STOP, "S&hutdown", "Power down the Machine")
+		menuBar.Append(menu, "&File")
+
+		#menu = wx.Menu()
+		#m_about = menu.Append(wx.ID_ABOUT, "&About", "Information about this program")
+		#menuBar.Append(menu, "&Help")
+
+		self.SetMenuBar(menuBar)
 
 
-        wx.Frame.__init__(self, None, title=title, pos=(0,0), size=wx.GetDisplaySize())
-        self.Bind(wx.EVT_CLOSE, self.OnClose)
 
-        menuBar = wx.MenuBar()
-        menu = wx.Menu()
-        m_exit = menu.Append(wx.ID_EXIT, "E&xit\tAlt-X", "Close window and exit program.")
-        self.Bind(wx.EVT_MENU, self.OnClose, m_exit)
-        menuBar.Append(menu, "&File")
-        menu = wx.Menu()
-        m_about = menu.Append(wx.ID_ABOUT, "&About", "Information about this program")
-        self.Bind(wx.EVT_MENU, self.OnAbout, m_about)
-        menuBar.Append(menu, "&Help")
-        self.SetMenuBar(menuBar)
+		#Main Display Screen
+		mainDispPanel = wx.Panel(self)
 
-        self.statusbar = self.CreateStatusBar()
+		mainButtonPanel = mainScreenButtonPanel(mainDispPanel, self)
+		mainInfoPannel = mainScreenInfoPanel(mainDispPanel, self)
 
-        panel = wx.Panel(self)
-        box = wx.BoxSizer(wx.VERTICAL)
+		mainDispSizer = wx.BoxSizer(wx.HORIZONTAL)
+		mainDispSizer.Add(mainInfoPannel,0,wx.EXPAND|wx.ALL,border=10)
+		mainDispSizer.Add(mainButtonPanel,0,wx.EXPAND|wx.ALL,border=10)
 
-        m_text = wx.StaticText(panel, -1, "Hello World!")
-        m_text.SetFont(wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD))
-        m_text.SetSize(m_text.GetBestSize())
-        box.Add(m_text, 0, wx.ALL, 10)
+		mainDispPanel.SetSizer(mainDispSizer)
 
-        m_close = wx.Button(panel, wx.ID_CLOSE, "Close")
-        m_close.Bind(wx.EVT_BUTTON, self.OnClose)
-        box.Add(m_close, 0, wx.ALL, 10)
+		#Bind Menu Events to Methods
+		self.Bind(wx.EVT_CLOSE, self.OnClose)
+		self.Bind(wx.EVT_MENU, self.OnClose, m_exit)
+		self.Bind(wx.EVT_MENU, self.OnRestart, m_restart)
+		self.Bind(wx.EVT_MENU, self.OnShutdown, m_shutDown)
 
-        panel.SetSizer(box)
-        panel.Layout()
+		# This is the timer event that I use to refresh data on the screen
+		self.Bind(wx.EVT_TIMER, self.RefreshData)
 
-    def OnClose(self, event):
-        dlg = wx.MessageDialog(self,
-            "Do you really want to close this application?",
-            "Confirm Exit", wx.OK|wx.CANCEL|wx.ICON_QUESTION)
-        result = dlg.ShowModal()
-        dlg.Destroy()
-        if result == wx.ID_OK:
-            self.Destroy()
+	def RefreshData(self, event=None):
+		pass
 
-    def OnAbout(self, event):
-        dlg = AboutBox()
-        dlg.ShowModal()
-        dlg.Destroy()
+	def OnClose(self, event):
+		dlg = wx.MessageDialog(self,
+			"Do you really want to close this application?",
+			"Confirm Exit", wx.OK|wx.CANCEL|wx.ICON_QUESTION)
+		result = dlg.ShowModal()
+		dlg.Destroy()
+		if result == wx.ID_OK:
+			self.Destroy()
 
-app = wx.App(redirect=True)   # Error messages go to popup window
+	def OnShutdown(self, event):
+		pass
+
+	def OnRestart(self, event):
+		pass
+
+
+app = wx.App(redirect=False)   # Error messages go to popup window
 top = MainFrame("<<project>>")
 top.Show()
 app.MainLoop()
