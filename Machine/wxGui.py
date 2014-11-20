@@ -13,12 +13,10 @@ class MainFrame(wx.Frame):
 	def __init__(self, title, fps = 30):
 
 
-		#self.tmpFrameSize = (self.frameSize[0]/2,self.frameSize[1]-100)
+		self.tmpFrameSize = (1600, 900)
 
 		# Gets frame size and stores it
 		self.frameSize = wx.GetDisplaySize()
-		print self.frameSize
-
 
 		wx.Frame.__init__(self, None, title=title, pos=(0,0), size=self.frameSize,style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
 
@@ -47,12 +45,12 @@ class MainFrame(wx.Frame):
 		#Main Display Screen
 		mainDispPanel = wx.Panel(self)
 
-		mainButtonPanel = mainScreenButtonPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
-		mainInfoPannel = mainScreenInfoPanel(mainDispPanel, self)
+		mainButtonPanel = mainScreenButtonPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-4),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
+		mainInfoPannel = mainScreenInfoPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-4),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
 
 		mainDispSizer = wx.BoxSizer(wx.HORIZONTAL)
-		mainDispSizer.Add(mainInfoPannel,0,wx.EXPAND|wx.ALL,border=5)
-		mainDispSizer.Add(mainButtonPanel,0,wx.EXPAND|wx.ALL,border=5)
+		mainDispSizer.Add(mainInfoPannel,0,wx.EXPAND|wx.ALL,border=2)
+		mainDispSizer.Add(mainButtonPanel,0,wx.EXPAND|wx.ALL,border=2)
 
 		mainDispPanel.SetSizer(mainDispSizer)
 

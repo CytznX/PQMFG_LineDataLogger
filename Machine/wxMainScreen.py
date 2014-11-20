@@ -13,10 +13,10 @@ import os, sys
 import user
 
 class mainScreenInfoPanel(wx.Panel):
-	def __init__(self, parent, frame,):
+	def __init__(self, parent, frame, size):
 
 		# initialize Pannel
-		wx.Panel.__init__(self, parent)
+		wx.Panel.__init__(self, parent, size=size)
 
 		#set Background color
 		self.SetBackgroundColour("black")
@@ -28,7 +28,7 @@ class mainScreenInfoPanel(wx.Panel):
 
 		box = wx.BoxSizer(wx.VERTICAL)
 
-		m_text = wx.StaticText(self, -1, "_________PQMFG Data Aquision System____________________________")
+		m_text = wx.StaticText(self, -1, "___PQMFG Data Aquision System____________________________")
 		m_text.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD))
 		m_text.SetSize(m_text.GetBestSize())
 		box.Add(m_text, 0, wx.ALL, 10)
@@ -54,9 +54,9 @@ class mainScreenButtonPanel(wx.Panel):
 
 			#some universal variables
 			self.button_width = (size[0]-(3*self.gap))/2
-			self.button_height = ((int(((2.0/3.0)*(size[1]))-(9*self.gap)))/8)
+			self.button_height = ((int(((2.0/3.0)*(size[1]))-(8*self.gap)))/7)
 			self.dialog_width = (size[0])-(3*self.gap)
-			self.dialog_height = ((1.0/3.0)*(size[1])) - (1*self.gap)
+			self.dialog_height = ((1.0/3.0)*(size[1])) - (2*self.gap)
 
 			self.gap = self.gap
 
