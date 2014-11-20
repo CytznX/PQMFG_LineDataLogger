@@ -1,5 +1,8 @@
+"""!/usr/bin/python2.7----------------------------------------------------------
+Class that holds the Componets for the main view screen of PQMFG data aquistion system
 
-
+Written by: Max Seifert AKA cytznx
+-------------------------------------------------------------------------------"""
 
 #Gui Elements
 import wx
@@ -10,18 +13,23 @@ import os, sys
 import user
 
 class mainScreenInfoPanel(wx.Panel):
-	def __init__(self, parent, frame):
+	def __init__(self, parent, frame,):
 
 		# initialize Pannel
 		wx.Panel.__init__(self, parent)
+
+		#set Background color
+		self.SetBackgroundColour("black")
+
+		self.LocalBorder = 5
 
 		# I save this ... for setting size later but i dont think i need to use it...
 		self.myParent = parent
 
 		box = wx.BoxSizer(wx.VERTICAL)
 
-		m_text = wx.StaticText(self, -1, "Hello World!")
-		m_text.SetFont(wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD))
+		m_text = wx.StaticText(self, -1, "_________PQMFG Data Aquision System____________________________")
+		m_text.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD))
 		m_text.SetSize(m_text.GetBestSize())
 		box.Add(m_text, 0, wx.ALL, 10)
 
@@ -32,157 +40,156 @@ class mainScreenInfoPanel(wx.Panel):
 		self.SetSizer(box)
 		self.Layout()
 
+	def RefreshData(self):
+		pass
+
+
 class mainScreenButtonPanel(wx.Panel):
 
-		def __init__(self, parent, frame):
+		def __init__(self, parent, frame, size,):
 
 			#Tagging Parent
 			self.parent = parent
 			self.gap = 5
 
-			self.lastLoadedDirectory = None
-
-			#Variable That counts number of filters applied
-			self.filterCounter = 0
-
 			#some universal variables
-			self.button_width = 300
-			self.button_height = 50
-			self.dialog_width = (self.button_width*2)+self.gap
-			self.dialog_height = 300
+			self.button_width = (size[0]-(3*self.gap))/2
+			self.button_height = ((int(((2.0/3.0)*(size[1]))-(9*self.gap)))/8)
+			self.dialog_width = (size[0])-(3*self.gap)
+			self.dialog_height = ((1.0/3.0)*(size[1])) - (1*self.gap)
 
+			self.gap = self.gap
 
+			# Create the Button/Message Panel
+			wx.Panel.__init__(self, parent, size=size)
 
-			#Create the Button/Message Panel
-			wx.Panel.__init__(self, parent)
-
-			#set Background color
+			# set Background color
 			self.SetBackgroundColour("black")
 
-			#Create Button for adding BLUR Filter
-			BlurButton = wx.Button(self, label="Blur",
+			# 1 Create Button for adding BLUR Filter
+			LoadNewWOButton = wx.Button(self, label="Load New WO",
 				pos=(self.gap, self.gap), size=(self.button_width, self.button_height))
 
-			BlurButton.Bind(wx.EVT_BUTTON, self.BlurButtonEvent, )
+			LoadNewWOButton.Bind(wx.EVT_BUTTON, self.LoadNewWOButtonEvent, )
 
-			#2Create Button for adding CONTOUR Filter
-			ContourButton = wx.Button(self, label="Contour",
-				pos=(self.gap, 2*self.gap+1*self.button_height), size=(self.button_width, self.button_height))
+			# 2 Create Button for adding CONTOUR Filter
+			DeletWOButton = wx.Button(self, label="Delete Current WO",
+				pos=(self.gap, 2*self.gap+1*self.button_height),
+				size=(self.button_width, self.button_height))
 
-			ContourButton.Bind(wx.EVT_BUTTON, self.ContourButtonEvent, )
+			DeletWOButton.Bind(wx.EVT_BUTTON, self.DeletWOButtonEvent, )
 
-			#3Create Button for adding DETAIL Filter
-			DetailButton = wx.Button(self, label="Detail",
-				pos=(self.gap, 3*self.gap+2*self.button_height), size=(self.button_width, self.button_height))
+			# 3 Create Button for adding DETAIL Filter
+			AddEmployeeButton = wx.Button(self, label="Add Employee",
+				pos=(self.gap, 3*self.gap+2*self.button_height),
+				size=(self.button_width, self.button_height))
 
-			DetailButton.Bind(wx.EVT_BUTTON, self.DetailButtonEvent, )
+			AddEmployeeButton.Bind(wx.EVT_BUTTON, self.AddEmployeeButtonEvent, )
 
-			#4Create Button for adding EDGE_ENHANCE Filter
-			Edge_EnhanceButton = wx.Button(self, label="Edge_Enhance",
-				pos=(self.gap, 4*self.gap+3*self.button_height), size=(self.button_width, self.button_height))
+			# 4 Create Button for adding EDGE_ENHANCE Filter
+			LineUpButton = wx.Button(self, label="Bring Line Up",
+				pos=(self.gap, 4*self.gap+3*self.button_height),
+				size=(self.button_width, self.button_height))
 
-			Edge_EnhanceButton.Bind(wx.EVT_BUTTON, self.EdgeEnhanceButtonEvent, )
-
-			#5Create Button for adding EDGE_ENHANCE_MORE Filter
-			Edge_Enhance_MoreButton = wx.Button(self, label="Edge_Enhance_More",
-				pos=(self.gap, 5*self.gap+4*self.button_height), size=(self.button_width, self.button_height))
-
-			Edge_Enhance_MoreButton.Bind(wx.EVT_BUTTON, self.EdgeEnhanceMoreButtonEvent, )
+			LineUpButton.Bind(wx.EVT_BUTTON, self.LineUpButtonEvent, )
 
 			#
 			########################SECOND COLUM##################################
 			#
 
-			#6Create Button for adding EMBOSS Filter
-			EmbossButton = wx.Button(self, label="Emboss",
-				pos=(2*self.gap + self.button_width, self.gap), size=(self.button_width, self.button_height))
+			# 5 Create Button for adding EMBOSS Filter
+			CompleteCurrentWOButton = wx.Button(self, label="Complete Current WO",
+				pos=(2*self.gap + self.button_width, self.gap),
+				size=(self.button_width, self.button_height))
 
-			EmbossButton.Bind(wx.EVT_BUTTON, self.EmbossButtonEvent, )
+			CompleteCurrentWOButton.Bind(wx.EVT_BUTTON, self.CompleteCurrentWOButtonEvent, )
 
-			#7Create Button for adding FIND_EDGES Filter
-			Find_EdgesButton = wx.Button(self, label="Find_Edges",
-				pos=(2*self.gap + self.button_width, 2*self.gap+1*self.button_height), size=(self.button_width, self.button_height))
+			# 6 Create Button for adding FIND_EDGES Filter
+			AdjustCountButton = wx.Button(self, label="Adjust Current Count",
+				pos=(2*self.gap + self.button_width, 2*self.gap+1*self.button_height),
+				size=(self.button_width, self.button_height))
 
-			Find_EdgesButton.Bind(wx.EVT_BUTTON, self.FindEdgesButtonEvent, )
+			AdjustCountButton.Bind(wx.EVT_BUTTON, self.AdjustCountButtonEvent, )
 
-			#8Create Button for adding SMOOTH Filter
-			SmoothButton = wx.Button(self, label="Smooth",
-				pos=(2*self.gap + self.button_width, 3*self.gap+2*self.button_height), size=(self.button_width, self.button_height))
+			# 7 Create Button for adding SMOOTH Filter
+			removeEmployeeButton = wx.Button(self, label="Remove Employee",
+				pos=(2*self.gap + self.button_width, 3*self.gap+2*self.button_height),
+				size=(self.button_width, self.button_height))
 
-			SmoothButton.Bind(wx.EVT_BUTTON, self.SmoothButtonEvent, )
+			removeEmployeeButton.Bind(wx.EVT_BUTTON, self.removeEmployeeButtonEvent, )
 
-			#9Create Button for adding SMOOTH_MORE Filter
-			Smooth_MoreButton = wx.Button(self, label="Smooth_More",
-				pos=(2*self.gap + self.button_width, 4*self.gap+3*self.button_height), size=(self.button_width, self.button_height))
+			# 8 Create Button for adding SMOOTH_MORE Filter
+			LineDownButton = wx.Button(self, label="Bring Line Down",
+				pos=(2*self.gap + self.button_width, 4*self.gap+3*self.button_height),
+				size=(self.button_width, self.button_height))
 
-			Smooth_MoreButton.Bind(wx.EVT_BUTTON, self.SmoothMoreButtonEvent, )
+			LineDownButton.Bind(wx.EVT_BUTTON, self.SmoothMoreButtonEvent, )
 
-			#10Create Button for adding SHARPEN Filter
-			SharpenButton = wx.Button(self, label="Sharpen",
-				pos=(2*self.gap + self.button_width, 5*self.gap+4*self.button_height), size=(self.button_width, self.button_height))
 
-			SharpenButton.Bind(wx.EVT_BUTTON, self.SharpenButtonEvent, )
+			#
+			########################Bottom Row##################################
+			#
 
-			#11Load Image Button
-			LoadImageButton = wx.Button(self, label="Load Image",
-				pos=(self.gap, 6*self.gap+5*self.button_height), size=((self.button_width*2)+self.gap, self.button_height))
+			# 11 Load Image Button
+			FillSheetButton = wx.Button(self, label="Fill Sheet",
+				pos=(self.gap, 5*self.gap+4*self.button_height),
+				size=((self.button_width*2)+self.gap, self.button_height))
 
-			LoadImageButton.Bind(wx.EVT_BUTTON, self.LoadImageButtonEvent, )
+			FillSheetButton.Bind(wx.EVT_BUTTON, self.FillSheetButtonEvent, )
 
-			#12Load Image Button
-			ShowCompImageButton = wx.Button(self, label="Comparison Image",
-				pos=(self.gap, 7*self.gap+6*self.button_height), size=((self.button_width*2)+self.gap, self.button_height))
+			# 12 Load Image Button
+			SetEmailButton = wx.Button(self, label="Set Email Updates",
+				pos=(self.gap, 6*self.gap+5*self.button_height),
+				size=((self.button_width*2)+self.gap, self.button_height))
 
-			ShowCompImageButton.Bind(wx.EVT_BUTTON, self.ShowCompImageButtonEvent, )
+			SetEmailButton.Bind(wx.EVT_BUTTON, self.SetEmailButtonEvent, )
 
-			#13Reset ImageButton
-			ResetImageButton = wx.Button(self, label="Reset Image",
-				pos=(self.gap, (8*self.gap)+(7*self.button_height)), size=((self.button_width*2)+self.gap, self.button_height))
+			# 13 Reset ImageButton
+			SetPrinterButton = wx.Button(self, label="Set Printer",
+				pos=(self.gap, (7*self.gap)+(6*self.button_height)),
+				size=((self.button_width*2)+self.gap, self.button_height))
 
-			ResetImageButton.Bind(wx.EVT_BUTTON, self.ResetImageButtonEvent, )
+			SetPrinterButton.Bind(wx.EVT_BUTTON, self.SetPrinterButtonEvent, )
 
-			#Create Readout Pannel
-			self._messagePannel = wx.TextCtrl( self, -1, pos=(self.gap, (9*self.gap)+(8*self.button_height)),
+			#
+			########################Readout Pannel ##################################
+			#
+			self._messagePannel = wx.TextCtrl( self, -1,
+				pos=(self.gap, (8*self.gap)+(7*self.button_height)),
 				size = (self.dialog_width, self.dialog_height),
 				style = wx.TE_MULTILINE | wx.TE_READONLY)
 
-		def BlurButtonEvent(self, event=None):
+		def LoadNewWOButtonEvent(self, event=None):
 			pass
 
-		def ContourButtonEvent(self, event=None):
+		def DeletWOButtonEvent(self, event=None):
 			pass
 
-		def DetailButtonEvent(self, event=None):
+		def AddEmployeeButtonEvent(self, event=None):
 			pass
 
-		def EdgeEnhanceButtonEvent(self, event=None):
+		def LineUpButtonEvent(self, event=None):
 			pass
 
-		def EdgeEnhanceMoreButtonEvent(self, event=None):
+		def CompleteCurrentWOButtonEvent(self, event=None):
 			pass
 
-		def EmbossButtonEvent(self, event=None):
+		def AdjustCountButtonEvent(self, event=None):
 			pass
 
-		def FindEdgesButtonEvent(self, event=None):
-			pass
-
-		def SmoothButtonEvent(self, event=None):
+		def removeEmployeeButtonEvent(self, event=None):
 			pass
 
 		def SmoothMoreButtonEvent(self, event=None):
 			pass
 
-		def SharpenButtonEvent(self, event=None):
+		def FillSheetButtonEvent(self, event=None):
 			pass
 
-		def LoadImageButtonEvent(self, event=None):
+		def SetPrinterButtonEvent(self, event=None):
 			pass
 
-		def ResetImageButtonEvent(self, event=None):
-			pass
-
-		def ShowCompImageButtonEvent(self, event=None):
+		def SetEmailButtonEvent(self, event=None):
 			pass
 
 		def UndoFilter(self):
