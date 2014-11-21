@@ -26,23 +26,32 @@ class mainScreenInfoPanel(wx.Panel):
 		# I save this ... for setting size later but i dont think i need to use it...
 		self.myParent = parent
 
-		box = wx.BoxSizer(wx.VERTICAL)
+		mainHeader = wx.StaticText(self, -1, "___PQMFG Data Aquision System____________________________ ",
+			pos =(self.LocalBorder,self.LocalBorder))
 
-		m_text = wx.StaticText(self, -1, "___PQMFG Data Aquision System____________________________")
-		m_text.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD))
-		m_text.SetSize(m_text.GetBestSize())
-		box.Add(m_text, 0, wx.ALL, 10)
+		mainHeader.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD))
+		mainHeader.SetSize(mainHeader.GetBestSize())
+		mainHeader.SetForegroundColour((255,128,0)) # set text color
+		#mainHeader.SetBackgroundColour((0,0,255)) # set text back color
 
-		m_close = wx.Button(self, wx.ID_CLOSE, "Close")
-		m_close.Bind(wx.EVT_BUTTON, frame.OnClose)
-		box.Add(m_close, 0, wx.ALL, 10)
+		# 1 Create Button for adding BLUR Filter
+		LoadNewWOButton = wx.Button(self, label="Load New WO",
+			pos=(200, 200), size=(100, 20))
 
-		self.SetSizer(box)
-		self.Layout()
+		LoadNewWOButton.Bind(wx.EVT_BUTTON, self.OnPaint(), )
 
 	def RefreshData(self):
 		pass
 
+	def OnPaint(self, evt=None):
+		"""set up the device context (DC) for painting"""
+		dc = wx.PaintDC(self)
+		dc.BeginDrawing()
+		dc.SetPen(wx.Pen("red",style=wx.SOLID))
+		dc.SetBrush(wx.Brush("red", wx.SOLID))
+		# set x, y, w, h for rectangle
+		dc.DrawRectangle(self.LocalBorder,self.LocalBorder,200, 200)
+		dc.EndDrawing()
 
 class mainScreenButtonPanel(wx.Panel):
 
@@ -66,27 +75,27 @@ class mainScreenButtonPanel(wx.Panel):
 			# set Background color
 			self.SetBackgroundColour("black")
 
-			# 1 Create Button for adding BLUR Filter
+			# 1 Create Button Loading in New Work Order
 			LoadNewWOButton = wx.Button(self, label="Load New WO",
 				pos=(self.gap, self.gap), size=(self.button_width, self.button_height))
 
 			LoadNewWOButton.Bind(wx.EVT_BUTTON, self.LoadNewWOButtonEvent, )
 
-			# 2 Create Button for adding CONTOUR Filter
+			# 2 Create Button for Deleting in New Work Order
 			DeletWOButton = wx.Button(self, label="Delete Current WO",
 				pos=(self.gap, 2*self.gap+1*self.button_height),
 				size=(self.button_width, self.button_height))
 
 			DeletWOButton.Bind(wx.EVT_BUTTON, self.DeletWOButtonEvent, )
 
-			# 3 Create Button for adding DETAIL Filter
+			# 3 Create Button for adding Employee
 			AddEmployeeButton = wx.Button(self, label="Add Employee",
 				pos=(self.gap, 3*self.gap+2*self.button_height),
 				size=(self.button_width, self.button_height))
 
 			AddEmployeeButton.Bind(wx.EVT_BUTTON, self.AddEmployeeButtonEvent, )
 
-			# 4 Create Button for adding EDGE_ENHANCE Filter
+			# 4 Create Button for Bring Line out of down time
 			LineUpButton = wx.Button(self, label="Bring Line Up",
 				pos=(self.gap, 4*self.gap+3*self.button_height),
 				size=(self.button_width, self.button_height))
@@ -97,28 +106,28 @@ class mainScreenButtonPanel(wx.Panel):
 			########################SECOND COLUM##################################
 			#
 
-			# 5 Create Button for adding EMBOSS Filter
+			# 5 Create Button for Completing the current WO
 			CompleteCurrentWOButton = wx.Button(self, label="Complete Current WO",
 				pos=(2*self.gap + self.button_width, self.gap),
 				size=(self.button_width, self.button_height))
 
 			CompleteCurrentWOButton.Bind(wx.EVT_BUTTON, self.CompleteCurrentWOButtonEvent, )
 
-			# 6 Create Button for adding FIND_EDGES Filter
+			# 6 Create Button for adding Adjusting the Current WO Count
 			AdjustCountButton = wx.Button(self, label="Adjust Current Count",
 				pos=(2*self.gap + self.button_width, 2*self.gap+1*self.button_height),
 				size=(self.button_width, self.button_height))
 
 			AdjustCountButton.Bind(wx.EVT_BUTTON, self.AdjustCountButtonEvent, )
 
-			# 7 Create Button for adding SMOOTH Filter
+			# 7 Create Button for REmoving the current Employee
 			removeEmployeeButton = wx.Button(self, label="Remove Employee",
 				pos=(2*self.gap + self.button_width, 3*self.gap+2*self.button_height),
 				size=(self.button_width, self.button_height))
 
 			removeEmployeeButton.Bind(wx.EVT_BUTTON, self.removeEmployeeButtonEvent, )
 
-			# 8 Create Button for adding SMOOTH_MORE Filter
+			# 8 Create Button for Bringing Line Down
 			LineDownButton = wx.Button(self, label="Bring Line Down",
 				pos=(2*self.gap + self.button_width, 4*self.gap+3*self.button_height),
 				size=(self.button_width, self.button_height))
@@ -130,21 +139,21 @@ class mainScreenButtonPanel(wx.Panel):
 			########################Bottom Row##################################
 			#
 
-			# 11 Load Image Button
+			# Create Button for switching view to fill sheet
 			FillSheetButton = wx.Button(self, label="Fill Sheet",
 				pos=(self.gap, 5*self.gap+4*self.button_height),
 				size=((self.button_width*2)+self.gap, self.button_height))
 
 			FillSheetButton.Bind(wx.EVT_BUTTON, self.FillSheetButtonEvent, )
 
-			# 12 Load Image Button
+			# 12 Create Button for seting Email Updates
 			SetEmailButton = wx.Button(self, label="Set Email Updates",
 				pos=(self.gap, 6*self.gap+5*self.button_height),
 				size=((self.button_width*2)+self.gap, self.button_height))
 
 			SetEmailButton.Bind(wx.EVT_BUTTON, self.SetEmailButtonEvent, )
 
-			# 13 Reset ImageButton
+			# 13Create Button for seting the printer
 			SetPrinterButton = wx.Button(self, label="Set Printer",
 				pos=(self.gap, (7*self.gap)+(6*self.button_height)),
 				size=((self.button_width*2)+self.gap, self.button_height))

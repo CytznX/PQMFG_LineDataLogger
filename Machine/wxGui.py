@@ -16,9 +16,13 @@ class MainFrame(wx.Frame):
 		self.tmpFrameSize = (1600, 900)
 
 		# Gets frame size and stores it
-		self.frameSize = wx.GetDisplaySize()
+		self.frameSize = self.tmpFrameSize #wx.GetDisplaySize()
 
 		wx.Frame.__init__(self, None, title=title, pos=(0,0), size=self.frameSize,style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
+
+
+		#Sets the currser to what i want
+		self.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
 
 		# Configure a timer to update the display screen
 		self.timer = wx.Timer(self)
@@ -45,8 +49,8 @@ class MainFrame(wx.Frame):
 		#Main Display Screen
 		mainDispPanel = wx.Panel(self)
 
-		mainButtonPanel = mainScreenButtonPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-4),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
-		mainInfoPannel = mainScreenInfoPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-4),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
+		mainButtonPanel = mainScreenButtonPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
+		mainInfoPannel = mainScreenInfoPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
 
 		mainDispSizer = wx.BoxSizer(wx.HORIZONTAL)
 		mainDispSizer.Add(mainInfoPannel,0,wx.EXPAND|wx.ALL,border=2)
