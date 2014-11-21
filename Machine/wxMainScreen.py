@@ -65,7 +65,7 @@ class mainScreenButtonPanel(wx.Panel):
 			self.button_width = (size[0]-(3*self.gap))/2
 			self.button_height = ((int(((2.0/3.0)*(size[1]))-(8*self.gap)))/7)
 			self.dialog_width = (size[0])-(3*self.gap)
-			self.dialog_height = ((1.0/3.0)*(size[1])) - (2*self.gap)
+			self.dialog_height = ((1.0/3.0)*(size[1])) - (3*self.gap)
 
 			self.gap = self.gap
 
