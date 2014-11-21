@@ -26,19 +26,42 @@ class mainScreenInfoPanel(wx.Panel):
 		# I save this ... for setting size later but i dont think i need to use it...
 		self.myParent = parent
 
-		mainHeader = wx.StaticText(self, -1, "___PQMFG Data Aquision System____________________________ ",
-			pos =(self.LocalBorder,self.LocalBorder))
+
+		#The Machine Number
+		self.MachineNumberHeader = wx.StaticText(self, -1, "##",
+			pos =(2*self.LocalBorder,self.LocalBorder))
+
+		#Some Basic formating
+		self.MachineNumberHeader.SetFont(wx.Font(40, wx.SWISS, wx.NORMAL, wx.BOLD))
+		headerNumberSize = self.MachineNumberHeader.GetBestSize()
+		self.MachineNumberHeader.SetSize(headerNumberSize)
+		self.MachineNumberHeader.SetForegroundColour((0,255,0)) # set text color
+
+		#Creates the
+		mainHeader = wx.StaticText(self, -1, "PQMFG Data Aquision System_______________ ",
+			pos =((4*self.LocalBorder)+headerNumberSize[0],3.5*self.LocalBorder))
 
 		mainHeader.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD))
 		mainHeader.SetSize(mainHeader.GetBestSize())
-		mainHeader.SetForegroundColour((255,128,0)) # set text color
+		mainHeader.SetForegroundColour((0,255,255)) # set text color
 		#mainHeader.SetBackgroundColour((0,0,255)) # set text back color
 
-		# 1 Create Button for adding BLUR Filter
-		LoadNewWOButton = wx.Button(self, label="Load New WO",
-			pos=(200, 200), size=(100, 20))
+		startPos = (self.MachineNumberHeader.GetBestSize()[0],self.MachineNumberHeader.GetBestSize()[1]+2*self.LocalBorder)
 
-		LoadNewWOButton.Bind(wx.EVT_BUTTON, self.OnPaint(), )
+		"""
+		subHeader = wx.StaticText(self, -1, "PQMFG Data Aquision System_______________ ",
+			pos =((4*self.LocalBorder)+headerNumberSize[0],3.5*self.LocalBorder))
+
+		subHeader.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD))
+		subHeader.SetSize(mainHeader.GetBestSize())
+		subHeader.SetForegroundColour((255,128,0)) # set text color
+		"""
+
+		# 1 Create Button for adding BLUR Filter
+		#LoadNewWOButton = wx.Button(self, label="Load New WO",
+		#	pos=(200, 200), size=(100, 20))
+		#
+		#LoadNewWOButton.Bind(wx.EVT_BUTTON, self.OnPaint(), )
 
 	def RefreshData(self):
 		pass

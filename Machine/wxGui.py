@@ -12,14 +12,11 @@ from wxMainScreen import mainScreenInfoPanel
 class MainFrame(wx.Frame):
 	def __init__(self, title, fps = 30):
 
-
-		self.tmpFrameSize = (1600, 900)
-
 		# Gets frame size and stores it
+		self.tmpFrameSize = (1366, 768) #wanted to do this dynamically but it was just easier to preset
 		self.frameSize = self.tmpFrameSize #wx.GetDisplaySize()
 
 		wx.Frame.__init__(self, None, title=title, pos=(0,0), size=self.frameSize,style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
-
 
 		#Sets the currser to what i want
 		self.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
