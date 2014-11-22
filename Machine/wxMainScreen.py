@@ -13,10 +13,14 @@ import os, sys
 import user
 
 class mainScreenInfoPanel(wx.Panel):
-	def __init__(self, parent, frame, size):
+	def __init__(self, parent, frame, hideMouse, size):
 
 		# initialize Pannel
 		wx.Panel.__init__(self, parent, size=size)
+
+		#Hides the currser
+		if hideMouse:
+			self.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
 
 		#set Background color
 		self.SetBackgroundColour("black")
@@ -166,10 +170,11 @@ class mainScreenInfoPanel(wx.Panel):
 
 class mainScreenButtonPanel(wx.Panel):
 
-		def __init__(self, parent, frame, size,):
+		def __init__(self, parent, frame, hideMouse, size,):
 
 			#Tagging Parent
 			self.parent = parent
+			self.curFrame = frame
 			self.gap = 5
 
 			#some universal variables
@@ -182,6 +187,10 @@ class mainScreenButtonPanel(wx.Panel):
 
 			# Create the Button/Message Panel
 			wx.Panel.__init__(self, parent, size=size)
+
+			#Hides the currser
+			if hideMouse:
+				self.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
 
 			# set Background color
 			self.SetBackgroundColour("black")
@@ -304,7 +313,7 @@ class mainScreenButtonPanel(wx.Panel):
 			pass
 
 		def FillSheetButtonEvent(self, event=None):
-			pass
+			self.curFrame.TogglFillSheet(event)
 
 		def SetPrinterButtonEvent(self, event=None):
 			pass

@@ -10,7 +10,7 @@ from wxMainScreen import mainScreenButtonPanel
 from wxMainScreen import mainScreenInfoPanel
 
 class MainFrame(wx.Frame):
-	def __init__(self, title, fps = 30):
+	def __init__(self, title, hideMouse=True, fps = 30):
 
 		# Gets frame size and stores it
 		self.tmpFrameSize = (1366, 768) #wanted to do this dynamically but it was just easier to preset
@@ -22,15 +22,12 @@ class MainFrame(wx.Frame):
 		#Toggle to show or hide FillSheet/MainScreen
 		self.showFillsheet = False
 
-		#Sets the currser to what i want
-		self.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
-
 		# Configure a timer to update the display screen
 		self.timer = wx.Timer(self)
 		self.timer.Start(1000. / fps)
 
 		#Creates Menu Bar At Top of Screen
-		menuBar = wx.MenuBar()
+		self.menuBar = wx.MenuBar()
 
 		#Creates Status Bar For Instructions At bottom of Screen
 		self.statusbar = self.CreateStatusBar()
@@ -39,25 +36,25 @@ class MainFrame(wx.Frame):
 		m_exit = menu.Append(wx.ID_EXIT, "E&xit To Terminal\tAlt-X", "Exit To Terminal.")
 		m_restart = menu.Append(wx.ID_REDO, "R&estart", "Restart Machine To pull Down new Updates")
 		m_shutDown = menu.Append(wx.ID_STOP, "S&hutdown", "Power down the Machine")
-		menuBar.Append(menu, "&File")
+		self.menuBar.Append(menu, "&File")
 
 		#menu = wx.Menu()
 		#m_about = menu.Append(wx.ID_ABOUT, "&About", "Information about this program")
 		#menuBar.Append(menu, "&Help")
 
-		self.SetMenuBar(menuBar)
+		self.SetMenuBar(self.menuBar)
 
 		#Main Display Screen
-		mainDispPanel = wx.Panel(self)
+		self.mainDispPanel = wx.Panel(self)
 
-		self.mainButtonPanel = mainScreenButtonPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
-		self.mainInfoPannel = mainScreenInfoPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
+		self.mainButtonPanel = mainScreenButtonPanel(self.mainDispPanel, self, hideMouse, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-self.menuBar.GetSize()[1]))
+		self.mainInfoPannel = mainScreenInfoPanel(self.mainDispPanel, self, hideMouse, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-self.menuBar.GetSize()[1]))
 
 		mainDispSizer = wx.BoxSizer(wx.HORIZONTAL)
 		mainDispSizer.Add(self.mainInfoPannel,0,wx.EXPAND|wx.ALL,border=2)
 		mainDispSizer.Add(self.mainButtonPanel,0,wx.EXPAND|wx.ALL,border=2)
 
-		mainDispPanel.SetSizer(mainDispSizer)
+		self.mainDispPanel.SetSizer(mainDispSizer)
 
 		#Bind Menu Events to Methods
 		self.Bind(wx.EVT_CLOSE, self.OnClose)
@@ -67,6 +64,20 @@ class MainFrame(wx.Frame):
 
 		# This is the timer event that I use to refresh data on the screen
 		self.Bind(wx.EVT_TIMER, self.RefreshData)
+
+		#Hides the currser on all pannels
+		if hideMouse:
+			self.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+
+			self.statusbar.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+			self.menuBar.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+
+			self.mainDispPanel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+			#self.mainButtonPanel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+			s#elf.mainInfoPannel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+
+
+
 
 	def RefreshData(self, event=None):
 		self.mainInfoPannel.RefreshData(
@@ -86,6 +97,12 @@ class MainFrame(wx.Frame):
 
 	def TogglFillSheet(self,event):
 		self.showFillsheet = not self.showFillsheet
+
+		if self.showFillsheet:
+			self.mainDispPanel.Hide()
+		else:
+			self.mainDispPanel.Show()
+
 
 
 	def OnShutdown(self, event):
