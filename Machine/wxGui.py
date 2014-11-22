@@ -74,7 +74,7 @@ class MainFrame(wx.Frame):
 
 			self.mainDispPanel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
 			#self.mainButtonPanel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
-			s#elf.mainInfoPannel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+			#self.mainInfoPannel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
 
 
 
