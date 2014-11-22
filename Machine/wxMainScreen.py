@@ -26,46 +26,133 @@ class mainScreenInfoPanel(wx.Panel):
 		# I save this ... for setting size later but i dont think i need to use it...
 		self.myParent = parent
 
-
 		#The Machine Number
 		self.MachineNumberHeader = wx.StaticText(self, -1, "##",
 			pos =(1*self.LocalBorder,self.LocalBorder))
 
-		#Some Basic formating
+		#Basic Formating
 		self.MachineNumberHeader.SetFont(wx.Font(40, wx.SWISS, wx.NORMAL, wx.BOLD))
-		headerNumberSize = self.MachineNumberHeader.GetBestSize()
-		self.MachineNumberHeader.SetSize(headerNumberSize)
+		self.MachineNumberHeader.SetSize(self.MachineNumberHeader.GetBestSize())
 		self.MachineNumberHeader.SetForegroundColour((0,255,0)) # set text color
 		self.MachineNumberHeader.SetBackgroundColour((0,0,255)) # set text back color
 
-		#Creates the
-		mainHeader = wx.StaticText(self, -1, "PQMFG Data Aquision System________________ ",
-			pos =((2*self.LocalBorder)+headerNumberSize[0],3.5*self.LocalBorder))
 
+		#Creates the "PQMFG Data Aquision System________________ " Header
+		mainHeader = wx.StaticText(self, -1, "PQMFG Data Aquision System________________ ",
+			pos =((2*self.LocalBorder) + 91, 3.5*self.LocalBorder))
+
+		#Basic Formating
 		mainHeader.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD))
 		mainHeader.SetSize(mainHeader.GetBestSize())
-		mainHeader.SetForegroundColour((0,255,255)) # set text color
+		mainHeader.SetForegroundColour((128,255,255)) # set text color
 		#mainHeader.SetBackgroundColour((0,0,255)) # set text back color
 
-		startPos = (self.MachineNumberHeader.GetBestSize()[0],self.MachineNumberHeader.GetBestSize()[1]+2*self.LocalBorder)
+		_FirstComnOffset = 5*self.LocalBorder
+		_SecondOffset = 366
+		_ThirdOffset = 700-30
 
-		"""
-		subHeader = wx.StaticText(self, -1, "PQMFG Data Aquision System_______________ ",
-			pos =((4*self.LocalBorder)+headerNumberSize[0],3.5*self.LocalBorder))
+		self._CountDspDic, returnLoc = self.CreateDspColumn(
+			startingKeys = [("Total Peaces","######"), ("Peaces Boxed","######"), ("Peaces Scraped","######")],
+			startingLoc = (_FirstComnOffset, self.MachineNumberHeader.GetBestSize()[1]+2*self.LocalBorder))
 
+		self._PPMDspDic, returnLoc = self.CreateDspColumn(
+			startingKeys = [("Hourly(Peaces/Minute)","###.##"), ("Total(Peaces/Minute)","###.##")],
+			startingLoc = (_FirstComnOffset, returnLoc[1]+2*self.LocalBorder))
+
+		self._LineStatusDspDic, returnLoc = self.CreateDspColumn(
+			startingKeys = [("Current WO","N/A"), ("WO Runtime","00:00:00"), ("LineStatus","Inactice")],
+			startingLoc = (_SecondOffset,self.MachineNumberHeader.GetBestSize()[1]+2*self.LocalBorder),
+			SecondColColor=(255, 0, 0))
+		self._MnDwnTimesDspDic, returnLoc = self.CreateDspColumn(
+			startingKeys = [("Maintence","00:00:00"), ("Inventory","00:00:00"), ("Q/A and Q/C","00:00:00")],
+			startingLoc = (_ThirdOffset,self.MachineNumberHeader.GetBestSize()[1]+2*self.LocalBorder),
+			SecondColColor=(255, 0, 0))
+
+		self._subDwnTimesDspDic, returnLoc = self.CreateDspColumn(
+			startingKeys = [("Total","00:00:00"), ("Change Over","00:00:00")],
+			startingLoc = (_ThirdOffset-7,returnLoc[1]+(2*self.LocalBorder)),
+			SecondColColor=(255, 0, 0))
+
+		#Creates the "PQMFG Data Aquision System________________ " Header
+		subHeader = wx.StaticText(self, -1, "______Current Employees____________________________ ",
+			pos =((2*self.LocalBorder) , returnLoc[1]+2*self.LocalBorder))
+
+		#Basic Formating
 		subHeader.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD))
-		subHeader.SetSize(mainHeader.GetBestSize())
-		subHeader.SetForegroundColour((255,128,0)) # set text color
-		"""
+		subHeader.SetSize(subHeader.GetBestSize())
+		subHeader.SetForegroundColour((0,128,255)) # set text color
+		#mainHeader.SetBackgroundColour((0,0,255)) # set text back color
 
-		# 1 Create Button for adding BLUR Filter
-		#LoadNewWOButton = wx.Button(self, label="Load New WO",
-		#	pos=(200, 200), size=(100, 20))
-		#
-		#LoadNewWOButton.Bind(wx.EVT_BUTTON, self.OnPaint(), )
+		self._HeaderBottom = returnLoc[1]+2*self.LocalBorder + subHeader.GetBestSize()[1]
 
-	def RefreshData(self):
-		pass
+	def CreateDspColumn(self, startingKeys, startingLoc, Size=12, Spacers=(10,5), FirstColColor=(255, 255, 255), SecondColColor=(0, 255, 0)):
+		curHeaderPos = startingLoc
+		curHeaderSpacer = []
+
+		#Dictionary Retured for updating pannels latter
+		curDspDct = dict()
+
+		#Create Static Text For keepping peace count
+		for header,_ in startingKeys:
+
+			curDspDct[header] = None
+			subHeader = wx.StaticText(self, -1, header+": ",
+				pos =curHeaderPos)
+
+			subHeader.SetFont(wx.Font(Size, wx.SWISS, wx.NORMAL, wx.BOLD))
+			subHeader.SetSize(subHeader.GetBestSize())
+			subHeader.SetForegroundColour(FirstColColor) # set text color
+
+			curHeaderPos = (curHeaderPos[0],curHeaderPos[1]+subHeader.GetBestSize()[1]+Spacers[1])
+
+			curHeaderSpacer.append(subHeader.GetBestSize()[0])
+
+
+		curHeaderPos = (curHeaderPos[0]+max(curHeaderSpacer)+Spacers[0], startingLoc [1])
+		curHeaderSpacer = []
+
+		for key, spacer in startingKeys:
+
+			curDspDct[key] = wx.StaticText(self, -1, spacer,
+				pos =curHeaderPos)
+
+			curDspDct[key].SetFont(wx.Font(Size, wx.SWISS, wx.NORMAL, wx.BOLD))
+			curDspDct[key].SetSize(curDspDct[key].GetBestSize())
+			curDspDct[key].SetForegroundColour(SecondColColor) # set text color
+			curHeaderSpacer.append(curDspDct[key].GetBestSize()[0])
+
+			curHeaderPos = (curHeaderPos[0], curHeaderPos[1]+curDspDct[key].GetBestSize()[1]+Spacers[1])
+
+		return curDspDct , (curHeaderPos[0]+max(curHeaderSpacer), curHeaderPos[1])
+
+	def RefreshData(self, HeaderData, EmployeeList):
+
+		for Header, Data, Color in HeaderData:
+			_curOperator = None
+
+			if Header == "Machine Number":
+				_curOperator = self.MachineNumberHeader
+
+			elif Header in self._CountDspDic.keys():
+				_curOperator = self._CountDspDic[Header]
+
+			elif Header in self._PPMDspDic.keys():
+				_curOperator = self._PPMDspDic[Header]
+
+			elif Header in self._LineStatusDspDic.keys():
+				_curOperator = self._LineStatusDspDic[Header]
+
+			elif Header in self._MnDwnTimesDspDic.keys():
+				_curOperator = self._MnDwnTimesDspDic[Header]
+
+			elif Header in self._subDwnTimesDspDic.keys():
+				_curOperator = self._subDwnTimesDspDic[Header]
+
+			if _curOperator is not None:
+				_curOperator.SetLabel(Data)
+				if Color is not None:
+					_curOperator.SetForegroundColour(Color) # set text color
+
 
 	def OnPaint(self, evt=None):
 		"""set up the device context (DC) for painting"""

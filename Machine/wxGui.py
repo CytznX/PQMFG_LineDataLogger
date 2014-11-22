@@ -16,7 +16,11 @@ class MainFrame(wx.Frame):
 		self.tmpFrameSize = (1366, 768) #wanted to do this dynamically but it was just easier to preset
 		self.frameSize = self.tmpFrameSize #wx.GetDisplaySize()
 
+		#Initializes the Extended Frame
 		wx.Frame.__init__(self, None, title=title, pos=(0,0), size=self.frameSize,style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
+
+		#Toggle to show or hide FillSheet/MainScreen
+		self.showFillsheet = False
 
 		#Sets the currser to what i want
 		self.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
@@ -46,12 +50,12 @@ class MainFrame(wx.Frame):
 		#Main Display Screen
 		mainDispPanel = wx.Panel(self)
 
-		mainButtonPanel = mainScreenButtonPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
-		mainInfoPannel = mainScreenInfoPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
+		self.mainButtonPanel = mainScreenButtonPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
+		self.mainInfoPannel = mainScreenInfoPanel(mainDispPanel, self, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-menuBar.GetSize()[1]))
 
 		mainDispSizer = wx.BoxSizer(wx.HORIZONTAL)
-		mainDispSizer.Add(mainInfoPannel,0,wx.EXPAND|wx.ALL,border=2)
-		mainDispSizer.Add(mainButtonPanel,0,wx.EXPAND|wx.ALL,border=2)
+		mainDispSizer.Add(self.mainInfoPannel,0,wx.EXPAND|wx.ALL,border=2)
+		mainDispSizer.Add(self.mainButtonPanel,0,wx.EXPAND|wx.ALL,border=2)
 
 		mainDispPanel.SetSizer(mainDispSizer)
 
@@ -65,7 +69,11 @@ class MainFrame(wx.Frame):
 		self.Bind(wx.EVT_TIMER, self.RefreshData)
 
 	def RefreshData(self, event=None):
-		pass
+		self.mainInfoPannel.RefreshData(
+			HeaderData=[("Machine Number","11",(255,0,0)),
+				("Total Peaces","10501",None),
+				("Hourly(Peaces/Minute)","10.02",None)],
+			EmployeeList=[])
 
 	def OnClose(self, event):
 		dlg = wx.MessageDialog(self,
@@ -75,6 +83,10 @@ class MainFrame(wx.Frame):
 		dlg.Destroy()
 		if result == wx.ID_OK:
 			self.Destroy()
+
+	def TogglFillSheet(self,event):
+		self.showFillsheet = not self.showFillsheet
+
 
 	def OnShutdown(self, event):
 		pass
