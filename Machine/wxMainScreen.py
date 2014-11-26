@@ -182,6 +182,9 @@ class mainScreenInfoPanel(wx.Panel):
 				self._MnDwnTimesDspDic["Q/A and Q/C"].SetForegroundColour((255,0,0))
 			elif currentReason == "Break":
 				 self._MnDwnTimesDspDic["Break"].SetForegroundColour((255,0,0))
+			else:
+				for key in self._MnDwnTimesDspDic.keys():
+					self._MnDwnTimesDspDic[key].SetForegroundColour((255,0,0))
 
 		elif not currentState and currentReason =="ChangeOver":
 			for key in self._MnDwnTimesDspDic.keys():
@@ -368,9 +371,33 @@ class mainScreenButtonPanel(wx.Panel):
 					self.CurrentActivityLogger.changeState("000", "ChangeOver")
 					dlg.Destroy()
 
-		def DeletWOButtonEvent(self, event=None):
-			pass
+			else:
+				dlg = wx.MessageDialog(self, "Cannot load new Work Order with out completeing/Deleting current WO", "Warning WO Still Running", wx.OK)
+				dlg.ShowModal()
+				dlg.Destroy()
 
+		def DeletWOButtonEvent(self, event=None):
+
+			current_WO, currentState, currentReason = self.CurrentActivityLogger.getCurrentState()
+
+			#If theres no current workorer running
+			if current_WO is not None:
+
+				#Ask iif you want to quit
+				dlg = wx.MessageDialog(self,
+					"Do you really want to Delete Current Work Order: "+current_WO,
+					"Confirm Exit", wx.YES_NO |wx.ICON_QUESTION)
+				result = dlg.ShowModal()
+				dlg.Destroy()
+
+				#If selection was yes ... bail out
+				if result == wx.ID_YES:
+					self.CurrentActivityLogger.changeCurrentWO(None, False)
+
+			else:
+				dlg = wx.MessageDialog(self, "No Work Order Currently Running", "Error", wx.OK)
+				dlg.ShowModal()
+				dlg.Destroy()
 		def AddEmployeeButtonEvent(self, event=None):
 			pass
 
@@ -386,7 +413,7 @@ class mainScreenButtonPanel(wx.Panel):
 		def CompleteCurrentWOButtonEvent(self, event=None):
 
 			status = self.CurrentActivityLogger.getCurrentState()
-			if status is not None:
+			if status[0] is not None:
 				dlg = wx.MessageDialog(self,
 					"Do you really want to Complete Work Order: "+status[0]+"?",
 					"Confirm Complete WO", wx.OK|wx.CANCEL|wx.ICON_QUESTION)
@@ -405,7 +432,16 @@ class mainScreenButtonPanel(wx.Panel):
 			pass
 
 		def FillSheetButtonEvent(self, event=None):
-			self.curFrame.TogglFillSheet(event)
+			print self.CurrentActivityLogger.getCurrentState()
+			if self.CurrentActivityLogger.getCurrentState()[0] is not None:
+				self.curFrame.TogglFillSheet(event)
+			else:
+				dlg = wx.MessageDialog(self,
+					"You must load a Work Order before accessing Fillsheet",
+					"Error", wx.OK)
+				result = dlg.ShowModal()
+				dlg.Destroy()
+
 
 		def SetPrinterButtonEvent(self, event=None):
 			pass

@@ -384,37 +384,60 @@ class ActivityLogger:
 			'''First Send all relivant OLD data via TCP to server'''
 			Thread(target=self.CurrentTCPServer.sendToServer, args=(self.getFormatedLog(),)).start()
 
-		#Current WO that is being run
-		self.current_WO = WO_Name
+		if WO_Name is not None:
+			#Current WO that is being run
+			self.current_WO = WO_Name
 
-		#Keeps Track Of current State
-		self.currentState = True
-		self.currentReason = None
+			#Keeps Track Of current State
+			self.currentState = True
+			self.currentReason = None
 
-		#When Was this WO started on the Line
+			#When Was this WO started on the Line
+			self.WO_StartTime = datetime.datetime.now()
+			self.hourdecrement = datetime.datetime.now()
 
-		self.WO_StartTime = datetime.datetime.now()
-		self.hourdecrement = datetime.datetime.now()
+			#Keeps Track Of Pass/Fail Count
+			self.modCounter = 0
+			self.modBoxCounter = 0
+			self.totalCount = [0]
+			self.failCount = 0
+			self.boxCount = [0]
+			self.peacesPerBox = None
+			self.FillStart = None
+			self.FillEnd = None
 
-		#Keeps Track Of Pass/Fail Count
-		self.modCounter = 0
-		self.modBoxCounter = 0
-		self.totalCount = [0]
-		self.failCount = 0
-		self.boxCount = [0]
-		self.peacesPerBox = None
-		self.FillStart = None
-		self.FillEnd = None
+			self.isBulk = False
+		else:
 
-		self.isBulk = False
+			#Current WO that is being run
+			self.current_WO = None
+
+			#Keeps Track Of current State
+			self.currentState = None
+			self.currentReason = None
+
+			#When Was this WO started on the Line
+			self.WO_StartTime = None
+
+			#last hour increment/decrement time
+			self.hourdecrement = None
+
+			#Keeps Track Of Pass/Fail Count
+			self.totalCount = None
+			self.failCount = None
+			self.boxCount = None
+			self.peacesPerBox = None
+			self.modCounter = 0
+			self.modBoxCounter = None
+			self.FillStart = None
+			self.FillEnd = None
+			self.isBulk = False
 
 		self._BatchInfo = {"INIT": ["Batch Code", "Fill Weight", "Total Weight", "Total Wt Range"]}
 
 		self._PalletInfo = {"INIT": ["Pallet#", "Cases", "Pcs/Case", "Count", "Batch#"]}
 
 		self._QCInfo = {"INIT": ["Batch#","Stability","Begins","Middle","Ends","Re-Sample","Initials"]}
-
-
 
 		#Keeps Track of count adjustments
 		self.adjustments = []

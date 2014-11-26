@@ -6,15 +6,19 @@ Written by: Max Seifert AKA cytznx
 
 #Gui Elements
 import wx
+import datetime
 from wxPython.wx import *
 
 from StateMachine import *
 
 class fillScreenInfoPanel(wx.Panel):
-	def __init__(self, parent, hideMouse, size):
+	def __init__(self, parent, passedLogger, hideMouse, size):
 
 		#Tagging Parent
 		self.parent = parent
+
+		#The Logger
+		self.CurrentActivityLogger = passedLogger
 
 		# initialize Pannel
 		wx.Panel.__init__(self, parent, size=size)
@@ -170,6 +174,41 @@ class fillScreenInfoPanel(wx.Panel):
 
 
 		return curDspDct , (curHeaderPos[0]+max(curHeaderSpacer), curHeaderPos[1])
+
+	def RefreshData(self):
+
+		current_WO, currentState, currentReason = self.CurrentActivityLogger.getCurrentState()
+		WO_StartTime, FillStart, FillEnd = self.CurrentActivityLogger.getStartTimes()
+
+		try:
+			self._FillSheetHeaderVariables["Work Order"].SetLabel(current_WO)
+		except TypeError:
+			self._FillSheetHeaderVariables["Work Order"].SetLabel(str(current_WO))
+
+		self._FillSheetHeaderVariables["Run Start"].SetLabel(WO_StartTime.strftime('%H:%M:%S'))
+		self._FillSheetHeaderVariables["Run End"].SetLabel(datetime.datetime.now().strftime('%H:%M:%S'))
+		try:
+			self._FillSheetHeaderVariables["Fill Start"].SetLabel(FillStart.strftime('%H:%M:%S'))
+		except AttributeError:
+			self._FillSheetHeaderVariables["Fill Start"].SetLabel(str(FillStart))
+
+		try:
+			self._FillSheetHeaderVariables["Fill End"].SetLabel(FillEnd.strftime('%H:%M:%S'))
+		except AttributeError:
+			self._FillSheetHeaderVariables["Fill End"].SetLabel(str(FillEnd))
+		#print self.CurrentActivityLogger.formatDiffDateTime()
+
+		pass
+
+		#
+
+		#self._FillSheetHeaderVariables[("Work Order","######"), ("Run Start","00:00:00"), ("Run End","00:00:00"), ("Fill Start","00:00:00"), ("Fill End","00:00:00")]
+
+		#self._FillSheetWeightsInfo[("Tare Weight(g)","######"), ("Volume(ml)","00:00:00"), ("    Specific Gravity","00:00:00"), ("Weight(g)","00:00:00"), ("Cosmetic","00:00:00")]
+
+		#self._FillSheetProductInfo[("Product Name","######"), ("Formula Ref#","00:00:00"), ("Packing Code","00:00:00")]
+
+		#self.CurrentActivityLogger
 
 	def OnPackOff(self, event=None):
 		if 	self.packOff.GetBackgroundColour() == (0,255,0):

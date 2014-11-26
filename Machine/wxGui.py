@@ -58,7 +58,7 @@ class MainFrame(wx.Frame):
 		self.mainButtonPanel = mainScreenButtonPanel(self.mainDispPanel, self, self.CurrentActivityLogger, hideMouse, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-self.menuBar.GetSize()[1]))
 		self.mainInfoPannel = mainScreenInfoPanel(self.mainDispPanel, self,self.CurrentActivityLogger, hideMouse, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-self.menuBar.GetSize()[1]))
 
-		self.fillScreenPannel = fillScreenInfoPanel(self, hideMouse, ((self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-self.menuBar.GetSize()[1]))
+		self.fillScreenPannel = fillScreenInfoPanel(self, self.CurrentActivityLogger, hideMouse, ((self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-self.menuBar.GetSize()[1]))
 		self.fillScreenPannel.Hide()
 
 		mainDispSizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -94,22 +94,42 @@ class MainFrame(wx.Frame):
 
 
 	def RefreshData(self, event=None):
-		self.mainInfoPannel.RefreshData()
+		if self.mainDispPanel.IsShown():
+			self.mainInfoPannel.RefreshData()
+		else:
+			self.fillScreenPannel.RefreshData()
+
 
 	def OnClose(self, event):
-		dlg = wx.MessageDialog(self,
-			"Do you really want to close this application?",
-			"Confirm Exit", wx.OK|wx.CANCEL|wx.ICON_QUESTION)
-		result = dlg.ShowModal()
-		dlg.Destroy()
-		if result == wx.ID_OK:
 
-			print "Releasing Current Logger"
-			self.CurrentActivityLogger.release()
-			print "Deleting Current Logger"
-			del(self.CurrentActivityLogger)
-			print "Logger Destroyed"
-			self.Destroy()
+		#Gets the current state of the Machine and passes to to msg select
+		current_WO, currentState, currentReason = self.CurrentActivityLogger.getCurrentState()
+
+		#If theres no current workorer running
+		if current_WO is None:
+
+			#Ask iif you want to quit
+			dlg = wx.MessageDialog(self,
+				"Do you really want to close this application?",
+				"Confirm Exit", wx.YES_NO |wx.ICON_QUESTION)
+			result = dlg.ShowModal()
+			dlg.Destroy()
+
+			#If selection was yes ... bail out
+			if result == wx.ID_YES:
+
+				print "Releasing Current Logger"
+				self.CurrentActivityLogger.release()
+				print "Deleting Current Logger"
+				del(self.CurrentActivityLogger)
+				print "Logger Destroyed"
+				self.Destroy()
+
+		#Else the tell them they need complete the Work Order
+		else:
+			dlg = wx.MessageDialog(self, "Cannot Exit Without Completeing Work Order: "+current_WO, "Warning WO Still Running", wx.OK)
+			dlg.ShowModal()
+			dlg.Destroy()
 
 	def TogglFillSheet(self,event):
 
