@@ -17,7 +17,7 @@ class MainFrame(wx.Frame):
 	def __init__(self, title, hideMouse=False, fps = 5):
 
 		#Create The ActivityLogger
-		self.CurrentActivityLogger = ActivityLogger(rpi=True)
+		self.CurrentActivityLogger = ActivityLogger(rpi=False)
 
 		'''FOR TESTING PURPOSES ONLY'''
 		#for counter in range(int(random.random()*50)):

@@ -211,9 +211,13 @@ class mainScreenInfoPanel(wx.Panel):
 			self._CountDspDic["Peaces Boxed"].SetLabel(str(failCount))
 			self._CountDspDic["Peaces Scraped"].SetLabel(str(boxCount))
 
+			try:
+				self._PPMDspDic["Hourly(Peaces/Minute)"].SetLabel("%.2f" % self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=True))
+				self._PPMDspDic["Total(Peaces/Minute)"].SetLabel("%.2f"% self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=False))
+			except TypeError:
+				self._PPMDspDic["Hourly(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=True)))
+				self._PPMDspDic["Total(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=False)))
 
-		self._PPMDspDic["Hourly(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=True)))
-		self._PPMDspDic["Total(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=False)))
 
 
 class mainScreenButtonPanel(wx.Panel):
