@@ -4,7 +4,7 @@ This is Version 2.0 of the PQMFG state machine feature improved as well as simpl
 Created By: Maxwell Seifert
 Biarritz
 '''
-rpi = False
+
 twil = False
 
 #Import the needed moduals
@@ -17,23 +17,27 @@ from threading import Thread
 if twil:
 	import TextWriter as tw
 
-if rpi:
-	import RPi.GPIO as GPIO
 
-#I added this variable so i could easily enable and disable the piface digital I/O stuff
 
 class ActivityLogger:
 	'''
 	Default constructor... Much Love
 	'''
-	def __init__(self, logFolder = 'LogFolder/'):
+	def __init__(self, logFolder = 'LogFolder/', rpi = False):
+
+
+		#I added this variable so i could easily enable and disable the piface digital I/O stuff
+		self.rpi = rpi
 
 		#creates class variabls for passed or called constructor Vars
-		if rpi:
+		if self.rpi:
+			import RPi.GPIO as GPIO
 			self.logfolder = '/home/pi/'
 		else:
 			self.logfolder = logFolder
-		self.createInitVars()
+
+
+		self.MachineID, self.port, self.FserverIP, self.FserverPort = self.createInitVars()
 
 		#If this isnt being tested on my computer initialize piface
 
@@ -95,7 +99,7 @@ class ActivityLogger:
 		self.EmpWorkingDic = dict()
 		self.EmployeeRef = self.createEmployeeDic()
 
-		if rpi:
+		if self.rpi:
 
 			#Initialize GPIO mode
 			GPIO.setmode(GPIO.BCM)
@@ -121,12 +125,12 @@ class ActivityLogger:
 	def set_New_Dbounce(self, newtime, pin=24):
 
 		self.CurrentDbounceTime = newtime
-		if rpi:
+		if self.rpi:
 			GPIO.remove_event_detect(pin)
 			GPIO.add_event_detect(pin, GPIO.RISING, callback=self.modCount, bouncetime=newtime)
 
 	def release(self):
-		if rpi:
+		if self.rpi:
 			GPIO.cleanup()
 		self.CurrentTCPServer.stop()
 		self.CurrentTCPServer.join()
@@ -166,9 +170,9 @@ class ActivityLogger:
 						self.pushMessage("Value Error in Pallet info, Deleted bad Line... Please make sure all necisary values are integers")
 						del (self._PalletInfo[key])
 
-			returns = (self.totalCount, sum(self.totalCount)-tmpFail, [tmpBoxed], self.peacesPerBox)
+			returns = (self.totalCount, sum(self.totalCount)-tmpFail, [tmpBoxed])
 		else:
-			returns = (self.totalCount, self.failCount, self.boxCount, self.peacesPerBox)
+			returns = (self.totalCount, self.failCount, self.boxCount)
 		return returns
 
 	def getMachineID(self):
@@ -182,15 +186,15 @@ class ActivityLogger:
 		ErrorLog = self.logfolder+ErrorLog
 
 		#Initialized as default values
-		self.MachineID = '1'
-		self.port= 5005
-		self.FserverIP = '127.0.0.1'
-		self.FserverPort = 5005
+		MachineID = '1'
+		port= 5005
+		FserverIP = '127.0.0.1'
+		FserverPort = 5005
 
 		recievedlines = []
 
 		try:
-			if rpi:
+			if self.rpi:
 				f = open(DefaultFile, "r")#open
 			else:
 				f = open('MachineInitVar.txt', "r")#open
@@ -228,22 +232,24 @@ class ActivityLogger:
 		#read all lines and look for what I want ... yuuuuuuupppp
 		for line in recievedlines:
 			if line.startswith('MachineNumber'):
-				self.MachineID = line.split()[1]
+				MachineID = line.split()[1]
 
 			elif line.startswith('MachinPort'):
 				try:
-					self.port = int(line.split()[1])
+					port = int(line.split()[1])
 				except ValueError:
-					self.port = 5005
+					port = 5005
 
 			elif line.startswith('ServerIP'):
-				self.FserverIP = line.split()[1]
+				FserverIP = line.split()[1]
 
 			elif line.startswith('ServerPort'):
 				try:
-					self.FserverPort = int(line.split()[1])
+					FserverPort = int(line.split()[1])
 				except ValueError:
-					self. FserverPort = 5005
+					FserverPort = 5005
+
+		return MachineID, port, FserverIP, FserverPort
 
 	'''
 	Opens up the employee.txt file and returns data as a python dictionary
@@ -617,7 +623,7 @@ class ActivityLogger:
 					_args = "Machine: " + str(self.MachineID) + " Running Wo: " + str(self.current_WO) + " Came Back Up from: " + str(self.currentReason) + " @ " + datetime.datetime.now().strftime('%H:%M:%S')
 					Thread(target=tw.sendTxtMsg, args=(_args,)).start()
 
-			elif Reason =='ChangeOver':
+			elif self.currentReason =='ChangeOver':
 				placeholder = self.ChangeOverTime[-1][0]
 				self.ChangeOverTime[-1] = (placeholder, (datetime.datetime.now(),ID))
 				self.totalCount = [0]
@@ -912,6 +918,7 @@ class ActivityLogger:
 		minutes =(TimeDiff-(hours*3600))/60
 		sec = (TimeDiff-(hours*3600)-(minutes*60))
 		return hours, minutes, sec
+
 
 
 	#YAY!!! PROPERTYIES

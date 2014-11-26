@@ -5,12 +5,23 @@ Written by: Max Seifert AKA cytznx
 -------------------------------------------------------------------------------"""
 import wx, wx.html
 import sys
+import subprocess
 
 from wxMainScreen import mainScreenButtonPanel
 from wxMainScreen import mainScreenInfoPanel
+from wxFillScreen import fillScreenInfoPanel
+from wxCustomDialog import NumberInputBox
+from StateMachine import *
 
 class MainFrame(wx.Frame):
-	def __init__(self, title, hideMouse=True, fps = 30):
+	def __init__(self, title, hideMouse=False, fps = 30):
+
+		#Create The ActivityLogger
+		self.CurrentActivityLogger = ActivityLogger()
+
+		'''FOR TESTING PURPOSES ONLY'''
+		#for counter in range(int(random.random()*50)):
+		#	cur_AL.addEmployee(str(100+int(random.random()*100)))
 
 		# Gets frame size and stores it
 		self.tmpFrameSize = (1366, 768) #wanted to do this dynamically but it was just easier to preset
@@ -18,9 +29,6 @@ class MainFrame(wx.Frame):
 
 		#Initializes the Extended Frame
 		wx.Frame.__init__(self, None, title=title, pos=(0,0), size=self.frameSize,style=wx.DEFAULT_FRAME_STYLE ^ wx.RESIZE_BORDER)
-
-		#Toggle to show or hide FillSheet/MainScreen
-		self.showFillsheet = False
 
 		# Configure a timer to update the display screen
 		self.timer = wx.Timer(self)
@@ -47,14 +55,22 @@ class MainFrame(wx.Frame):
 		#Main Display Screen
 		self.mainDispPanel = wx.Panel(self)
 
-		self.mainButtonPanel = mainScreenButtonPanel(self.mainDispPanel, self, hideMouse, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-self.menuBar.GetSize()[1]))
-		self.mainInfoPannel = mainScreenInfoPanel(self.mainDispPanel, self, hideMouse, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-self.menuBar.GetSize()[1]))
+		self.mainButtonPanel = mainScreenButtonPanel(self.mainDispPanel, self, self.CurrentActivityLogger, hideMouse, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-self.menuBar.GetSize()[1]))
+		self.mainInfoPannel = mainScreenInfoPanel(self.mainDispPanel, self,self.CurrentActivityLogger, hideMouse, ((1/3.0)*(self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-self.menuBar.GetSize()[1]))
+
+		self.fillScreenPannel = fillScreenInfoPanel(self, hideMouse, ((self.frameSize[0]-2),self.frameSize[1]-self.statusbar.GetSize()[1]-self.menuBar.GetSize()[1]))
+		self.fillScreenPannel.Hide()
 
 		mainDispSizer = wx.BoxSizer(wx.HORIZONTAL)
 		mainDispSizer.Add(self.mainInfoPannel,0,wx.EXPAND|wx.ALL,border=2)
 		mainDispSizer.Add(self.mainButtonPanel,0,wx.EXPAND|wx.ALL,border=2)
 
 		self.mainDispPanel.SetSizer(mainDispSizer)
+
+		self.sizer = wx.BoxSizer(wx.VERTICAL)
+		self.sizer.Add(self.mainDispPanel, 1, wx.EXPAND)
+		self.sizer.Add(self.fillScreenPannel, 1, wx.EXPAND)
+		self.SetSizer(self.sizer)
 
 		#Bind Menu Events to Methods
 		self.Bind(wx.EVT_CLOSE, self.OnClose)
@@ -73,18 +89,12 @@ class MainFrame(wx.Frame):
 			self.menuBar.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
 
 			self.mainDispPanel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
-			#self.mainButtonPanel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
-			#self.mainInfoPannel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
-
-
+			self.mainButtonPanel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+			self.mainInfoPannel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
 
 
 	def RefreshData(self, event=None):
-		self.mainInfoPannel.RefreshData(
-			HeaderData=[("Machine Number","11",(255,0,0)),
-				("Total Peaces","10501",None),
-				("Hourly(Peaces/Minute)","10.02",None)],
-			EmployeeList=[])
+		self.mainInfoPannel.RefreshData()
 
 	def OnClose(self, event):
 		dlg = wx.MessageDialog(self,
@@ -93,17 +103,30 @@ class MainFrame(wx.Frame):
 		result = dlg.ShowModal()
 		dlg.Destroy()
 		if result == wx.ID_OK:
+
+			print "Releasing Current Logger"
+			self.CurrentActivityLogger.release()
+			print "Deleting Current Logger"
+			del(self.CurrentActivityLogger)
+			print "Logger Destroyed"
 			self.Destroy()
 
 	def TogglFillSheet(self,event):
-		self.showFillsheet = not self.showFillsheet
 
-		if self.showFillsheet:
+		if self.mainDispPanel.IsShown():
 			self.mainDispPanel.Hide()
+			self.fillScreenPannel.Show()
 		else:
 			self.mainDispPanel.Show()
+			self.fillScreenPannel.Hide()
+		self.Layout()
 
-
+	#How I shutdown the pi
+	def shutdownPI(self):
+		command = "/usr/bin/sudo /sbin/shutdown -h now"
+		process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+		output = process.communicate()[0]
+		print output
 
 	def OnShutdown(self, event):
 		pass
@@ -113,6 +136,6 @@ class MainFrame(wx.Frame):
 
 
 app = wx.App(redirect=False)   # Error messages go to popup window
-top = MainFrame("<<project>>")
+top = MainFrame("PQMFG Data Aquisition System")
 top.Show()
 app.MainLoop()

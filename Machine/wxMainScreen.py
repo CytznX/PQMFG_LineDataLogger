@@ -8,15 +8,17 @@ Written by: Max Seifert AKA cytznx
 import wx
 from wxPython.wx import *
 
-#cool stuff
-import os, sys
-import user
+from StateMachine import *
+from wxCustomDialog import NumberInputBox
 
 class mainScreenInfoPanel(wx.Panel):
-	def __init__(self, parent, frame, hideMouse, size):
+	def __init__(self, parent, frame, passedLogger, hideMouse, size):
 
 		# initialize Pannel
 		wx.Panel.__init__(self, parent, size=size)
+
+		#The Logger
+		self.CurrentActivityLogger = passedLogger
 
 		#Hides the currser
 		if hideMouse:
@@ -27,11 +29,13 @@ class mainScreenInfoPanel(wx.Panel):
 
 		self.LocalBorder = 5
 
+		self.CurrentActivityLogger.getMachineID()
+
 		# I save this ... for setting size later but i dont think i need to use it...
 		self.myParent = parent
 
 		#The Machine Number
-		self.MachineNumberHeader = wx.StaticText(self, -1, "##",
+		self.MachineNumberHeader = wx.StaticText(self, -1, self.CurrentActivityLogger.getMachineID(),
 			pos =(1*self.LocalBorder,self.LocalBorder))
 
 		#Basic Formating
@@ -64,11 +68,11 @@ class mainScreenInfoPanel(wx.Panel):
 			startingLoc = (_FirstComnOffset, returnLoc[1]+2*self.LocalBorder))
 
 		self._LineStatusDspDic, returnLoc = self.CreateDspColumn(
-			startingKeys = [("Current WO","N/A"), ("WO Runtime","00:00:00"), ("LineStatus","Inactice")],
+			startingKeys = [("Current WO","N/A"), ("WO Runtime","00:00:00"), ("Line Status","Inactice")],
 			startingLoc = (_SecondOffset,self.MachineNumberHeader.GetBestSize()[1]+2*self.LocalBorder),
 			SecondColColor=(255, 0, 0))
 		self._MnDwnTimesDspDic, returnLoc = self.CreateDspColumn(
-			startingKeys = [("Maintence","00:00:00"), ("Inventory","00:00:00"), ("Q/A and Q/C","00:00:00")],
+			startingKeys = [("Maintence","00:00:00"), ("Inventory","00:00:00"), ("Q/A and Q/C","00:00:00"),("Break","00:00:00")],
 			startingLoc = (_ThirdOffset,self.MachineNumberHeader.GetBestSize()[1]+2*self.LocalBorder),
 			SecondColColor=(255, 0, 0))
 
@@ -129,48 +133,95 @@ class mainScreenInfoPanel(wx.Panel):
 
 		return curDspDct , (curHeaderPos[0]+max(curHeaderSpacer), curHeaderPos[1])
 
-	def RefreshData(self, HeaderData, EmployeeList):
+	def RefreshData(self):
 
-		for Header, Data, Color in HeaderData:
-			_curOperator = None
+		#self.CurrentActivityLogger.getMachineID()
 
-			if Header == "Machine Number":
-				_curOperator = self.MachineNumberHeader
+		################################Update CurrentState##############################################
+		current_WO, currentState, currentReason = self.CurrentActivityLogger.getCurrentState()
 
-			elif Header in self._CountDspDic.keys():
-				_curOperator = self._CountDspDic[Header]
+		try:
+			self._LineStatusDspDic["Current WO"].SetLabel(current_WO)
+			self._LineStatusDspDic["WO Runtime"].SetLabel("%02d:%02d:%02d" % self.CurrentActivityLogger.getRunTime())
+		except TypeError:
+			self._LineStatusDspDic["Current WO"].SetLabel(str(current_WO))
+			self._LineStatusDspDic["WO Runtime"].SetLabel("N/A")
 
-			elif Header in self._PPMDspDic.keys():
-				_curOperator = self._PPMDspDic[Header]
+		if not currentState:
+			self._LineStatusDspDic["Line Status"].SetLabel("Line Is Down")
 
-			elif Header in self._LineStatusDspDic.keys():
-				_curOperator = self._LineStatusDspDic[Header]
+			self.MachineNumberHeader.SetForegroundColour((255,0,0))
+			self._LineStatusDspDic["Current WO"].SetForegroundColour((255,0,0))
+			self._LineStatusDspDic["WO Runtime"].SetForegroundColour((255,0,0))
+			self._LineStatusDspDic["Line Status"].SetForegroundColour((255,0,0))
+		else:
+			self._LineStatusDspDic["Line Status"].SetLabel("Line Is Up")
 
-			elif Header in self._MnDwnTimesDspDic.keys():
-				_curOperator = self._MnDwnTimesDspDic[Header]
+			self.MachineNumberHeader.SetForegroundColour((0,255,0))
+			self._LineStatusDspDic["Current WO"].SetForegroundColour((0,255,0))
+			self._LineStatusDspDic["WO Runtime"].SetForegroundColour((0,255,0))
+			self._LineStatusDspDic["Line Status"].SetForegroundColour((0,255,0))
 
-			elif Header in self._subDwnTimesDspDic.keys():
-				_curOperator = self._subDwnTimesDspDic[Header]
+		################################Update DownTimes#################################################
+		totalDwnTimes = self.CurrentActivityLogger.getDwnTimesTotals()
 
-			if _curOperator is not None:
-				_curOperator.SetLabel(Data)
-				if Color is not None:
-					_curOperator.SetForegroundColour(Color) # set text color
+		for header,totals in zip(["Maintence","Inventory","Q/A and Q/C", "Break"],totalDwnTimes[:-1]):
+			self._MnDwnTimesDspDic[header].SetLabel("%02d:%02d:%02d" % self.CurrentActivityLogger.formatDiffDateTime(totals))
+
+		self._subDwnTimesDspDic["Change Over"].SetLabel("%02d:%02d:%02d" % self.CurrentActivityLogger.formatDiffDateTime(totalDwnTimes[-1]))
+		self._subDwnTimesDspDic["Total"].SetLabel("%02d:%02d:%02d" % self.CurrentActivityLogger.formatDiffDateTime(sum(totalDwnTimes[:-1])))
+
+		if not currentState and not currentReason =="ChangeOver":
+			self._subDwnTimesDspDic["Total"].SetForegroundColour((255,0,0))
+
+			if currentReason == "Maitenance":
+				self._MnDwnTimesDspDic["Maintence"].SetForegroundColour((255,0,0))
+			elif currentReason == "Inventory":
+				self._MnDwnTimesDspDic["Inventory"].SetForegroundColour((255,0,0))
+			elif currentReason == "Quality_Control":
+				self._MnDwnTimesDspDic["Q/A and Q/C"].SetForegroundColour((255,0,0))
+			elif currentReason == "Break":
+				 self._MnDwnTimesDspDic["Break"].SetForegroundColour((255,0,0))
+
+		elif not currentState and currentReason =="ChangeOver":
+			for key in self._MnDwnTimesDspDic.keys():
+				self._MnDwnTimesDspDic[key].SetForegroundColour((0,255,0))
+
+			self._subDwnTimesDspDic["Change Over"].SetForegroundColour((255,0,0))
+			self._subDwnTimesDspDic["Total"].SetForegroundColour((0,255,0))
+
+		else:
+			for key in self._MnDwnTimesDspDic.keys():
+				self._MnDwnTimesDspDic[key].SetForegroundColour((0,255,0))
+
+			self._subDwnTimesDspDic["Change Over"].SetForegroundColour((0,255,0))
+			self._subDwnTimesDspDic["Total"].SetForegroundColour((0,255,0))
 
 
-	def OnPaint(self, evt=None):
-		"""set up the device context (DC) for painting"""
-		dc = wx.PaintDC(self)
-		dc.BeginDrawing()
-		dc.SetPen(wx.Pen("red",style=wx.SOLID))
-		dc.SetBrush(wx.Brush("red", wx.SOLID))
-		# set x, y, w, h for rectangle
-		dc.DrawRectangle(self.LocalBorder,self.LocalBorder,200, 200)
-		dc.EndDrawing()
+
+		########################Update the counts########################################################
+		totalCount, failCount, boxCount = self.CurrentActivityLogger.getCounts()
+
+		try:
+			self._CountDspDic["Total Peaces"].SetLabel(str(sum(totalCount)))
+			self._CountDspDic["Peaces Boxed"].SetLabel(str(failCount))
+			self._CountDspDic["Peaces Scraped"].SetLabel(str(sum(boxCount)))
+		except Exception, e:
+			self._CountDspDic["Total Peaces"].SetLabel(str(totalCount))
+			self._CountDspDic["Peaces Boxed"].SetLabel(str(failCount))
+			self._CountDspDic["Peaces Scraped"].SetLabel(str(boxCount))
+
+
+		self._PPMDspDic["Hourly(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=True)))
+		self._PPMDspDic["Total(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=False)))
+
 
 class mainScreenButtonPanel(wx.Panel):
 
-		def __init__(self, parent, frame, hideMouse, size,):
+		def __init__(self, parent, frame, passedLogger, hideMouse, size,):
+
+			#The Logger
+			self.CurrentActivityLogger = passedLogger
 
 			#Tagging Parent
 			self.parent = parent
@@ -187,7 +238,6 @@ class mainScreenButtonPanel(wx.Panel):
 
 			# Create the Button/Message Panel
 			wx.Panel.__init__(self, parent, size=size)
-
 			#Hides the currser
 			if hideMouse:
 				self.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
@@ -283,13 +333,36 @@ class mainScreenButtonPanel(wx.Panel):
 			#
 			########################Readout Pannel ##################################
 			#
+
 			self._messagePannel = wx.TextCtrl( self, -1,
 				pos=(self.gap, (8*self.gap)+(7*self.button_height)),
 				size = (self.dialog_width, self.dialog_height),
 				style = wx.TE_MULTILINE | wx.TE_READONLY)
 
+			if hideMouse:
+				LoadNewWOButton.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+				DeletWOButton.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+				AddEmployeeButton.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+				LineUpButton.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+				CompleteCurrentWOButton.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+				AdjustCountButton.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+				removeEmployeeButton.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+				LineDownButton.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+				FillSheetButton.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+				SetEmailButton.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+				SetPrinterButton.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
+
+
 		def LoadNewWOButtonEvent(self, event=None):
-			pass
+
+			if self.CurrentActivityLogger.getCurrentState()[0] == None:
+				dlg = NumberInputBox("Input Work Order Number")
+				result = dlg.ShowModal()
+
+				if result == wx.ID_OK:
+					self.CurrentActivityLogger.changeCurrentWO(dlg.getDialog())
+					self.CurrentActivityLogger.changeState("000", "ChangeOver")
+					dlg.Destroy()
 
 		def DeletWOButtonEvent(self, event=None):
 			pass
@@ -298,10 +371,25 @@ class mainScreenButtonPanel(wx.Panel):
 			pass
 
 		def LineUpButtonEvent(self, event=None):
-			pass
+			if not self.CurrentActivityLogger.getCurrentState()[0] == None:
+				dlg = NumberInputBox("Input Badge Number")
+				result = dlg.ShowModal()
+
+				if result == wx.ID_OK:
+					self.CurrentActivityLogger.changeState(dlg.getDialog())
+					dlg.Destroy()
 
 		def CompleteCurrentWOButtonEvent(self, event=None):
-			pass
+
+			status = self.CurrentActivityLogger.getCurrentState()
+			if status is not None:
+				dlg = wx.MessageDialog(self,
+					"Do you really want to Complete Work Order: "+status[0]+"?",
+					"Confirm Complete WO", wx.OK|wx.CANCEL|wx.ICON_QUESTION)
+				result = dlg.ShowModal()
+				dlg.Destroy()
+				if result == wx.ID_OK:
+					self.CurrentActivityLogger.finishCurrentWO()
 
 		def AdjustCountButtonEvent(self, event=None):
 			pass
