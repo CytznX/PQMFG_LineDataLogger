@@ -14,10 +14,10 @@ from wxCustomDialog import NumberInputBox
 from StateMachine import *
 
 class MainFrame(wx.Frame):
-	def __init__(self, title, hideMouse=False, fps = 30):
+	def __init__(self, title, hideMouse=False, fps = 5):
 
 		#Create The ActivityLogger
-		self.CurrentActivityLogger = ActivityLogger()
+		self.CurrentActivityLogger = ActivityLogger(rpi=True)
 
 		'''FOR TESTING PURPOSES ONLY'''
 		#for counter in range(int(random.random()*50)):
