@@ -6,6 +6,7 @@ Written by: Max Seifert AKA cytznx
 
 #Gui Elements
 import wx
+import datetime
 from wxPython.wx import *
 
 from StateMachine import *
@@ -17,8 +18,14 @@ class mainScreenInfoPanel(wx.Panel):
 		# initialize Pannel
 		wx.Panel.__init__(self, parent, size=size)
 
+		self.Size = size
+
 		#The Logger
 		self.CurrentActivityLogger = passedLogger
+
+		#Used for drawing employees
+		self.previousEmpDicionary = []
+		self.EmployeesDrawn = dict()
 
 		#Hides the currser
 		if hideMouse:
@@ -28,8 +35,6 @@ class mainScreenInfoPanel(wx.Panel):
 		self.SetBackgroundColour("black")
 
 		self.LocalBorder = 5
-
-		self.CurrentActivityLogger.getMachineID()
 
 		# I save this ... for setting size later but i dont think i need to use it...
 		self.myParent = parent
@@ -221,7 +226,79 @@ class mainScreenInfoPanel(wx.Panel):
 				self._PPMDspDic["Hourly(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=True)))
 				self._PPMDspDic["Total(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=False)))
 
+		if not self.previousEmpDicionary == self.CurrentActivityLogger.stillLoggedOn():
 
+			EmpFont = wx.Font(14, wx.SWISS, wx.NORMAL, wx.BOLD)
+			CurrentPos = (5, self._HeaderBottom+5)
+			ColumbWidths = []
+			self.previousEmpDicionary = self.CurrentActivityLogger.stillLoggedOn()
+
+			for key in self.EmployeesDrawn.keys():
+				first = self.EmployeesDrawn[key][0]
+				second = self.EmployeesDrawn[key][1]
+				del self.EmployeesDrawn[key]
+				first.Destroy()
+				second.Destroy()
+
+			self.EmployeesDrawn = dict()
+			for Position in ["Line_Leader", "Mechanic","Line_Worker"]:
+
+				if Position =="Line_Leader":
+					posColor = (0,255,0)
+				elif Position =="Mechanic":
+					posColor = (128,0,64)
+				elif Position =="Line_Worker":
+					posColor = (0,0,255)
+
+				for Employee_ID, Employee_Title in self.CurrentActivityLogger.stillLoggedOn():
+					if Position == Employee_Title:
+
+						#Pull name from employee dictionary
+						Employee_ID = self.CurrentActivityLogger.getName(Employee_ID)
+
+						if Employee_ID == "Wayne Drown":
+							empTitle = wx.StaticText(self, -1, "Princess"+":", pos=CurrentPos)
+						else:
+							empTitle = wx.StaticText(self, -1, Employee_Title+":", pos=CurrentPos)
+						empTitle.SetFont(EmpFont)
+						nameSize = empTitle.GetBestSize()
+
+						if CurrentPos[1]+5+nameSize[1] > self.Size[1] and ColumbWidths is not []:
+
+							empTitle.Destroy()
+
+							CurrentPos = (CurrentPos[0]+5+max(ColumbWidths), self._HeaderBottom)
+							ColumbWidths = []
+
+							if Employee_ID == "Wayne Drown":
+								empTitle = wx.StaticText(self, -1, "Princess"+":", pos=CurrentPos)
+							else:
+								empTitle = wx.StaticText(self, -1, Employee_Title+":", pos=CurrentPos)
+							empTitle.SetFont(EmpFont)
+
+						nameSize = empTitle.GetBestSize()
+						empTitle.SetSize(nameSize)
+
+						if Employee_ID == "Wayne Drown":
+
+							empTitle.SetForegroundColour((255,0,255)) # set text color
+						else:
+							empTitle.SetForegroundColour(posColor) # set text color
+
+						empNameColor = (255,255,255)
+
+						empName = wx.StaticText(self, -1, Employee_ID, pos =(CurrentPos[0]+5+nameSize[0],CurrentPos[1]))
+
+						empName.SetFont(EmpFont)
+						empName.SetSize(empName.GetBestSize())
+						empName.SetForegroundColour(empNameColor) # set text color
+
+						ColumbWidths.append(5+nameSize[0]+empName.GetBestSize()[0])
+
+						self.EmployeesDrawn[Employee_ID] = (empTitle, empName)
+
+						CurrentPos = (CurrentPos[0], CurrentPos[1]+5+nameSize[1])
+				CurrentPos = (CurrentPos[0], CurrentPos[1]+5)
 
 class mainScreenButtonPanel(wx.Panel):
 
@@ -362,17 +439,18 @@ class mainScreenButtonPanel(wx.Panel):
 
 		def LoadNewWOButtonEvent(self, event=None):
 
-			if self.CurrentActivityLogger.getCurrentState()[0] == None:
+			if self.CurrentActivityLogger.getCurrentState()[0] is None:
 				dlg = NumberInputBox("Input Work Order Number")
 				result = dlg.ShowModal()
 
 				if result == wx.ID_OK:
+					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S>')+" Loaded New WO: "+dlg.getDialog()+"\n")
 					self.CurrentActivityLogger.changeCurrentWO(dlg.getDialog())
 					self.CurrentActivityLogger.changeState("000", "ChangeOver")
 					dlg.Destroy()
 
 			else:
-				dlg = wx.MessageDialog(self, "Cannot load new Work Order with out completeing/Deleting current WO", "Warning WO Still Running", wx.OK)
+				dlg = wx.MessageDialog(self, "Cannot load new Work Order with out Completeing/Deleting current WO", "Warning WO Still Running", wx.OK)
 				dlg.ShowModal()
 				dlg.Destroy()
 
@@ -392,14 +470,27 @@ class mainScreenButtonPanel(wx.Panel):
 
 				#If selection was yes ... bail out
 				if result == wx.ID_YES:
+					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S>')+" Deleted WO:"+current_WO+"\n")
 					self.CurrentActivityLogger.changeCurrentWO(None, False)
 
 			else:
 				dlg = wx.MessageDialog(self, "No Work Order Currently Running", "Error", wx.OK)
 				dlg.ShowModal()
 				dlg.Destroy()
+
 		def AddEmployeeButtonEvent(self, event=None):
-			pass
+
+			dlg = NumberInputBox("Input Work Order Number", Buttons=["1","2","3","4","5","6","7","8","9","0",", ","DEL",])
+			result = dlg.ShowModal()
+			dlg.Destroy()
+
+			if result == wx.ID_OK:
+				for returns in dlg.getDialog().split(", "):
+					if not returns == "":
+						self.CurrentActivityLogger.addEmployee(returns)
+
+
+
 
 		def LineUpButtonEvent(self, event=None):
 			if not self.CurrentActivityLogger.getCurrentState()[0] == None:
@@ -407,6 +498,7 @@ class mainScreenButtonPanel(wx.Panel):
 				result = dlg.ShowModal()
 
 				if result == wx.ID_OK:
+					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S> ')+dlg.getDialog()+" Brought Line Up"+"\n")
 					self.CurrentActivityLogger.changeState(dlg.getDialog())
 					dlg.Destroy()
 
@@ -420,10 +512,22 @@ class mainScreenButtonPanel(wx.Panel):
 				result = dlg.ShowModal()
 				dlg.Destroy()
 				if result == wx.ID_OK:
+					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S>')+" Completed Work Order:"+status+"\n")
 					self.CurrentActivityLogger.finishCurrentWO()
 
 		def AdjustCountButtonEvent(self, event=None):
-			pass
+			if self.CurrentActivityLogger.getCurrentState()[0] is not None:
+				dlg = NumberInputBox("Input Work Order Number", Buttons=["1","2","3","4","5","6","7","8","9","0","+/-","DEL",])
+				result = dlg.ShowModal()
+
+				if result == wx.ID_OK:
+					print dlg.getDialog()
+					dlg.Destroy()
+
+			else:
+				dlg = wx.MessageDialog(self, "Cannot Adjust Count Without First Loading in a new WO", "Warning no WO running", wx.OK)
+				dlg.ShowModal()
+				dlg.Destroy()
 
 		def removeEmployeeButtonEvent(self, event=None):
 			pass

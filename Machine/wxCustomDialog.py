@@ -2,84 +2,110 @@
 
 import wx
 import wx.grid as gridlib
-
+import random
 from StateMachine import *
 
 class NumberInputBox(wx.Dialog):
-	def __init__(self, outputHeader, Buttons=["1","2","3","4","5","6","7","8","9","0","DEL",], ButtonSize=(75,75)):
+	def __init__(self, outputHeader, Buttons=["1","2","3","4","5","6","7","8","9","0","DEL",], ButtonSize=(75,75),multiLine =False):
+
+		self._ButtonSize = ButtonSize
+		self._TxtPannelheight = 100
+		self._Border = (5, 5)
+		self._NumOfButtonRows = 3
+
+		#The Size of our Dialog Boc
+		self._Size = (2*(self._NumOfButtonRows*self._ButtonSize[0]+((self._NumOfButtonRows+1)*self._Border[0])),
+			(self._NumOfButtonRows+3)*self._ButtonSize[1]+((self._NumOfButtonRows+3)*self._Border[1]))
+
+		#Creates Dialog FrameWork
 		wx.Dialog.__init__(self, None, -1, outputHeader,
 			style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|
-				wx.TAB_TRAVERSAL)
+				wx.TAB_TRAVERSAL,
+			size=self._Size)
+
+		pan = wx.Panel(self, size=self._Size)
 
 		#Meh Decides what size font i should use
-		inputFont = wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD, underline=True,)
-
-		#Create vertical sizer
-		vbox = wx.BoxSizer(wx.VERTICAL)
+		inputFont = wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD, underline=False,)
 
 		##########################HEADER LAYER###################################
-		pan = wx.Panel(self)
-		horizontalBox = wx.BoxSizer(wx.VERTICAL)
 
-		self.Display_Output = wx.TextCtrl(pan, size=(ButtonSize[1]*3, ButtonSize[1]))
+		if multiLine:
+			self.Display_Output = wx.TextCtrl(pan,
+				size=(self._Size[0]-self._Border[0]*2, self._TxtPannelheight),
+				pos=self._Border,
+				style=wx.TE_MULTILINE | wx.TE_CENTER)
+		else:
+			self.Display_Output = wx.TextCtrl(pan,
+				size=(self._Size[0]-self._Border[0]*2, self._TxtPannelheight),
+				pos=self._Border,
+				style= wx.TE_CENTER)
+
 		self.Display_Output.SetFont(inputFont)
-		horizontalBox.Add(self.Display_Output, 0, wx.ALL, 0)
-
-		pan.SetSizer(horizontalBox) #<---- set sizer of pan to be dial_box
-		vbox.Add(pan,wx.ALIGN_CENTER|wx.TOP, border = 4) #<----add pan to main sizer
-
 
 		##########################BUTTON LAYERS###################################
-		pan = wx.Panel(self)
-		horizontalBox = wx.BoxSizer(wx.HORIZONTAL)
 		count = 1
+		startingLeft = (self._Size[0]/2)-(1.5*self._ButtonSize[0])-self._Border[0]
+		curPos = (startingLeft, self._TxtPannelheight+(self._Border[1]*2))
 
 		for Button in Buttons:
-			if count%3 == 0:
+			button = wx.Button(pan,
+				label=Button,
+				size=self._ButtonSize,
+				pos=curPos)
 
-				button = wx.Button(pan, label = Button, size = ButtonSize)
-				button.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD))
-				button.Bind(wx.EVT_BUTTON, self.OnButtonPress, )
-				horizontalBox.Add(button, wx.EXPAND)
+			button.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD))
+			button.Bind(wx.EVT_BUTTON, self.OnButtonPress, )
 
-				pan.SetSizer(horizontalBox)
-				vbox.Add(pan,wx.ALIGN_CENTER|wx.TOP, border = 4) #<----add pan to main sizer
+			if Button == "+/-":
+				button.SetForegroundColour((0, 255, 0))
 
-				pan = wx.Panel(self)
-				horizontalBox = wx.BoxSizer(wx.HORIZONTAL)
+			if count%self._NumOfButtonRows == 0:
+				curPos = (startingLeft, curPos[1]+self._ButtonSize[1]+self._Border[1])
 				count = 1
-
 			else:
-				button = wx.Button(pan, label = Button, size = ButtonSize)
-				button.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD))
-				button.Bind(wx.EVT_BUTTON, self.OnButtonPress, )
-				horizontalBox.Add(button, wx.EXPAND)
-
+				curPos = (curPos[0]+self._Border[0]+self._ButtonSize[0], curPos[1])
 				count += 1
-		if count is not 1:
-			pan.SetSizer(horizontalBox)
-			vbox.Add(pan,wx.ALIGN_CENTER|wx.TOP, border = 4) #<----add pan to main sizer
+
+		##########################Tidy Up###################################
+		if not count == 1:
+			curPos = (self._Border[0], curPos[1]+self._ButtonSize[1]+self._Border[1])
+		else:
+			curPos = (self._Border[0], curPos[1])
+
+		opt_ok = wx.Button(pan, wx.ID_OK,label="OK",
+			size=((self._Size[0]/2)-(self._Border[0]*1.5),45),
+			pos=curPos)
+
+		opt_close = wx.Button(pan, wx.ID_CANCEL, label="Cancel",
+			size=((self._Size[0]/2)-(self._Border[0]*1.5),45),
+			pos=((self._Size[0]/2)+(0.5*self._Border[0]),curPos[1]))
 
 		##########################BOTOM LAYERS###################################
-
-		opt_box = wx.BoxSizer(wx.HORIZONTAL)
-
-		opt_close = wx.Button(self, wx.ID_CANCEL, label="Close")
-		opt_ok = wx.Button(self, wx.ID_OK,label="OK")
-
-		opt_box.Add(opt_ok)
-		opt_box.Add(opt_close, flag =  wx.LEFT, border = 5)
-		vbox.Add(opt_box, flag = wx.ALIGN_CENTER|wx.BOTTOM, border = 4)
-		self.SetSizer(vbox)
-		self.SetMaxSize((ButtonSize[1]*3,400))
-		self.SetMinSize((ButtonSize[1]*3,400))
-		self.SetSize((ButtonSize[1]*3,400))
+		self.SetMaxSize(self._Size)
+		self.SetMinSize(self._Size)
+		self.SetSize(self._Size)
 
 	def OnButtonPress(self, event):
 		#print "Got: ", event.GetEventObject().GetLabel(), event.GetEventObject().GetLabel() == "DEL"
+		theButton = event.GetEventObject()
+		if theButton.GetLabel() == "DEL":
+			if not self.Display_Output.GetValue()[-2:] == ", ":
+				self.Display_Output.SetValue(self.Display_Output.GetValue()[:-1])
+			else:
+				self.Display_Output.SetValue(self.Display_Output.GetValue()[:-2])
 
-		if event.GetEventObject().GetLabel() == "DEL":
-			self.Display_Output.SetValue(self.Display_Output.GetValue()[:-1])
+		elif theButton.GetLabel() == ", ":
+			if not self.Display_Output.GetValue()[-2:] == ", ":
+				self.Display_Output.AppendText(", ")
+
+		elif theButton.GetLabel() == "+/-":
+			if self.Display_Output.GetValue().startswith("-"):
+				self.Display_Output.SetValue(self.Display_Output.GetValue()[1:])
+				theButton.SetForegroundColour((0, 255, 0)) # set text color
+			else:
+				self.Display_Output.SetValue("-"+self.Display_Output.GetValue())
+				theButton.SetForegroundColour((255, 0, 0)) # set text color
 		else:
 			#print "appending: ", event.GetEventObject().GetLabel()
 			self.Display_Output.AppendText(event.GetEventObject().GetLabel())
@@ -90,33 +116,20 @@ class NumberInputBox(wx.Dialog):
 	def getDialog(self):
 		return self.Display_Output.GetValue()
 
-class AboutBox(wx.Dialog):
-	def __init__(self, InitDictionary):
-		wx.Dialog.__init__(self, None, -1, "About <<project>>",
-			style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|wx.RESIZE_BORDER|
-				wx.TAB_TRAVERSAL)
 
-		pan = wx.Panel(self)
-		vbox = wx.BoxSizer(wx.VERTICAL)
-		dial_box = wx.BoxSizer(wx.HORIZONTAL)
-		dial_text = wx.StaticText(pan, label = "Route :")
-		dial_text2 = wx.StaticText(pan, label = "Sytle 2: ")
-		dial_box.Add(dial_text,0,wx.ALL,20)
-		dial_box.Add(dial_text2,0,wx.ALL,5)
-		dial_camp = wx.TextCtrl(pan)
-		dial_box.Add(dial_camp,wx.EXPAND)
-		pan.SetSizer(dial_box) #<---- set sizer of pan to be dial_box
+class EmployeeRemoveBox(wx.Dialog):
+	def __init__(self, outputHeader, currentLogger, ButtonSize=(75,75)):
 
-		vbox.Add(pan,wx.ALIGN_CENTER|wx.TOP, border = 4) #<----add pan to main sizer
-		opt_box = wx.BoxSizer(wx.HORIZONTAL)
-		opt_close = wx.Button(self, label = "Close")
-		opt_ok = wx.Button(self, label = "OK" )
-		opt_box.Add(opt_ok)
-		opt_box.Add(opt_close, flag =  wx.LEFT, border = 5)
-		vbox.Add(opt_box, flag = wx.ALIGN_CENTER|wx.BOTTOM, border = 4)
-		self.SetSizer(vbox)
+		self._currentLogger = currentLogger
+		self._CurrentSelection = []
 
+	def OnButtonPress(self, event):
 
+	def OnClose(self, event):
+		self.Close(True)
+
+	def getSelection(self):
+		return self._CurrentSelection
 ########################################################################
 class Test(wx.Frame):
 	""""""
@@ -126,11 +139,21 @@ class Test(wx.Frame):
 		"""Constructor"""
 		wx.Frame.__init__(self, parent=None, title="An Eventful Grid")
 
-		dlg = NumberInputBox("Input Work Order Number", "Work Order")
+				#Create The ActivityLogger
+		self.CurrentActivityLogger = ActivityLogger(rpi=False)
+
+		'''FOR TESTING PURPOSES ONLY'''
+		for counter in range(5+int(random.random()*10)):
+			self.CurrentActivityLogger.addEmployee(str(100+int(random.random()*50)))
+		self.CurrentActivityLogger.addEmployee(str(322))
+		self.CurrentActivityLogger.addEmployee(str(3131))
+		self.CurrentActivityLogger.addEmployee(str(1441))
+
+		dlg = EmployeeRemoveBox("Input Work Order Number", self.CurrentActivityLogger)
 
 		result = dlg.ShowModal()
 		if result == wx.ID_OK:
-			print "grabbing something: ", dlg.getDialog()
+			print dlg.getDialog().split(", ")
 		dlg.Destroy()
 		print result
 

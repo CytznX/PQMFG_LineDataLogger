@@ -200,14 +200,10 @@ class fillScreenInfoPanel(wx.Panel):
 
 		pass
 
-		#
-
+		###############################For reference us only##################################################3
 		#self._FillSheetHeaderVariables[("Work Order","######"), ("Run Start","00:00:00"), ("Run End","00:00:00"), ("Fill Start","00:00:00"), ("Fill End","00:00:00")]
-
 		#self._FillSheetWeightsInfo[("Tare Weight(g)","######"), ("Volume(ml)","00:00:00"), ("    Specific Gravity","00:00:00"), ("Weight(g)","00:00:00"), ("Cosmetic","00:00:00")]
-
 		#self._FillSheetProductInfo[("Product Name","######"), ("Formula Ref#","00:00:00"), ("Packing Code","00:00:00")]
-
 		#self.CurrentActivityLogger
 
 	def OnPackOff(self, event=None):

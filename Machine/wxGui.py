@@ -6,6 +6,7 @@ Written by: Max Seifert AKA cytznx
 import wx, wx.html
 import sys
 import subprocess
+import random
 
 from wxMainScreen import mainScreenButtonPanel
 from wxMainScreen import mainScreenInfoPanel
@@ -20,8 +21,11 @@ class MainFrame(wx.Frame):
 		self.CurrentActivityLogger = ActivityLogger(rpi=False)
 
 		'''FOR TESTING PURPOSES ONLY'''
-		#for counter in range(int(random.random()*50)):
-		#	cur_AL.addEmployee(str(100+int(random.random()*100)))
+		for counter in range(5+int(random.random()*10)):
+			self.CurrentActivityLogger.addEmployee(str(100+int(random.random()*50)))
+		self.CurrentActivityLogger.addEmployee(str(322))
+		self.CurrentActivityLogger.addEmployee(str(3131))
+		self.CurrentActivityLogger.addEmployee(str(1441))
 
 		# Gets frame size and stores it
 		self.tmpFrameSize = (1366, 768) #wanted to do this dynamically but it was just easier to preset
