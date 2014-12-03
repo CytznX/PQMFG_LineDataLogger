@@ -154,12 +154,12 @@ class EmployeeRemoveBox(wx.Dialog):
 		for employeeTitle in ["Line_Leader","Mechanic","Line_Worker"]:
 			for empNum, empTitle in sorted(_emps, key=lambda tup: tup[0]):
 				if employeeTitle == empTitle:
-					button=(wx.Button(self, label=empNum), 0, wx.EXPAND)
+					button=wx.Button(self, label=empNum), 0, wx.EXPAND
 					button[0].Bind(wx.EVT_BUTTON, self.OnButtonPress, )
 					self._employeeButtons.append(button)
 
 		_gs.AddMany(self._employeeButtons)
-		_vbox.Add(_gs, proportion=1, flag=wx.EXPAND)
+		_vbox.Add(_gs, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
 
 		##################Create Ok and Cancle & attach to BoxSizer #################
 
@@ -171,7 +171,7 @@ class EmployeeRemoveBox(wx.Dialog):
 		_hbox.Add(wx.Button(self, wx.ID_CANCEL, label="Cancel",
 			size=((self._Size[0]/2)-(self._Border[0]*1.5),45)), flag=wx.ALIGN_RIGHT, border=10)
 
-		_vbox.Add(_hbox)
+		_vbox.Add(_hbox, flag=wx.ALIGN_CENTER, border=10)
 
 		self.SetSizer(_vbox)
 
@@ -181,13 +181,25 @@ class EmployeeRemoveBox(wx.Dialog):
 
 	def OnButtonPress(self, event):
 		theButton = event.GetEventObject()
-		print theButton.GetLabel()
+
+		#SetForegroundColour((255,0,0))
+		if theButton.GetBackgroundColour() == (0,0,0,255):
+			theButton.SetBackgroundColour((0,255,0,255))
+		else:
+			theButton.SetBackgroundColour((0,0,0,255))
 
 	def OnClose(self, event):
 		self.Close(True)
 
 	def getSelection(self):
-		return self._CurrentSelection
+
+		_returns=[]
+		for button in self._employeeButtons:
+			if button[0].GetBackgroundColour() == (0, 255, 0, 255):
+				_returns.append(button[0].GetLabel())
+
+		return _returns
+
 ########################################################################
 class Test(wx.Frame):
 	""""""
@@ -210,10 +222,12 @@ class Test(wx.Frame):
 		dlg = EmployeeRemoveBox("Input Work Order Number", self.CurrentActivityLogger)
 
 		result = dlg.ShowModal()
-		if result == wx.ID_OK:
-			print dlg.getDialog().split(", ")
 		dlg.Destroy()
-		print result
+
+		if result == wx.ID_OK:
+			print dlg.getSelection()
+		else:
+			print result
 
 if __name__ == "__main__":
 	app = wx.PySimpleApp()

@@ -81,19 +81,19 @@ class fillScreenInfoPanel(wx.Panel):
 
 		# 1 Create Button for returning view to mainSheet
 		BackButton = wx.Button(self, label="Back",
-			pos=(size[0]-200-(10*self.LocalBorder), size[1]-266-(10*self.LocalBorder)), size=(200, 225))
+			pos=(size[0]-200-(10*self.LocalBorder), size[1]-266-(10*self.LocalBorder)), size=(200, 220))
 
 		# 2 Create Button for checking individual batch info per work order
 		BatchInfo = wx.Button(self, label="Batch Info",
-			pos=(size[0]-575-(10*self.LocalBorder), size[1]-266-(10*self.LocalBorder)), size=(375, 75))
+			pos=(size[0]-575-(10*self.LocalBorder), size[1]-266-(10*self.LocalBorder)), size=(370, 70))
 
 		# 3 Create Button for checking on current WO pallet info
 		PalletInfo = wx.Button(self, label="Pallet Info",
-			pos=(size[0]-575-(10*self.LocalBorder), size[1]-191-(10*self.LocalBorder)), size=(375, 75))
+			pos=(size[0]-575-(10*self.LocalBorder), size[1]-191-(10*self.LocalBorder)), size=(370, 70))
 
 		# 4 Create Button for checking on Quality Asurance
 		QualityAsurance = wx.Button(self, label="Quality Asurance",
-			pos=(size[0]-575-(10*self.LocalBorder), size[1]-116-(10*self.LocalBorder)), size=(375, 75))
+			pos=(size[0]-575-(10*self.LocalBorder), size[1]-116-(10*self.LocalBorder)), size=(370, 70))
 
 		#Bind All the Buttons To specific events
 		BackButton.Bind(wx.EVT_BUTTON, self.OnBack, )

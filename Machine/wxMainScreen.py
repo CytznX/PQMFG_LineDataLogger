@@ -11,6 +11,7 @@ from wxPython.wx import *
 
 from StateMachine import *
 from wxCustomDialog import NumberInputBox
+from wxCustomDialog import EmployeeRemoveBox
 
 class mainScreenInfoPanel(wx.Panel):
 	def __init__(self, parent, frame, passedLogger, hideMouse, size):
@@ -250,7 +251,7 @@ class mainScreenInfoPanel(wx.Panel):
 				elif Position =="Line_Worker":
 					posColor = (0,0,255)
 
-				for Employee_ID, Employee_Title in self.CurrentActivityLogger.stillLoggedOn():
+				for Employee_ID, Employee_Title in sorted(self.CurrentActivityLogger.stillLoggedOn(), key=lambda tup: tup[0]):
 					if Position == Employee_Title:
 
 						#Pull name from employee dictionary
@@ -267,7 +268,7 @@ class mainScreenInfoPanel(wx.Panel):
 
 							empTitle.Destroy()
 
-							CurrentPos = (CurrentPos[0]+5+max(ColumbWidths), self._HeaderBottom)
+							CurrentPos = (CurrentPos[0]+20+max(ColumbWidths), self._HeaderBottom+5)
 							ColumbWidths = []
 
 							if Employee_ID == "Wayne Drown":
@@ -480,7 +481,7 @@ class mainScreenButtonPanel(wx.Panel):
 
 		def AddEmployeeButtonEvent(self, event=None):
 
-			dlg = NumberInputBox("Input Work Order Number", Buttons=["1","2","3","4","5","6","7","8","9","0",", ","DEL",])
+			dlg = NumberInputBox("Input Work Order Number", Buttons=["1","2","3","4","5","6","7","8","9","0",", ","DEL",], multiLine=True)
 			result = dlg.ShowModal()
 			dlg.Destroy()
 
@@ -488,6 +489,7 @@ class mainScreenButtonPanel(wx.Panel):
 				for returns in dlg.getDialog().split(", "):
 					if not returns == "":
 						self.CurrentActivityLogger.addEmployee(returns)
+						self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S> ')+"Added Employee: "+self.CurrentActivityLogger.getName(returns)+"\n")
 
 		def LineUpButtonEvent(self, event=None):
 			if not self.CurrentActivityLogger.getCurrentState()[0] == None:
@@ -495,7 +497,7 @@ class mainScreenButtonPanel(wx.Panel):
 				result = dlg.ShowModal()
 
 				if result == wx.ID_OK:
-					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S> ')+dlg.getDialog()+" Brought Line Up"+"\n")
+					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S> ')+self.CurrentActivityLogger.getName(dlg.getDialog())+" Brought Line Up from "+self.CurrentActivityLogger.getCurrentState()[2]+"\n")
 					self.CurrentActivityLogger.changeState(dlg.getDialog())
 					dlg.Destroy()
 
@@ -509,17 +511,25 @@ class mainScreenButtonPanel(wx.Panel):
 				result = dlg.ShowModal()
 				dlg.Destroy()
 				if result == wx.ID_OK:
-					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S>')+" Completed Work Order:"+status[0]+"\n")
+					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S>')+" Completed Work Order: "+status[0]+"\n")
 					self.CurrentActivityLogger.finishCurrentWO()
 
 		def AdjustCountButtonEvent(self, event=None):
 			if self.CurrentActivityLogger.getCurrentState()[0] is not None:
-				dlg = NumberInputBox("Input Work Order Number", Buttons=["1","2","3","4","5","6","7","8","9","0","+/-","DEL",])
-				result = dlg.ShowModal()
+				dlg = NumberInputBox("Input Employee Badge Number", Buttons=["1","2","3","4","5","6","7","8","9","0","DEL",])
 
-				if result == wx.ID_OK:
-					print dlg.getDialog()
+				if dlg.ShowModal() == wx.ID_OK:
+					ID = dlg.getDialog()
 					dlg.Destroy()
+
+					dlg = NumberInputBox("Input Adjustment Amount", Buttons=["1","2","3","4","5","6","7","8","9","0","+/-","DEL",])
+
+					if dlg.ShowModal() == wx.ID_OK:
+						amount = dlg.getDialog()
+						dlg.Destroy()
+
+						self.CurrentActivityLogger.inc_CurTotalCount(event=None, amount=int(amount), force=True, ID=ID)
+						self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S> ')+self.CurrentActivityLogger.getName(ID)+" adjusted count by: "+amount+" peaces\n")
 
 			else:
 				dlg = wx.MessageDialog(self, "Cannot Adjust Count Without First Loading in a new WO", "Warning no WO running", wx.OK)
@@ -527,7 +537,17 @@ class mainScreenButtonPanel(wx.Panel):
 				dlg.Destroy()
 
 		def removeEmployeeButtonEvent(self, event=None):
-			pass
+
+			dlg = EmployeeRemoveBox("Input Employee Number to be Removed", self.CurrentActivityLogger)
+			result = dlg.ShowModal()
+			dlg.Destroy()
+
+			if result == wx.ID_OK:
+				for employee in dlg.getSelection():
+					self.CurrentActivityLogger.removeEmployee(employee)
+					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S> ')+"Removed Employee: "+employee+"\n")
+			else:
+				print result
 
 		def SmoothMoreButtonEvent(self, event=None):
 			pass
