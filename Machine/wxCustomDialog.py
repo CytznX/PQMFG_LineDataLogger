@@ -2,7 +2,7 @@
 
 import wx
 import wx.grid as gridlib
-import random
+import random, math
 from StateMachine import *
 
 class NumberInputBox(wx.Dialog):
@@ -118,12 +118,70 @@ class NumberInputBox(wx.Dialog):
 
 
 class EmployeeRemoveBox(wx.Dialog):
-	def __init__(self, outputHeader, currentLogger, ButtonSize=(75,75)):
+	def __init__(self, outputHeader, currentLogger, ButtonSize=(175,50)):
 
-		self._currentLogger = currentLogger
-		self._CurrentSelection = []
+		self._Border = (5, 5)
+		self._ButtonSize = ButtonSize
+
+		_emps= currentLogger.stillLoggedOn()
+		_colums = math.ceil(math.sqrt(len(_emps)))
+
+
+		self._Size  = (_colums*(self._Border[0]+ButtonSize[0])+self._Border[0], _colums*(self._Border[1]+ButtonSize[1])+self._Border[1]+200)
+
+		#Creates Dialog FrameWork
+		wx.Dialog.__init__(self, None, -1, outputHeader,
+			style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|
+				wx.TAB_TRAVERSAL)
+
+		##################Create header & attach to BoxSizer #####################
+		_vbox = wx.BoxSizer(wx.VERTICAL)
+
+		self.display = wx.StaticText(self, -1, "Select Emplyee(s) To Remove", style=wx.TE_CENTER)
+		self.display.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD, underline=True))
+		self.display.SetSize(self.display.GetBestSize())
+		self.display.SetForegroundColour((255,0,0)) # set text color
+
+		_vbox.Add(self.display, flag=wx.ALIGN_CENTER, border=4)
+
+
+
+		##################Create Grid Sizer & attach to BoxSizer #################
+		_gs = wx.GridSizer(_colums, _colums, self._Border[0], self._Border[1])
+
+		self._employeeButtons = []
+
+		for employeeTitle in ["Line_Leader","Mechanic","Line_Worker"]:
+			for empNum, empTitle in sorted(_emps, key=lambda tup: tup[0]):
+				if employeeTitle == empTitle:
+					button=(wx.Button(self, label=empNum), 0, wx.EXPAND)
+					button[0].Bind(wx.EVT_BUTTON, self.OnButtonPress, )
+					self._employeeButtons.append(button)
+
+		_gs.AddMany(self._employeeButtons)
+		_vbox.Add(_gs, proportion=1, flag=wx.EXPAND)
+
+		##################Create Ok and Cancle & attach to BoxSizer #################
+
+		_hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+		_hbox.Add(wx.Button(self, wx.ID_OK,label="OK",
+			size=((self._Size[0]/2)-(self._Border[0]*1.5),45)), flag=wx.ALIGN_LEFT, border=10)
+
+		_hbox.Add(wx.Button(self, wx.ID_CANCEL, label="Cancel",
+			size=((self._Size[0]/2)-(self._Border[0]*1.5),45)), flag=wx.ALIGN_RIGHT, border=10)
+
+		_vbox.Add(_hbox)
+
+		self.SetSizer(_vbox)
+
+		self.SetMaxSize(self._Size)
+		self.SetMinSize(self._Size)
+		self.SetSize(self._Size)
 
 	def OnButtonPress(self, event):
+		theButton = event.GetEventObject()
+		print theButton.GetLabel()
 
 	def OnClose(self, event):
 		self.Close(True)
@@ -143,7 +201,7 @@ class Test(wx.Frame):
 		self.CurrentActivityLogger = ActivityLogger(rpi=False)
 
 		'''FOR TESTING PURPOSES ONLY'''
-		for counter in range(5+int(random.random()*10)):
+		for counter in range(25+int(random.random()*10)):
 			self.CurrentActivityLogger.addEmployee(str(100+int(random.random()*50)))
 		self.CurrentActivityLogger.addEmployee(str(322))
 		self.CurrentActivityLogger.addEmployee(str(3131))

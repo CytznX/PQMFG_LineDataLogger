@@ -489,9 +489,6 @@ class mainScreenButtonPanel(wx.Panel):
 					if not returns == "":
 						self.CurrentActivityLogger.addEmployee(returns)
 
-
-
-
 		def LineUpButtonEvent(self, event=None):
 			if not self.CurrentActivityLogger.getCurrentState()[0] == None:
 				dlg = NumberInputBox("Input Badge Number")
@@ -512,7 +509,7 @@ class mainScreenButtonPanel(wx.Panel):
 				result = dlg.ShowModal()
 				dlg.Destroy()
 				if result == wx.ID_OK:
-					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S>')+" Completed Work Order:"+status+"\n")
+					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S>')+" Completed Work Order:"+status[0]+"\n")
 					self.CurrentActivityLogger.finishCurrentWO()
 
 		def AdjustCountButtonEvent(self, event=None):
