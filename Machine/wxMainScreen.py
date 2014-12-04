@@ -12,6 +12,7 @@ from wxPython.wx import *
 from StateMachine import *
 from wxCustomDialog import NumberInputBox
 from wxCustomDialog import EmployeeRemoveBox
+from wxCustomDialog import BringLineDownBox
 
 class mainScreenInfoPanel(wx.Panel):
 	def __init__(self, parent, frame, passedLogger, hideMouse, size):
@@ -387,7 +388,7 @@ class mainScreenButtonPanel(wx.Panel):
 				pos=(2*self.gap + self.button_width, 4*self.gap+3*self.button_height),
 				size=(self.button_width, self.button_height))
 
-			LineDownButton.Bind(wx.EVT_BUTTON, self.SmoothMoreButtonEvent, )
+			LineDownButton.Bind(wx.EVT_BUTTON, self.LineDownButtonEvent, )
 
 
 			#
@@ -441,7 +442,7 @@ class mainScreenButtonPanel(wx.Panel):
 		def LoadNewWOButtonEvent(self, event=None):
 
 			if self.CurrentActivityLogger.getCurrentState()[0] is None:
-				dlg = NumberInputBox("Input Work Order Number")
+				dlg = NumberInputBox("Input WO#")
 				result = dlg.ShowModal()
 
 				if result == wx.ID_OK:
@@ -481,7 +482,7 @@ class mainScreenButtonPanel(wx.Panel):
 
 		def AddEmployeeButtonEvent(self, event=None):
 
-			dlg = NumberInputBox("Input Work Order Number", Buttons=["1","2","3","4","5","6","7","8","9","0",", ","DEL",], multiLine=True)
+			dlg = NumberInputBox("Input Employee ID#", Buttons=["1","2","3","4","5","6","7","8","9","0",", ","DEL",], multiLine=True)
 			result = dlg.ShowModal()
 			dlg.Destroy()
 
@@ -493,7 +494,7 @@ class mainScreenButtonPanel(wx.Panel):
 
 		def LineUpButtonEvent(self, event=None):
 			if not self.CurrentActivityLogger.getCurrentState()[0] == None:
-				dlg = NumberInputBox("Input Badge Number")
+				dlg = NumberInputBox("Input Badge#")
 				result = dlg.ShowModal()
 
 				if result == wx.ID_OK:
@@ -516,13 +517,13 @@ class mainScreenButtonPanel(wx.Panel):
 
 		def AdjustCountButtonEvent(self, event=None):
 			if self.CurrentActivityLogger.getCurrentState()[0] is not None:
-				dlg = NumberInputBox("Input Employee Badge Number", Buttons=["1","2","3","4","5","6","7","8","9","0","DEL",])
+				dlg = NumberInputBox("Input Badge#", Buttons=["1","2","3","4","5","6","7","8","9","0","DEL",])
 
 				if dlg.ShowModal() == wx.ID_OK:
 					ID = dlg.getDialog()
 					dlg.Destroy()
 
-					dlg = NumberInputBox("Input Adjustment Amount", Buttons=["1","2","3","4","5","6","7","8","9","0","+/-","DEL",])
+					dlg = NumberInputBox("Input Amount", Buttons=["1","2","3","4","5","6","7","8","9","0","+/-","DEL",])
 
 					if dlg.ShowModal() == wx.ID_OK:
 						amount = dlg.getDialog()
@@ -549,8 +550,36 @@ class mainScreenButtonPanel(wx.Panel):
 			else:
 				print result
 
-		def SmoothMoreButtonEvent(self, event=None):
-			pass
+		def LineDownButtonEvent(self, event=None):
+
+			if self.CurrentActivityLogger.getCurrentState()[0] is not None and self.CurrentActivityLogger.getCurrentState()[1] is not False:
+				dlg = NumberInputBox("Input Badge#", Buttons=["1","2","3","4","5","6","7","8","9","0","DEL",])
+
+				if dlg.ShowModal() == wx.ID_OK:
+					ID = dlg.getDialog()
+					dlg.Destroy()
+
+					dlg = BringLineDownBox("Input Work Order Number")
+
+					result = dlg.ShowModal()
+					output = dlg.getSelection()
+					dlg.Destroy()
+
+					if result == wx.ID_OK:
+						self.CurrentActivityLogger.changeState(ID, output)
+						self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S> ')+self.CurrentActivityLogger.getName(ID)+" Brought Line Down from "+output+"\n")
+
+					else:
+						print result
+
+			else:
+				dlg = wx.MessageDialog(self, "Cannot Adjust Machine State Without First Loading in a new WO or bringing the machine up first", "Warning no WO running", wx.OK)
+				dlg.ShowModal()
+				dlg.Destroy()
+
+#####################################################################333
+
+
 
 		def FillSheetButtonEvent(self, event=None):
 			print self.CurrentActivityLogger.getCurrentState()

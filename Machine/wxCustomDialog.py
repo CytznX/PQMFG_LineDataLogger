@@ -6,12 +6,13 @@ import random, math
 from StateMachine import *
 
 class NumberInputBox(wx.Dialog):
-	def __init__(self, outputHeader, Buttons=["1","2","3","4","5","6","7","8","9","0","DEL",], ButtonSize=(75,75),multiLine =False):
+	def __init__(self, outputHeader, Buttons=["1","2","3","4","5","6","7","8","9","0","DEL",], ButtonSize=(75,75), multiLine =False):
 
 		self._ButtonSize = ButtonSize
 		self._TxtPannelheight = 100
 		self._Border = (5, 5)
 		self._NumOfButtonRows = 3
+		self._outputHeader = outputHeader
 
 		#The Size of our Dialog Boc
 		self._Size = (2*(self._NumOfButtonRows*self._ButtonSize[0]+((self._NumOfButtonRows+1)*self._Border[0])),
@@ -42,6 +43,7 @@ class NumberInputBox(wx.Dialog):
 				style= wx.TE_CENTER)
 
 		self.Display_Output.SetFont(inputFont)
+		self.Display_Output.SetValue("<"+self._outputHeader+">")
 
 		##########################BUTTON LAYERS###################################
 		count = 1
@@ -88,6 +90,9 @@ class NumberInputBox(wx.Dialog):
 
 	def OnButtonPress(self, event):
 		#print "Got: ", event.GetEventObject().GetLabel(), event.GetEventObject().GetLabel() == "DEL"
+
+		if self.Display_Output.GetValue() == "<"+self._outputHeader+">":
+			self.Display_Output.SetValue("")
 		theButton = event.GetEventObject()
 		if theButton.GetLabel() == "DEL":
 			if not self.Display_Output.GetValue()[-2:] == ", ":
@@ -183,10 +188,10 @@ class EmployeeRemoveBox(wx.Dialog):
 		theButton = event.GetEventObject()
 
 		#SetForegroundColour((255,0,0))
-		if theButton.GetBackgroundColour() == (0,0,0,255):
-			theButton.SetBackgroundColour((0,255,0,255))
+		if theButton.GetBackgroundColour() == (0,0,0):
+			theButton.SetBackgroundColour((0,255,0))
 		else:
-			theButton.SetBackgroundColour((0,0,0,255))
+			theButton.SetBackgroundColour((0,0,0))
 
 	def OnClose(self, event):
 		self.Close(True)
@@ -200,7 +205,79 @@ class EmployeeRemoveBox(wx.Dialog):
 
 		return _returns
 
-########################################################################
+
+class BringLineDownBox(wx.Dialog):
+	def __init__(self, outputHeader, reasons=["Maitenance","Inventory","Quality_Control","Break"], ButtonSize=(175,50)):
+
+		self._Border = (5, 5)
+		self._ButtonSize = ButtonSize
+
+		#Creates Dialog FrameWork
+		wx.Dialog.__init__(self, None, -1, outputHeader,
+			style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|
+				wx.TAB_TRAVERSAL)
+
+		##################Create header & attach to BoxSizer #####################
+		_vbox = wx.BoxSizer(wx.VERTICAL)
+
+		self.display = wx.StaticText(self, -1, "Choose a Reason", style=wx.TE_CENTER)
+		self.display.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD, underline=True))
+		self.display.SetSize(self.display.GetBestSize())
+		self.display.SetForegroundColour((255,0,0)) # set text color
+
+		_vbox.Add(self.display, flag=wx.ALIGN_CENTER, border=4)
+
+
+
+		##################Create Grid Sizer & attach to BoxSizer #################
+		_gs = wx.GridSizer(2, 2, self._Border[0], self._Border[1])
+
+		self._employeeButtons = []
+
+		for opition in reasons:
+			button=wx.Button(self, label=opition), 0, wx.EXPAND
+			button[0].Bind(wx.EVT_BUTTON, self.OnButtonPress, )
+			self._employeeButtons.append(button)
+
+		_gs.AddMany(self._employeeButtons)
+		_vbox.Add(_gs, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
+
+		##################Create Ok and Cancle & attach to BoxSizer #################
+
+		_hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+		_hbox.Add(wx.Button(self, wx.ID_OK, label="OK", size=ButtonSize))
+
+		_hbox.Add(wx.Button(self, wx.ID_CANCEL, label="Cancel", size=ButtonSize))
+
+		_vbox.Add(_hbox, flag=wx.ALIGN_CENTER, border=10)
+
+		self.SetSizer(_vbox)
+
+		#self.SetMaxSize(self._Size)
+		#self.SetMinSize(self._Size)
+		#self.SetSize(self._Size)
+
+	def OnButtonPress(self, event):
+		theButton = event.GetEventObject()
+
+		for button in self._employeeButtons:
+			button[0].SetBackgroundColour((0,0,0))
+
+		#SetForegroundColour((255,0,0))
+		if theButton.GetBackgroundColour() == (0,0,0):
+			theButton.SetBackgroundColour((0,255,0))
+		else:
+			theButton.SetBackgroundColour((0,0,0))
+
+	def getSelection(self):
+		_returns=None
+		for button in self._employeeButtons:
+			if button[0].GetBackgroundColour() == (0, 255, 0):
+				_returns=button[0].GetLabel()
+
+		return _returns
+
 class Test(wx.Frame):
 	""""""
 
@@ -219,7 +296,7 @@ class Test(wx.Frame):
 		self.CurrentActivityLogger.addEmployee(str(3131))
 		self.CurrentActivityLogger.addEmployee(str(1441))
 
-		dlg = EmployeeRemoveBox("Input Work Order Number", self.CurrentActivityLogger)
+		dlg = BringLineDownBox("Input Work Order Number")
 
 		result = dlg.ShowModal()
 		dlg.Destroy()

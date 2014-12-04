@@ -17,7 +17,8 @@ from threading import Thread
 if twil:
 	import TextWriter as tw
 
-
+if False:
+	import RPi.GPIO as GPIO
 
 class ActivityLogger:
 	'''
@@ -31,7 +32,6 @@ class ActivityLogger:
 
 		#creates class variabls for passed or called constructor Vars
 		if self.rpi:
-			import RPi.GPIO as GPIO
 			self.logfolder = '/home/pi/'
 		else:
 			self.logfolder = logFolder
