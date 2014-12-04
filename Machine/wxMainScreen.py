@@ -260,6 +260,8 @@ class mainScreenInfoPanel(wx.Panel):
 
 						if Employee_ID == "Wayne Drown":
 							empTitle = wx.StaticText(self, -1, "Princess"+":", pos=CurrentPos)
+						elif Employee_ID == "Steven Mock":
+							empTitle = wx.StaticText(self, -1, "Batman"+":", pos=CurrentPos)
 						else:
 							empTitle = wx.StaticText(self, -1, Employee_Title+":", pos=CurrentPos)
 						empTitle.SetFont(EmpFont)
@@ -274,6 +276,8 @@ class mainScreenInfoPanel(wx.Panel):
 
 							if Employee_ID == "Wayne Drown":
 								empTitle = wx.StaticText(self, -1, "Princess"+":", pos=CurrentPos)
+							elif Employee_ID == "Steven Mock":
+								empTitle = wx.StaticText(self, -1, "Batman"+":", pos=CurrentPos)
 							else:
 								empTitle = wx.StaticText(self, -1, Employee_Title+":", pos=CurrentPos)
 							empTitle.SetFont(EmpFont)
@@ -282,8 +286,9 @@ class mainScreenInfoPanel(wx.Panel):
 						empTitle.SetSize(nameSize)
 
 						if Employee_ID == "Wayne Drown":
-
 							empTitle.SetForegroundColour((255,0,255)) # set text color
+						elif Employee_ID == "Steven Mock":
+							empTitle.SetForegroundColour((255,255,0)) # set text color
 						else:
 							empTitle.SetForegroundColour(posColor) # set text color
 

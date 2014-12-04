@@ -10,6 +10,7 @@ import datetime
 from wxPython.wx import *
 
 from StateMachine import *
+from wxCustomDialog import NumberInputBox
 
 class fillScreenInfoPanel(wx.Panel):
 	def __init__(self, parent, passedLogger, hideMouse, size):
@@ -48,22 +49,30 @@ class fillScreenInfoPanel(wx.Panel):
 			Size=24,
 			SecondColColor=(255, 0, 0))
 
+		for key in self._FillSheetHeaderVariables.keys():
+			self._FillSheetHeaderVariables[key].Bind(wx.EVT_BUTTON, self.OnButtonPress, )
+
 		self._FillSheetWeightsInfo, returnLoc = self.CreateDspColumn(
-			startingKeys = [("Tare Weight(g)","######"), ("Volume(ml)","00:00:00"), ("    Specific Gravity","00:00:00"), ("Weight(g)","00:00:00"), ("Cosmetic","00:00:00")],
+			startingKeys = [("Tare Weight(g)","######"), ("Volume(ml)","######"), ("    Specific Gravity","######"), ("Weight(g)","######"), ("Cosmetic","######")],
 			startingLoc = (12*self.LocalBorder, size[1]-300-(10*self.LocalBorder)),
 			Button = True,
 			Size=24,
 			SecondColColor=(255, 0, 0))
 
+		for key in self._FillSheetWeightsInfo.keys():
+			self._FillSheetWeightsInfo[key].Bind(wx.EVT_BUTTON, self.OnButtonPress, )
+
 		colPos = 130+returnLoc[0]
 
 		self._FillSheetProductInfo, returnLoc = self.CreateDspColumn(
-			startingKeys = [("Product Name","######"), ("Formula Ref#","00:00:00"), ("Packing Code","00:00:00")],
+			startingKeys = [("Product Name","######"), ("Formula Ref#","######"), ("Packing Code","######")],
 			startingLoc = (colPos, mainHeader.GetBestSize()[1]+(10*self.LocalBorder)),
 			Button = True,
 			Size=24,
 			SecondColColor=(255, 0, 0))
 
+		for key in self._FillSheetProductInfo.keys():
+			self._FillSheetProductInfo[key].Bind(wx.EVT_BUTTON, self.OnButtonPress, )
 
 		# 0 Create Button for Pack Off selection
 		self.packOff = wx.Button(self, label="Pack Off",
@@ -78,6 +87,9 @@ class fillScreenInfoPanel(wx.Panel):
 			Button = True,
 			Size=24,
 			SecondColColor=(255, 0, 0))
+
+		for key in self._FillSheetEquipment.keys():
+			self._FillSheetEquipment[key].Bind(wx.EVT_BUTTON, self.OnButtonPress, )
 
 		# 1 Create Button for returning view to mainSheet
 		BackButton = wx.Button(self, label="Back",
@@ -211,6 +223,38 @@ class fillScreenInfoPanel(wx.Panel):
 			self.packOff.SetBackgroundColour((255,0,0)) # set text color
 		else:
 			self.packOff.SetBackgroundColour((0,255,0))
+
+
+	def OnButtonPress(self, event=None):
+		theButton = event.GetEventObject()
+		theKey = None
+
+		for key in self._FillSheetHeaderVariables.keys():
+			if self._FillSheetHeaderVariables[key] == theButton:
+				theKey = key
+
+		for key in self._FillSheetWeightsInfo.keys():
+			if self._FillSheetWeightsInfo[key] == theButton:
+				theKey = key
+
+		for key in self._FillSheetProductInfo.keys():
+			if self._FillSheetProductInfo[key] == theButton:
+				theKey = key
+
+		for key in self._FillSheetEquipment.keys():
+			if self._FillSheetEquipment[key] == theButton:
+				theKey = key
+
+		if theKey is not None:
+			dlg = NumberInputBox("Input Value", Buttons=["1","2","3","4","5","6","7","8","9","0",".","DEL",])
+
+			if dlg.ShowModal() == wx.ID_OK:
+				value = dlg.getDialog()
+				dlg.Destroy()
+
+				theButton.SetLabel(value)
+				self.CurrentActivityLogger.fillSheet[theKey] = value
+
 
 	def OnQualityAsurance(self, event=None):
 		pass
