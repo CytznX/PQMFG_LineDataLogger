@@ -11,6 +11,7 @@ from wxPython.wx import *
 
 from StateMachine import *
 from wxCustomDialog import NumberInputBox
+from wxCustomDialog import QWERTYBox
 
 class fillScreenInfoPanel(wx.Panel):
 	def __init__(self, parent, passedLogger, hideMouse, size):
@@ -221,11 +222,16 @@ class fillScreenInfoPanel(wx.Panel):
 	def OnPackOff(self, event=None):
 		if 	self.packOff.GetBackgroundColour() == (0,255,0):
 			self.packOff.SetBackgroundColour((255,0,0)) # set text color
+			self.CurrentActivityLogger.fillSheet["Pack Off"] = False
 		else:
 			self.packOff.SetBackgroundColour((0,255,0))
+			self.CurrentActivityLogger.fillSheet["Pack Off"] = True
 
 
 	def OnButtonPress(self, event=None):
+
+		#"Volume(ml)", "    Specific Gravity", "Weight(g)", "Cosmetic",
+
 		theButton = event.GetEventObject()
 		theKey = None
 
@@ -246,14 +252,40 @@ class fillScreenInfoPanel(wx.Panel):
 				theKey = key
 
 		if theKey is not None:
-			dlg = NumberInputBox("Input Value", Buttons=["1","2","3","4","5","6","7","8","9","0",".","DEL",])
+			if not(theKey == "Product Name" or theKey == "Formula Ref#" or theKey == "Packing Code"):
 
-			if dlg.ShowModal() == wx.ID_OK:
-				value = dlg.getDialog()
-				dlg.Destroy()
+				dlg = NumberInputBox("Input Value", Buttons=["1","2","3","4","5","6","7","8","9","0",".","DEL",])
 
-				theButton.SetLabel(value)
-				self.CurrentActivityLogger.fillSheet[theKey] = value
+				if dlg.ShowModal() == wx.ID_OK:
+					value = dlg.getDialog()
+					dlg.Destroy()
+
+					theButton.SetLabel(value)
+					self.CurrentActivityLogger.fillSheet[theKey] = value
+
+					if theKey == "    Specific Gravity" or theKey == "Volume(ml)":
+						self.CurrentActivityLogger.fillSheet["Weight(g)"] = "N/A"
+						self._FillSheetWeightsInfo["Weight(g)"].SetLabel("######")
+
+					elif theKey == "Weight(g)":
+						self.CurrentActivityLogger.fillSheet["    Specific Gravity"] = "N/A"
+						self._FillSheetWeightsInfo["    Specific Gravity"].SetLabel("######")
+
+						self.CurrentActivityLogger.fillSheet["Volume(ml)"] = "N/A"
+						self._FillSheetWeightsInfo["Volume(ml)"].SetLabel("######")
+			else:
+
+				dlg = QWERTYBox("Input Work Order Number")
+
+				if dlg.ShowModal() == wx.ID_OK:
+					value = dlg.getDialog()
+					dlg.Destroy()
+
+					theButton.SetLabel(value)
+					self.CurrentActivityLogger.fillSheet[theKey] = value
+
+
+
 
 
 	def OnQualityAsurance(self, event=None):

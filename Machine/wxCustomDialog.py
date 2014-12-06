@@ -278,6 +278,97 @@ class BringLineDownBox(wx.Dialog):
 
 		return _returns
 
+class QWERTYBox(wx.Dialog):
+	def __init__(self, outputHeader, ButtonSize=(175,50)):
+
+		self._Border = (5, 5)
+		self._ButtonSize = ButtonSize
+		self._Size = (800,400)
+		_vbox = wx.BoxSizer(wx.VERTICAL)
+
+		#Creates Dialog FrameWork
+		wx.Dialog.__init__(self, None, -1, outputHeader,
+			style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|
+				wx.TAB_TRAVERSAL)
+
+
+		################################HEADER###################################
+		self.Display_Output = wx.TextCtrl(self,
+			style=wx.TE_MULTILINE | wx.TE_CENTER)
+
+
+		self.Display_Output.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD, underline=False,))
+
+
+		_vbox.Add(self.Display_Output, flag=wx.EXPAND|wx.TOP|wx.BOTTOM, border=self._Border[0])
+
+		self.SetSizer(_vbox)
+
+		################################KEYBOARD#################################
+		numbers=["1","2","3","4","5","6","7","8","9","0"]
+		top = ["q","w","e","r","t","y","u","i","o","p"]
+		mid = ["a","s","d","f","g","h","j","k","l", "DEL"]
+		bot = ["CAP","z","x","c","v","b","n","m",".","/"]
+
+		_gs = wx.GridSizer(4, 10, self._Border[0], self._Border[1])
+
+		self._Buttons = []
+		self._cap = None
+
+		for opition in numbers+top+mid+bot:
+			if not opition == "":
+				button=wx.Button(self, label=opition)
+				if opition == "CAP":
+					self._cap = button
+				button.Bind(wx.EVT_BUTTON, self.OnButtonPress, )
+				button.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD, underline=False,))
+				self._Buttons.append((button, 0, wx.EXPAND))
+			else:
+				self._Buttons.append((wx.StaticText(self), wx.EXPAND))
+
+
+		_gs.AddMany(self._Buttons)
+		_vbox.Add(_gs, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
+
+		button=wx.Button(self, label=" ", size=(self._Size[0], 50))
+		button.Bind(wx.EVT_BUTTON, self.OnButtonPress, )
+		_vbox.Add(button, flag=wx.EXPAND|wx.TOP|wx.BOTTOM, border=self._Border[0])
+
+
+		##################Create Ok and Cancle & attach to BoxSizer #################
+
+		_hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+		_hbox.Add(wx.Button(self, wx.ID_OK, label="OK", size=ButtonSize))
+
+		_hbox.Add(wx.Button(self, wx.ID_CANCEL, label="Cancel", size=ButtonSize))
+
+		_vbox.Add(_hbox, flag=wx.ALIGN_CENTER, border=10)
+
+		#self.SetMaxSize(self._Size)
+		#self.SetMinSize(self._Size)
+		self.SetSize(self._Size)
+
+	def OnButtonPress(self, event):
+		theButton = event.GetEventObject()
+		if theButton.GetLabel() == "DEL":
+			self.Display_Output.SetValue(self.Display_Output.GetValue()[:-1])
+		elif theButton.GetLabel() == "CAP":
+			if theButton.GetBackgroundColour() == (0,0,0):
+				theButton.SetBackgroundColour((0,255,0))
+			else:
+				theButton.SetBackgroundColour((0,0,0))
+		else:
+			if self._cap.GetBackgroundColour() == (0,0,0):
+				self.Display_Output.AppendText(event.GetEventObject().GetLabel())
+			else:
+				self.Display_Output.AppendText(str(event.GetEventObject().GetLabel()).upper())
+
+
+
+	def getDialog(self):
+		return self.Display_Output.GetValue()
+
 class Test(wx.Frame):
 	""""""
 
@@ -296,13 +387,13 @@ class Test(wx.Frame):
 		self.CurrentActivityLogger.addEmployee(str(3131))
 		self.CurrentActivityLogger.addEmployee(str(1441))
 
-		dlg = BringLineDownBox("Input Work Order Number")
+		dlg = QWERTYBox("Input Work Order Number")
 
 		result = dlg.ShowModal()
 		dlg.Destroy()
 
 		if result == wx.ID_OK:
-			print dlg.getSelection()
+			print dlg.getDialog()
 		else:
 			print result
 
