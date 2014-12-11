@@ -24,6 +24,8 @@ class NumberInputBox(wx.Dialog):
 				wx.TAB_TRAVERSAL,
 			size=self._Size)
 
+		self.SetBackgroundColour((0,0,0))
+
 		pan = wx.Panel(self, size=self._Size)
 
 		#Meh Decides what size font i should use
@@ -139,6 +141,8 @@ class EmployeeRemoveBox(wx.Dialog):
 			style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|
 				wx.TAB_TRAVERSAL)
 
+		self.SetBackgroundColour((0,0,0))
+
 		##################Create header & attach to BoxSizer #####################
 		_vbox = wx.BoxSizer(wx.VERTICAL)
 
@@ -217,6 +221,8 @@ class BringLineDownBox(wx.Dialog):
 			style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|
 				wx.TAB_TRAVERSAL)
 
+		self.SetBackgroundColour((0,0,0))
+
 		##################Create header & attach to BoxSizer #####################
 		_vbox = wx.BoxSizer(wx.VERTICAL)
 
@@ -289,6 +295,7 @@ class QWERTYBox(wx.Dialog):
 			style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|
 				wx.TAB_TRAVERSAL)
 
+		self.SetBackgroundColour((0,0,0))
 
 		################################HEADER###################################
 		self.Display_Output = wx.TextCtrl(self,
@@ -379,6 +386,7 @@ class InfoOptionBox(wx.Dialog):
 
 		self._Border = (5, 5)
 
+		self.SetBackgroundColour((0,0,0))
 
 		self.CurrentActivityLogger = currentLogger
 
