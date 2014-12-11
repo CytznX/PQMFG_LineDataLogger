@@ -454,23 +454,20 @@ class ActivityLogger:
 	def _getQC(self):
 		return self._QCInfo
 
-	def _setQC(self, newCol, loc=None):
-		if loc is None: loc = str(len(self._QCInfo))
-		self._QCInfo[loc] = newCol
+	def _setQC(self, Dic):
+		self._QCInfo = Dic
 
 	def _getPallet(self):
 		return self._PalletInfo
 
-	def _setPallet(self, newCol, loc=None):
-		if loc is None: loc = str(len(self._QCInfo))
-		self._PalletInfo[loc] = newCol
+	def _setPallet(self, Dic,):
+		self._PalletInfo = Dic
 
 	def _getBatch(self):
 		return self._BatchInfo
 
-	def _setBatch(self, newCol, loc=None):
-		if loc is None: loc = str(len(self._QCInfo))
-		self._BatchInfo[loc] = newCol
+	def _setBatch(self, Dic):
+		self._BatchInfo = Dic
 
 	def changePeacesPerBox(self, ppb):
 		self.peacesPerBox = ppb

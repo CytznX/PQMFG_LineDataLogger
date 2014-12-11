@@ -574,9 +574,6 @@ class mainScreenButtonPanel(wx.Panel):
 						self.CurrentActivityLogger.changeState(ID, output)
 						self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S> ')+self.CurrentActivityLogger.getName(ID)+" Brought Line Down from "+output+"\n")
 
-					else:
-						print result
-
 			else:
 				dlg = wx.MessageDialog(self, "Cannot Adjust Machine State Without First Loading in a new WO or bringing the machine up first", "Warning no WO running", wx.OK)
 				dlg.ShowModal()

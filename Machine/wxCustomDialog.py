@@ -152,7 +152,7 @@ class EmployeeRemoveBox(wx.Dialog):
 
 
 		##################Create Grid Sizer & attach to BoxSizer #################
-		_gs = wx.GridSizer(_colums, _colums, self._Border[0], self._Border[1])
+		self._gs = wx.GridSizer(_colums, _colums, self._Border[0], self._Border[1])
 
 		self._employeeButtons = []
 
@@ -163,8 +163,8 @@ class EmployeeRemoveBox(wx.Dialog):
 					button[0].Bind(wx.EVT_BUTTON, self.OnButtonPress, )
 					self._employeeButtons.append(button)
 
-		_gs.AddMany(self._employeeButtons)
-		_vbox.Add(_gs, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
+		self._gs.AddMany(self._employeeButtons)
+		_vbox.Add(self._gs, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
 
 		##################Create Ok and Cancle & attach to BoxSizer #################
 
@@ -227,10 +227,8 @@ class BringLineDownBox(wx.Dialog):
 
 		_vbox.Add(self.display, flag=wx.ALIGN_CENTER, border=4)
 
-
-
 		##################Create Grid Sizer & attach to BoxSizer #################
-		_gs = wx.GridSizer(2, 2, self._Border[0], self._Border[1])
+		self._gs = wx.GridSizer(2, 2, self._Border[0], self._Border[1])
 
 		self._employeeButtons = []
 
@@ -239,8 +237,8 @@ class BringLineDownBox(wx.Dialog):
 			button[0].Bind(wx.EVT_BUTTON, self.OnButtonPress, )
 			self._employeeButtons.append(button)
 
-		_gs.AddMany(self._employeeButtons)
-		_vbox.Add(_gs, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
+		self._gs.AddMany(self._employeeButtons)
+		_vbox.Add(self._gs, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
 
 		##################Create Ok and Cancle & attach to BoxSizer #################
 
@@ -310,7 +308,7 @@ class QWERTYBox(wx.Dialog):
 		mid = ["a","s","d","f","g","h","j","k","l", "DEL"]
 		bot = ["CAP","z","x","c","v","b","n","m",".","/"]
 
-		_gs = wx.GridSizer(4, 10, self._Border[0], self._Border[1])
+		self._gs = wx.GridSizer(4, 10, self._Border[0], self._Border[1])
 
 		self._Buttons = []
 		self._cap = None
@@ -327,8 +325,8 @@ class QWERTYBox(wx.Dialog):
 				self._Buttons.append((wx.StaticText(self), wx.EXPAND))
 
 
-		_gs.AddMany(self._Buttons)
-		_vbox.Add(_gs, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
+		self._gs.AddMany(self._Buttons)
+		_vbox.Add(self._gs, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
 
 		button=wx.Button(self, label=" ", size=(self._Size[0], 50))
 		button.Bind(wx.EVT_BUTTON, self.OnButtonPress, )
@@ -369,6 +367,305 @@ class QWERTYBox(wx.Dialog):
 	def getDialog(self):
 		return self.Display_Output.GetValue()
 
+class InfoOptionBox(wx.Dialog):
+	def __init__(self, outputHeader, currentLogger, option=1, ButtonSize=(175,50)):
+
+		#Creates Dialog FrameWork
+		wx.Dialog.__init__(self, None, -1, outputHeader,
+			style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|
+				wx.TAB_TRAVERSAL)
+
+		################################Basic#################################
+
+		self._Border = (5, 5)
+
+
+		self.CurrentActivityLogger = currentLogger
+
+		self.workingDict = None
+		self._cap = None
+
+		self._Buttons = dict()
+		self._keys = []
+		self.theAddButton = None
+
+		self.currentOption = option
+
+		if self.currentOption == 1:
+			self.workingDict = self.CurrentActivityLogger.PalletInfo.copy()
+		elif self.currentOption == 2:
+			self.workingDict = self.CurrentActivityLogger.BatchInfo.copy()
+		else:
+			self.workingDict = self.CurrentActivityLogger.QCInfo.copy()
+
+
+		################################KEYBOARD#################################
+
+		self._vbox = wx.BoxSizer(wx.VERTICAL)
+		self._currentGridSizer = wx.GridSizer(1, 1, self._Border[0], self._Border[1])
+		self._vbox.Add(self._currentGridSizer, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
+
+		self.DrawDic()
+
+		##################Create Ok and Cancle & attach to BoxSizer #################
+
+		_hbox = wx.BoxSizer(wx.HORIZONTAL)
+
+		_hbox.Add(wx.Button(self, wx.ID_OK, label="OK", size=ButtonSize))
+
+		_hbox.Add(wx.Button(self, wx.ID_CANCEL, label="Cancel", size=ButtonSize))
+
+		self._vbox.Add(_hbox, flag=wx.ALIGN_CENTER, border=10)
+
+		#self._vbox.Add(self._currentGridSizer, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
+		self.SetSizer(self._vbox)
+
+		self._vbox.Fit(self)
+		#self.SetSizer(self._vbox)
+		#self._currentGridSizer.Fit(self)
+
+
+
+	def DrawDic(self):
+
+		#Reset Holding Vars
+		self._cap = None
+		self._Buttons = dict()
+		self._keys = []
+		self.theAddButton = None
+
+		#Do Some Renameing and Clear the Gridsizer
+		self._currentGridSizer.Clear(True)
+
+		#Gets the keys of passed dictionary
+		_dicKeys = self.workingDict.keys()
+
+		#figures out needed rows and columbs for current gridsizer
+		self._currentGridSizer.SetRows(len(_dicKeys)+1)
+		self._currentGridSizer.SetCols(len(self.workingDict[_dicKeys[0]])+1)
+
+		#print "Rows: ", len(_dicKeys)+1, "Cols: ", len(self.workingDict[_dicKeys[0]])+1
+		#print self.CurrentActivityLogger
+
+		#Add Blanck top left corner
+		self._currentGridSizer.Add(wx.StaticText(self), 0, wx.EXPAND)
+
+		#Adds the top header row
+		for header in self.workingDict[sorted(_dicKeys)[-1]]:
+			head = wx.StaticText(self, label=header, style=wx.ALIGN_CENTRE)
+			head.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD, underline=True,))
+
+			self._currentGridSizer.Add(head, 0, wx.EXPAND)
+
+		#Fills out every other button
+		for count1, key in  enumerate(sorted(self.workingDict.keys())[:-1]):
+
+			#Sorting Functionality
+			if not (count1+1) == key:
+				tmp = self.workingDict[key]
+				del(self.workingDict[key])
+				self.workingDict[count1+1] = tmp
+				key = count1+1
+
+			#Create The Key(Red) Button
+			button = wx.Button(self, label=str(key))
+
+			#Formats the button to look pretty
+			button.Bind(wx.EVT_BUTTON, self.OnKeyPress, )
+			button.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD, underline=False,))
+			button.SetBackgroundColour((255, 0, 0))
+
+			#Add keys to key and add the button to a list for later
+			self._keys.append(button)
+			self._currentGridSizer.Add(button, 0, wx.EXPAND,)
+
+			for count2, item in enumerate(self.workingDict[key]):
+
+				if self.currentOption == 1:
+
+					if not count2 == 3:
+
+						#Create Data Button
+						button = wx.Button(self, label=str(item))
+
+						#Formats the button to look pretty
+						button.Bind(wx.EVT_BUTTON, self.OnButtonPress, )
+
+					else:
+						button = wx.StaticText(self, label=str(item))
+
+					button.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD, underline=False,))
+
+					#Add keys to key and add the button to a list for later
+					if not key in self._Buttons.keys():
+						self._Buttons[key]=[]
+
+					self._Buttons[key].append(button)
+					self._currentGridSizer.Add(button, 0, wx.EXPAND)
+
+				else:
+
+					#Create Data Button
+					button = wx.Button(self, label=str(item))
+
+					#Formats the button to look pretty
+					button.Bind(wx.EVT_BUTTON, self.OnButtonPress, )
+
+					button.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD, underline=False,))
+
+					#Add keys to key and add the button to a list for later
+					if not key in self._Buttons.keys():
+						self._Buttons[key]=[]
+
+					self._Buttons[key].append(button)
+					self._currentGridSizer.Add(button, 0, wx.EXPAND)
+
+		#Creates the green add button
+		self.theAddButton = wx.Button(self, label="+")
+
+		#Button Formating
+		self.theAddButton.Bind(wx.EVT_BUTTON, self.OnNewLine, )
+		self.theAddButton.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD, underline=False,))
+		self.theAddButton.SetBackgroundColour((0,255,0))
+
+		#Add Button to GridSizer
+		self._currentGridSizer.Add(self.theAddButton, 0, wx.EXPAND)
+
+		#Fits the GridSizer to itself
+		self._vbox.Fit(self)
+
+
+	def OnNewLine(self, event):
+
+		#Default text of newly added button row
+		_initButtonText = ["N/A"]
+
+		#If theres no existing lines just create 1
+		if len(self.workingDict.keys()) == 1:
+			self.workingDict[1] = len(self.workingDict["INIT"])*_initButtonText
+
+		#else we apend to the bottom
+		else:
+			#print len(self.workingDict["INIT"]), ["N/A"]
+			self.workingDict[sorted(self.workingDict.keys())[-2]+1] = len(self.workingDict["INIT"])*_initButtonText
+
+		#Draw the new dictionarry
+		self.DrawDic()
+
+
+	def OnKeyPress(self, event):
+
+		#Find Wich Button was pressed
+		for button in self._keys:
+			if event.GetEventObject() is button:
+
+				#Delete the corisponding column in the dictionary
+				del(self.workingDict[int(button.GetLabel())])
+
+		#Draw the new dictionarry
+		self.DrawDic()
+
+
+	def OnButtonPress(self, event):
+
+		#Draw the new dictionarry
+
+		#pulls the button from the passed event
+		theButton = event.GetEventObject()
+
+		#Search for the button that
+		for key in self._Buttons.keys():
+			for pos, button in enumerate(self._Buttons[key]):
+				if button is theButton:
+
+					if (self.currentOption == 2 and pos == 0) or (self.currentOption == 1) or (self.currentOption == 3):
+
+						if self.currentOption == 2 or self.currentOption == 3:
+							dlg = QWERTYBox("Input Batch Number")
+						else:
+							dlg = NumberInputBox("Input Value", Buttons=["1","2","3","4","5","6","7","8","9","0",".","DEL",])
+
+						if dlg.ShowModal() == wx.ID_OK:
+							value = dlg.getDialog()
+
+							self.workingDict[key][pos] = value
+							theButton.SetLabel(value)
+
+						dlg.Destroy()
+
+					elif self.currentOption == 2:
+						#keys: ("Tare Weight(g)","######"), ("Volume(ml)","######"), ("    Specific Gravity","######"), ("Weight(g)","######"), ("Cosmetic","######")
+						# self.CurrentActivityLogger.fillSheet[key]
+						keys = self.CurrentActivityLogger.fillSheet.keys()
+
+						if pos == 1:
+							if "Weight(g)" in keys and not self.CurrentActivityLogger.fillSheet["Weight(g)"] == "######" and not self.CurrentActivityLogger.fillSheet["Weight(g)"] == "N/A" :
+								print self.CurrentActivityLogger.fillSheet["Weight(g)"]
+								self.workingDict[key][pos] = float(self.CurrentActivityLogger.fillSheet["Weight(g)"])
+								theButton.SetLabel(str(self.CurrentActivityLogger.fillSheet["Weight(g)"]))
+
+							elif ("Volume(ml)" in keys and "    Specific Gravity" in keys) and not self.CurrentActivityLogger.fillSheet["Volume(ml)"] == "######" and not self.CurrentActivityLogger.fillSheet["    Specific Gravity"] == "######" and not self.CurrentActivityLogger.fillSheet["Volume(ml)"] == "N/A" and not self.CurrentActivityLogger.fillSheet["    Specific Gravity"] == "N/A":
+								tmpValue = float(self.CurrentActivityLogger.fillSheet["Volume(ml)"])*float(self.CurrentActivityLogger.fillSheet["    Specific Gravity"])
+								self.workingDict[key][pos] = tmpValue
+								theButton.SetLabel(str(tmpValue))
+
+							else:
+								self.workingDict[key][pos] = None
+								theButton.SetLabel("Invalid FS Data")
+
+							if "Cosmetic" in keys and not self.CurrentActivityLogger.fillSheet["Cosmetic"] == "######" and not self.workingDict[key][pos] == None:
+								tmpValue = self.workingDict[key][pos] + float(self.CurrentActivityLogger.fillSheet["Cosmetic"])
+								self.workingDict[key][pos] = tmpValue
+								theButton.SetLabel(str(tmpValue))
+
+						elif pos == 2:
+							if "Tare Weight(g)" in keys and not self.CurrentActivityLogger.fillSheet["Tare Weight(g)"] == "######":
+
+								tmpValue = None
+								try:
+									tmpValue = float(self.workingDict[key][1])+float(self.CurrentActivityLogger.fillSheet["Tare Weight(g)"])
+								except Exception, e:
+									print e , self.workingDict[key][1], self.CurrentActivityLogger.fillSheet["Tare Weight(g)"]
+									self.workingDict[key][pos] = None
+									theButton.SetLabel("Invalid FS Data")
+								else:
+									self.workingDict[key][pos] = tmpValue
+									theButton.SetLabel(str(tmpValue ))
+
+							else:
+								self.workingDict[key][pos] = None
+								theButton.SetLabel("Invalid FS Data")
+						else:
+							try:
+								tmpValue = 1.02*float(self.workingDict[key][2])
+							except Exception, e:
+								print e, self.workingDict[key][2]
+								self.workingDict[key][pos] = None
+								theButton.SetLabel("Invalid FS Data")
+							else:
+								tmpValue = str(float(self.workingDict[key][2]))+"-"+str(tmpValue)
+								self.workingDict[key][pos] = tmpValue
+								theButton.SetLabel(tmpValue)
+
+					if self.currentOption==1:
+							try:
+								self.workingDict[key][3] = float(self.workingDict[key][1])*float(self.workingDict[key][2])
+								self._Buttons[key][3].SetLabel(str(float(self.workingDict[key][1])*float(self.workingDict[key][2])))
+							except Exception, e:
+								self.workingDict[key][3] = "N/A"
+								self._Buttons[key][3].SetLabel("N/A")
+
+					else:
+						pass
+
+					#Fits the GridSizer to itself
+					self._vbox.Fit(self)
+
+
+
+	def GetDictionary(self):
+		return self.workingDict
+
 class Test(wx.Frame):
 	""""""
 
@@ -387,13 +684,51 @@ class Test(wx.Frame):
 		self.CurrentActivityLogger.addEmployee(str(3131))
 		self.CurrentActivityLogger.addEmployee(str(1441))
 
-		dlg = QWERTYBox("Input Work Order Number")
+		# "Weight(g)" or "Volume(ml)" and "    Specific Gravity"
+		self.CurrentActivityLogger.fillSheet["Volume(ml)"] = 10
+		self.CurrentActivityLogger.fillSheet["    Specific Gravity"] = 10
+		self.CurrentActivityLogger.fillSheet["Cosmetic"] = 0.5
+		self.CurrentActivityLogger.fillSheet["Tare Weight(g)"] = 2.2
+
+		#OPtion 3 QC Info
+		newDic = {"INIT": ["Batch#","Stability","Begins","Middle","Ends","Re-Sample","Initials"],
+									1: ['111', '100', '5', '500', '5', '500', '5'],
+									2: ['121', '200', '5', '1000', '5', '500', '5'],}
+
+
+		##########################SETS NEW Dictionary#############################
+		self.CurrentActivityLogger._setQC(newDic)
+
+		#OPtion 2 == batchInfo
+		newDic = {"INIT": ["Batch Code", "Fill Weight", "Total Weight", "Total Wt Range"],
+									1: ['111', '100', '5', '500'],
+									2: ['121', '200', '5', '1000'],}
+
+		##########################SETS NEW Dictionary#############################
+		self.CurrentActivityLogger._setBatch(newDic)
+
+		#OPtion 1 == PalletInfo
+		newDic = {'INIT': ['Pallet#', 'Cases', 'Pcs/Case', 'Count', 'Batch#'],
+									1: ['111', '100', '5', '500', '1123234'],
+									2: ['121', '200', '5', '1000', '1423234'],}
+
+		##########################SETS NEW Dictionary#############################
+		self.CurrentActivityLogger._setPallet(newDic)
+
+
+		dlg = InfoOptionBox("Input Work Order Number", self.CurrentActivityLogger, option=3)
 
 		result = dlg.ShowModal()
 		dlg.Destroy()
 
 		if result == wx.ID_OK:
-			print dlg.getDialog()
+			print "----------RESULT-----------"
+
+			thedict = dlg.GetDictionary()
+
+			for key in sorted(thedict.keys()):
+				print key, thedict[key]
+
 		else:
 			print result
 

@@ -12,6 +12,7 @@ from wxPython.wx import *
 from StateMachine import *
 from wxCustomDialog import NumberInputBox
 from wxCustomDialog import QWERTYBox
+from wxCustomDialog import InfoOptionBox
 
 class fillScreenInfoPanel(wx.Panel):
 	def __init__(self, parent, passedLogger, hideMouse, size):
@@ -258,7 +259,6 @@ class fillScreenInfoPanel(wx.Panel):
 
 				if dlg.ShowModal() == wx.ID_OK:
 					value = dlg.getDialog()
-					dlg.Destroy()
 
 					theButton.SetLabel(value)
 					self.CurrentActivityLogger.fillSheet[theKey] = value
@@ -279,23 +279,40 @@ class fillScreenInfoPanel(wx.Panel):
 
 				if dlg.ShowModal() == wx.ID_OK:
 					value = dlg.getDialog()
-					dlg.Destroy()
 
 					theButton.SetLabel(value)
 					self.CurrentActivityLogger.fillSheet[theKey] = value
 
-
+			dlg.Destroy()
 
 
 
 	def OnQualityAsurance(self, event=None):
-		pass
+		dlg = InfoOptionBox("Input QA Info", self.CurrentActivityLogger, option=3)
+		result = dlg.ShowModal()
+		dlg.Destroy()
+
+		if result == wx.ID_OK:
+			thedict = dlg.GetDictionary()
+			self.CurrentActivityLogger._setQC(thedict)
 
 	def OnBatchInfo(self, event=None):
-		pass
+		dlg = InfoOptionBox("Input Batch Info", self.CurrentActivityLogger, option=2)
+		result = dlg.ShowModal()
+		dlg.Destroy()
+
+		if result == wx.ID_OK:
+			thedict = dlg.GetDictionary()
+			self.CurrentActivityLogger._setBatch(thedict)
 
 	def OnPalletInfo(self, event=None):
-		pass
+		dlg = InfoOptionBox("Input Pallet Info", self.CurrentActivityLogger, option=1)
+		result = dlg.ShowModal()
+		dlg.Destroy()
+
+		if result == wx.ID_OK:
+			thedict = dlg.GetDictionary()
+			self.CurrentActivityLogger._setPallet(thedict)
 
 	def OnBack(self, event=None):
 		self.parent.TogglFillSheet(event)
