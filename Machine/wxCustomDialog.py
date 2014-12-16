@@ -194,10 +194,11 @@ class EmployeeRemoveBox(wx.Dialog):
 		theButton = event.GetEventObject()
 
 		#SetForegroundColour((255,0,0))
-		if theButton.GetBackgroundColour() == (0,0,0):
-			theButton.SetBackgroundColour((0,255,0))
+		#print theButton.GetBackgroundColour()
+		if theButton.GetBackgroundColour() == (0,0,0,255):
+			theButton.SetBackgroundColour((0,255,0,255))
 		else:
-			theButton.SetBackgroundColour((0,0,0))
+			theButton.SetBackgroundColour((0,0,0,255))
 
 	def OnClose(self, event):
 		self.Close(True)
@@ -272,10 +273,10 @@ class BringLineDownBox(wx.Dialog):
 			button[0].SetBackgroundColour((0,0,0))
 
 		#SetForegroundColour((255,0,0))
-		if theButton.GetBackgroundColour() == (0,0,0):
-			theButton.SetBackgroundColour((0,255,0))
+		if theButton.GetBackgroundColour() == (0,0,0,255):
+			theButton.SetBackgroundColour((0,255,0,255))
 		else:
-			theButton.SetBackgroundColour((0,0,0))
+			theButton.SetBackgroundColour((0,0,0,255))
 
 	def getSelection(self):
 		_returns=None
