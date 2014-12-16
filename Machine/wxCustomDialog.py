@@ -198,7 +198,7 @@ class EmployeeRemoveBox(wx.Dialog):
 		if theButton.GetBackgroundColour() == (0,0,0,255):
 			theButton.SetBackgroundColour((0,255,0,255))
 		else:
-			theButton.SetBackgroundColour((0,0,0,255))
+			theButton.SetBackgroundColour((255,255,255,255))
 
 	def OnClose(self, event):
 		self.Close(True)
