@@ -117,7 +117,7 @@ class ActivityLogger:
 			# when a falling edge is detected on port 23, regardless of whatever
 			# else is happening in the program, the function my_callback2 will be run
 			# 'bouncetime=300' includes the bounce control written into interrupts2a.py
-			GPIO.add_event_detect(23, GPIO.RISING, callback=self.modBoxCount, bouncetime=self.CurrentDbounceTime)
+			#GPIO.add_event_detect(23, GPIO.RISING, callback=self.modBoxCount, bouncetime=self.CurrentDbounceTime)
 
 	def get_Dbounce(self):
 		return self.CurrentDbounceTime
@@ -147,30 +147,13 @@ class ActivityLogger:
 	def getCounts(self):
 
 		#self._PalletInfo = {"INIT": ["Pallet#", "Cases", "Pcs/Case", "Count", "Batch#"]}
+		#print "counts have been gotten"
+		self.refreshBoxCount()
+		self.refreshFailCount()
 
 		returns = None
 		if self.isBulk:
 			returns = (self.totalCount, 0, self.boxCount, self.peacesPerBox)
-		elif len(self._PalletInfo.keys())>1:
-
-			tmpBoxed = 0
-			tmpFail = 0
-
-			for key in self._PalletInfo.keys():
-				if not key == "INIT":
-					#print self._PalletInfo[key]
-					try:
-						tmpBoxed += int(self._PalletInfo[key]['Cases'])
-						tmpFail += int(self._PalletInfo[key]['Cases'])*int(self._PalletInfo[key]['Pcs/Case'])
-					except TypeError, e:
-						tmpBoxed += 0
-						tmpFail += 0
-
-					except ValueError,e:
-						self.pushMessage("Value Error in Pallet info, Deleted bad Line... Please make sure all necisary values are integers")
-						del (self._PalletInfo[key])
-
-			returns = (self.totalCount, sum(self.totalCount)-tmpFail, [tmpBoxed])
 		else:
 			returns = (self.totalCount, self.failCount, self.boxCount)
 		return returns
@@ -709,8 +692,6 @@ class ActivityLogger:
 				else:
 					self.totalCount[-1] += amount
 
-
-
 			elif (not amount == 1) or (not ID == None):
 				self.adjustments.append((ID ,'Total', amount, datetime.datetime.now()))
 				incrementSucssful = True
@@ -725,6 +706,7 @@ class ActivityLogger:
 				else:
 					self.totalCount[-1] += amount
 
+		self.refreshBoxCount()
 		self.refreshFailCount()
 		return incrementSucssful
 	'''
@@ -740,53 +722,31 @@ class ActivityLogger:
 			#If more than a hour has passed start new tally and reset clock
 			if(datetime.datetime.now()-self.hourdecrement).seconds >3600:
 				self.hourdecrement = datetime.datetime.now()
-				self.boxCount.append(0)
 				self.totalCount.append(0)
 
 			#elses we increment current tally
 			else:
-				if not (self.totalCount==None or self.boxCount ==None or self.peacesPerBox == None):
-					self.failCount = sum(self.totalCount) - (sum(self.boxCount)*self.peacesPerBox)
+				if not (self.totalCount==None or self.boxCount ==None):
+					self.failCount = sum(self.totalCount) - (sum(self.boxCount))
 				else:
 					self.failCount = 0
 
 		return decrementSucssful
 
+	def refreshBoxCount(self,  event = None, force = False):
+		if len(self.PalletInfo.keys())>1:
+			tmpSum = 0
+			for key in self.PalletInfo.keys():
+				if key is not "INIT":
+					tmpSum += int(self.PalletInfo[key][3])
+
+			print "Refreshed Box count: ", tmpSum
+			self.boxCount = [tmpSum]
+
+
 	def inc_CurBoxCount(self,  event = None, amount =1, force = False, ID = None):
 
-		decrementSucssful = False
-
-		if not self.current_WO == None and (not self.currentState == False or force):
-
-			if amount==1 and ID == None:
-				decrementSucssful = True
-
-				#If more than a hour has passed start new tally and reset clock
-				if(datetime.datetime.now()-self.hourdecrement).seconds >3600:
-					self.hourdecrement = datetime.datetime.now()
-					self.boxCount.append(amount)
-					self.totalCount.append(0)
-
-				#elses we increment current tally
-				else:
-					self.boxCount[-1] += amount
-
-			elif not (not amount == 1) or (not ID == None):
-				self.adjustments.append((ID ,'Box', amount, datetime.datetime.now()))
-				decrementSucssful = True
-
-				#If more than a hour has passed start new tally and reset clock
-				if(datetime.datetime.now()-self.hourdecrement).seconds >3600:
-					self.hourdecrement = datetime.datetime.now()
-					self.boxCount.append(amount)
-					self.totalCount.append(0)
-
-				#elses we increment current tally
-				else:
-					self.boxCount[-1] += amount
-
-		self.refreshFailCount()
-		return decrementSucssful
+		pass
 
 	'''
 	returns the runtime (in seconds) of current work order
@@ -810,25 +770,17 @@ class ActivityLogger:
 
 		if not self.current_WO == None:
 			try:
-
 				if hourly:
-					if not (self.peacesPerBox == None or self.peacesPerBox == 0 or self.isBulk):
-						peacesPacked = self.boxCount[-1]*self.peacesPerBox
-					else:
-						peacesPacked = self.totalCount[-1]
-
+					peacesPacked = self.totalCount[-1]
 					curAvg = peacesPacked/((datetime.datetime.now()-self.hourdecrement).seconds/60.0)
 
 				else:
-					if not (self.peacesPerBox == None or self.peacesPerBox == 0 or self.isBulk):
-						peacesPacked = sum(self.boxCount)*self.peacesPerBox
-					else:
-						peacesPacked = sum(self.totalCount)
-
+					peacesPacked = sum(self.totalCount)
 					curAvg = peacesPacked/(self.getRunTime(False)/60.0)
 
 			except ZeroDivisionError:
 					curAvg = 0
+
 		return curAvg
 
 	def getDwnTimesTotals(self):

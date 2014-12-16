@@ -211,22 +211,26 @@ class mainScreenInfoPanel(wx.Panel):
 
 		########################Update the counts########################################################
 		totalCount, failCount, boxCount = self.CurrentActivityLogger.getCounts()
+		#print totalCount, failCount, boxCount
 
 		try:
 			self._CountDspDic["Total Peaces"].SetLabel(str(sum(totalCount)))
-			self._CountDspDic["Peaces Boxed"].SetLabel(str(failCount))
-			self._CountDspDic["Peaces Scraped"].SetLabel(str(sum(boxCount)))
+			self._CountDspDic["Peaces Boxed"].SetLabel(str(sum(boxCount)))
+			self._CountDspDic["Peaces Scraped"].SetLabel(str(failCount))
 		except Exception, e:
 			self._CountDspDic["Total Peaces"].SetLabel(str(totalCount))
-			self._CountDspDic["Peaces Boxed"].SetLabel(str(failCount))
-			self._CountDspDic["Peaces Scraped"].SetLabel(str(boxCount))
+			self._CountDspDic["Peaces Boxed"].SetLabel(str(boxCount))
+			self._CountDspDic["Peaces Scraped"].SetLabel(str(failCount))
 
-			try:
-				self._PPMDspDic["Hourly(Peaces/Minute)"].SetLabel("%.2f" % self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=True))
-				self._PPMDspDic["Total(Peaces/Minute)"].SetLabel("%.2f"% self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=False))
-			except TypeError:
-				self._PPMDspDic["Hourly(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=True)))
-				self._PPMDspDic["Total(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=False)))
+
+		#print self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=True), self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=False)
+
+		try:
+			self._PPMDspDic["Hourly(Peaces/Minute)"].SetLabel("%.2f" % self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=True))
+			self._PPMDspDic["Total(Peaces/Minute)"].SetLabel("%.2f"% self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=False))
+		except TypeError:
+			self._PPMDspDic["Hourly(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=True)))
+			self._PPMDspDic["Total(Peaces/Minute)"].SetLabel(str(self.CurrentActivityLogger.getCurrentRunningPassAvg(hourly=False)))
 
 		if not self.previousEmpDicionary == self.CurrentActivityLogger.stillLoggedOn():
 
@@ -584,7 +588,6 @@ class mainScreenButtonPanel(wx.Panel):
 
 
 		def FillSheetButtonEvent(self, event=None):
-			print self.CurrentActivityLogger.getCurrentState()
 			if self.CurrentActivityLogger.getCurrentState()[0] is not None:
 				self.curFrame.TogglFillSheet(event)
 			else:

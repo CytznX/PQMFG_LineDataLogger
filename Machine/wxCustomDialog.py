@@ -144,7 +144,9 @@ class EmployeeRemoveBox(wx.Dialog):
 		self.SetBackgroundColour((0,0,255))
 
 		##################Create header & attach to BoxSizer #####################
-		_vbox = wx.BoxSizer(wx.VERTICAL)
+
+		my_box = wx.StaticBox(self, wx.ID_ANY, "Employee Removal")
+		_vbox = wx.StaticBoxSizer(my_box, wx.VERTICAL)
 
 		self.display = wx.StaticText(self, -1, "Select Emplyee(s) To Remove", style=wx.TE_CENTER)
 		self.display.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD, underline=True))
@@ -224,7 +226,8 @@ class BringLineDownBox(wx.Dialog):
 		self.SetBackgroundColour((0,0,255))
 
 		##################Create header & attach to BoxSizer #####################
-		_vbox = wx.BoxSizer(wx.VERTICAL)
+		my_box = wx.StaticBox(self, wx.ID_ANY, "Bring line Down")
+		_vbox = wx.StaticBoxSizer(my_box, wx.VERTICAL)
 
 		self.display = wx.StaticText(self, -1, "Choose a Reason", style=wx.TE_CENTER)
 		self.display.SetFont(wx.Font(24, wx.SWISS, wx.NORMAL, wx.BOLD, underline=True))
@@ -288,7 +291,9 @@ class QWERTYBox(wx.Dialog):
 		self._Border = (5, 5)
 		self._ButtonSize = ButtonSize
 		self._Size = (800,400)
-		_vbox = wx.BoxSizer(wx.VERTICAL)
+
+		my_box = wx.StaticBox(self, wx.ID_ANY, outputHeader)
+		_vbox = wx.StaticBoxSizer(my_box, wx.VERTICAL)
 
 		#Creates Dialog FrameWork
 		wx.Dialog.__init__(self, None, -1, outputHeader,
@@ -724,7 +729,7 @@ class Test(wx.Frame):
 		self.CurrentActivityLogger._setPallet(newDic)
 
 
-		dlg = InfoOptionBox("Input Work Order Number", self.CurrentActivityLogger, option=3)
+		dlg = EmployeeRemoveBox("Input Work Order Number", self.CurrentActivityLogger)
 
 		result = dlg.ShowModal()
 		dlg.Destroy()
