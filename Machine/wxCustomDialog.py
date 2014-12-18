@@ -194,11 +194,11 @@ class EmployeeRemoveBox(wx.Dialog):
 		theButton = event.GetEventObject()
 
 		#SetForegroundColour((255,0,0))
-		#print theButton.GetBackgroundColour()
-		if theButton.GetBackgroundColour() == (0,0,0,255):
-			theButton.SetBackgroundColour((0,255,0,255))
+		print theButton.GetBackgroundColour()
+		if theButton.GetBackgroundColour() == (0,0,0):
+			theButton.SetBackgroundColour((0,255,0))
 		else:
-			theButton.SetBackgroundColour((255,255,255,255))
+			theButton.SetBackgroundColour((0,0,0,255))
 
 	def OnClose(self, event):
 		self.Close(True)
@@ -207,7 +207,7 @@ class EmployeeRemoveBox(wx.Dialog):
 
 		_returns=[]
 		for button in self._employeeButtons:
-			if button[0].GetBackgroundColour() == (0, 255, 0, 255):
+			if button[0].GetBackgroundColour() == (0, 255, 0):
 				_returns.append(button[0].GetLabel())
 
 		return _returns
@@ -270,7 +270,7 @@ class BringLineDownBox(wx.Dialog):
 		theButton = event.GetEventObject()
 
 		for button in self._employeeButtons:
-			button[0].SetBackgroundColour((0,0,0))
+			button[0].SetBackgroundColour((0,0,0, 255))
 
 		#SetForegroundColour((255,0,0))
 		if theButton.GetBackgroundColour() == (0,0,0,255):
@@ -293,13 +293,14 @@ class QWERTYBox(wx.Dialog):
 		self._ButtonSize = ButtonSize
 		self._Size = (800,400)
 
-		my_box = wx.StaticBox(self, wx.ID_ANY, outputHeader)
-		_vbox = wx.StaticBoxSizer(my_box, wx.VERTICAL)
-
 		#Creates Dialog FrameWork
-		wx.Dialog.__init__(self, None, -1, outputHeader,
+		wx.Dialog.__init__(self, None, -1, "QWERTY Box",
 			style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|
 				wx.TAB_TRAVERSAL)
+
+		my_box = wx.StaticBox(self, wx.ID_ANY, "Bring line Down")
+		_vbox = wx.StaticBoxSizer(my_box, wx.VERTICAL)
+
 
 		self.SetBackgroundColour((0,0,255))
 
@@ -368,7 +369,7 @@ class QWERTYBox(wx.Dialog):
 			if theButton.GetBackgroundColour() == (0,0,0):
 				theButton.SetBackgroundColour((0,255,0))
 			else:
-				theButton.SetBackgroundColour((0,0,0))
+				theButton.SetBackgroundColour((0,0,0,255))
 		else:
 			if self._cap.GetBackgroundColour() == (0,0,0):
 				self.Display_Output.AppendText(event.GetEventObject().GetLabel())
