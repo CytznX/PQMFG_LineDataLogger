@@ -17,7 +17,7 @@ from threading import Thread
 if twil:
 	import TextWriter as tw
 
-if True:
+if False:
 	import RPi.GPIO as GPIO
 
 class ActivityLogger:
@@ -740,7 +740,7 @@ class ActivityLogger:
 				if key is not "INIT":
 					tmpSum += int(self.PalletInfo[key][3])
 
-			print "Refreshed Box count: ", tmpSum
+			#print "Refreshed Box count: ", tmpSum
 			self.boxCount = [tmpSum]
 
 
@@ -878,7 +878,8 @@ class ActivityLogger:
 										"FormattedMain": self.formatDiffDateTime(_dwntime[0]),
 										"FormattedInv": self.formatDiffDateTime(_dwntime[1]),
 										"FormattedQuality": self.formatDiffDateTime(_dwntime[2]),
-										"FormattedBreak": self.formatDiffDateTime(_dwntime[3])}
+										"FormattedBreak": self.formatDiffDateTime(_dwntime[3]),
+										"FormattedChngOvr": self.formatDiffDateTime(_dwntime[4])}
 
 
 			log = (_machineVars, self.EmpWorkingDic, _dwnTimes, self.fillSheet, self._BatchInfo, self._PalletInfo, self._QCInfo)

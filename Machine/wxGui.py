@@ -12,13 +12,14 @@ from wxMainScreen import mainScreenButtonPanel
 from wxMainScreen import mainScreenInfoPanel
 from wxFillScreen import fillScreenInfoPanel
 from wxCustomDialog import NumberInputBox
+from wxCustomDialog import SliderBox
 from StateMachine import *
 
 class MainFrame(wx.Frame):
-	def __init__(self, title, hideMouse=False, fps = 5):
+	def __init__(self, title, hideMouse=False, fps = 5, innit_EmailVars = (["maxs"], 2)):
 
 		#Create The ActivityLogger
-		self.CurrentActivityLogger = ActivityLogger(rpi=True)
+		self.CurrentActivityLogger = ActivityLogger(rpi=False)
 
 		'''FOR TESTING PURPOSES ONLY
 		for counter in range(5+int(random.random()*10)):
@@ -39,17 +40,24 @@ class MainFrame(wx.Frame):
 		self.timer = wx.Timer(self)
 		self.timer.Start(1000. / fps)
 
+		self.innit_AutoEmailVars = innit_EmailVars
+
 		#Creates Menu Bar At Top of Screen
 		self.menuBar = wx.MenuBar()
 
 		#Creates Status Bar For Instructions At bottom of Screen
 		self.statusbar = self.CreateStatusBar()
 
-		menu = wx.Menu()
-		m_exit = menu.Append(wx.ID_EXIT, "E&xit To Terminal\tAlt-X", "Exit To Terminal.")
-		m_restart = menu.Append(wx.ID_REDO, "R&estart", "Restart Machine To pull Down new Updates")
-		m_shutDown = menu.Append(wx.ID_STOP, "S&hutdown", "Power down the Machine")
-		self.menuBar.Append(menu, "&File")
+		fileMenu = wx.Menu()
+		m_exit = fileMenu.Append(wx.ID_EXIT, "E&xit To Terminal\tAlt-X", "Exit To Terminal.")
+		m_restart = fileMenu.Append(wx.ID_REDO, "R&estart", "Restart Machine To pull Down new Updates")
+		m_shutDown = fileMenu.Append(wx.ID_STOP, "S&hutdown", "Power down the Machine")
+		self.menuBar.Append(fileMenu, "&File")
+
+		settingMenu = wx.Menu()
+		m_Dbounce = settingMenu.Append(wx.ID_ANY, "Dbounce Time", "Increase or decrease 'Total Peaces' sensor Dbounce Time")
+		m_DoubleCount = settingMenu.AppendCheckItem(-1, "Double Count", "Toggle Double Count")
+		self.menuBar.Append(settingMenu, "&Settings")
 
 		#menu = wx.Menu()
 		#m_about = menu.Append(wx.ID_ABOUT, "&About", "Information about this program")
@@ -67,8 +75,8 @@ class MainFrame(wx.Frame):
 		self.fillScreenPannel.Hide()
 
 		mainDispSizer = wx.BoxSizer(wx.HORIZONTAL)
-		mainDispSizer.Add(self.mainInfoPannel,0,wx.EXPAND|wx.ALL,border=2)
-		mainDispSizer.Add(self.mainButtonPanel,0,wx.EXPAND|wx.ALL,border=2)
+		mainDispSizer.Add(self.mainInfoPannel, 0, wx.EXPAND|wx.ALL, border=2)
+		mainDispSizer.Add(self.mainButtonPanel, 0, wx.EXPAND|wx.ALL, border=2)
 
 		self.mainDispPanel.SetSizer(mainDispSizer)
 
@@ -82,6 +90,9 @@ class MainFrame(wx.Frame):
 		self.Bind(wx.EVT_MENU, self.OnClose, m_exit)
 		self.Bind(wx.EVT_MENU, self.OnRestart, m_restart)
 		self.Bind(wx.EVT_MENU, self.OnShutdown, m_shutDown)
+
+		self.Bind(wx.EVT_MENU, self.OnDbounce, m_Dbounce)
+		self.Bind(wx.EVT_MENU, self.OnDoubleCount, m_DoubleCount)
 
 		# This is the timer event that I use to refresh data on the screen
 		self.Bind(wx.EVT_TIMER, self.RefreshData)
@@ -146,18 +157,32 @@ class MainFrame(wx.Frame):
 			self.fillScreenPannel.Hide()
 		self.Layout()
 
-	#How I shutdown the pi
-	def shutdownPI(self):
+
+	def OnDbounce(self, event):
+		dlg = SliderBox("Input New Dbounce Time", self.CurrentActivityLogger.get_Dbounce())#, self.CurrentActivityLogger
+
+		result = dlg.ShowModal()
+		val = dlg.GetValue()
+		dlg.Destroy()
+
+		if result == wx.ID_OK:
+			self.CurrentActivityLogger.set_New_Dbounce(val)
+
+
+	def OnDoubleCount(self, event):
+		self.CurrentActivityLogger.TotalDoubleCount = not self.CurrentActivityLogger.TotalDoubleCount
+
+	def OnShutdown(self, event):
 		command = "/usr/bin/sudo /sbin/shutdown -h now"
 		process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
 		output = process.communicate()[0]
 		print output
 
-	def OnShutdown(self, event):
-		pass
-
 	def OnRestart(self, event):
-		pass
+		command = "/usr/bin/sudo /sbin/reboot"
+		process = subprocess.Popen(command.split(), stdout=subprocess.PIPE)
+		output = process.communicate()[0]
+		print output
 
 
 app = wx.App(redirect=False)   # Error messages go to popup window

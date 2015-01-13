@@ -194,7 +194,7 @@ class EmployeeRemoveBox(wx.Dialog):
 		theButton = event.GetEventObject()
 
 		#SetForegroundColour((255,0,0))
-		print theButton.GetBackgroundColour()
+		#print theButton.GetBackgroundColour()
 		if theButton.GetBackgroundColour() == (0,0,0):
 			theButton.SetBackgroundColour((0,255,0))
 		else:
@@ -681,6 +681,56 @@ class InfoOptionBox(wx.Dialog):
 	def GetDictionary(self):
 		return self.workingDict
 
+class SliderBox(wx.Dialog):
+	def __init__(self, outputHeader, innitDebounceTime=400, ButtonSize=(175,50)):
+
+		self._Border = (5, 5)
+		self._ButtonSize = ButtonSize
+		self._Size = (800,400)
+
+		#Creates Dialog FrameWork
+		wx.Dialog.__init__(self, None, -1, outputHeader,
+			style=wx.DEFAULT_DIALOG_STYLE|wx.THICK_FRAME|
+				wx.TAB_TRAVERSAL)
+
+		my_box = wx.StaticBox(self, wx.ID_ANY, "Adjust Debounce Time")
+		_vbox = wx.StaticBoxSizer(my_box, wx.VERTICAL)
+		self.SetSizer(_vbox)
+
+		_hbox1 = wx.BoxSizer(wx.HORIZONTAL)
+
+		self.txt = wx.StaticText(self, label=str(innitDebounceTime)+' (ms)',)
+		_hbox1.Add(self.txt)
+
+		self.sld = wx.Slider(self, value=innitDebounceTime, minValue=150, maxValue=5000,
+				size=(250, -1), style=wx.SL_HORIZONTAL)
+		_hbox1.Add(self.sld)
+
+		self.sld.Bind(wx.EVT_SCROLL, self.OnSliderScroll)
+
+		_vbox.Add(_hbox1, flag=wx.ALIGN_CENTER, border=50)
+
+		_hbox2 = wx.BoxSizer(wx.HORIZONTAL)
+
+		_hbox2.Add(wx.Button(self, wx.ID_OK, label="OK", size=self._ButtonSize))
+
+		_hbox2.Add(wx.Button(self, wx.ID_CANCEL, label="Cancel", size=self._ButtonSize))
+
+		_vbox.Add(_hbox2, flag=wx.ALIGN_CENTER, border=50)
+
+		_vbox.Fit(self)
+
+
+	def OnSliderScroll(self, e):
+
+		obj = e.GetEventObject()
+		val = obj.GetValue()
+
+		self.txt.SetLabel(str(val)+" (ms)")
+
+	def GetValue(self):
+		return self.sld.GetValue()
+
 class Test(wx.Frame):
 	""""""
 
@@ -731,18 +781,19 @@ class Test(wx.Frame):
 		self.CurrentActivityLogger._setPallet(newDic)
 
 
-		dlg = EmployeeRemoveBox("Input Work Order Number", self.CurrentActivityLogger)
+		dlg = SliderBox("Input Work Order Number")#, self.CurrentActivityLogger
 
 		result = dlg.ShowModal()
+		val = dlg.GetValue()
 		dlg.Destroy()
 
 		if result == wx.ID_OK:
 			print "----------RESULT-----------"
+			print val, type(val)
+			#thedict = dlg.GetDictionary()
 
-			thedict = dlg.GetDictionary()
-
-			for key in sorted(thedict.keys()):
-				print key, thedict[key]
+			#for key in sorted(thedict.keys()):
+			#	print key, thedict[key]
 
 		else:
 			print result
