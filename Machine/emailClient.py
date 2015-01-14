@@ -9,7 +9,7 @@ ___________________________________________________"""
 # Import smtplib for the actual sending function
 import smtplib
 import time
-s
+
 # Import the email modules we'll need
 from email.mime.text import MIMEText
 
