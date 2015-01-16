@@ -212,13 +212,6 @@ class fillScreenInfoPanel(wx.Panel):
 			self._FillSheetHeaderVariables["Fill End"].SetLabel(str(FillEnd))
 		#print self.CurrentActivityLogger.formatDiffDateTime()
 
-		pass
-
-		###############################For reference us only##################################################3
-		#self._FillSheetHeaderVariables[("Work Order","######"), ("Run Start","00:00:00"), ("Run End","00:00:00"), ("Fill Start","00:00:00"), ("Fill End","00:00:00")]
-		#self._FillSheetWeightsInfo[("Tare Weight(g)","######"), ("Volume(ml)","00:00:00"), ("    Specific Gravity","00:00:00"), ("Weight(g)","00:00:00"), ("Cosmetic","00:00:00")]
-		#self._FillSheetProductInfo[("Product Name","######"), ("Formula Ref#","00:00:00"), ("Packing Code","00:00:00")]
-		#self.CurrentActivityLogger
 
 	def OnPackOff(self, event=None):
 		if 	self.packOff.GetBackgroundColour() == (0,255,0):
@@ -285,7 +278,37 @@ class fillScreenInfoPanel(wx.Panel):
 
 			dlg.Destroy()
 
+	def ButtonRefresh(self):
+		###############################For reference us only##################################################3
+		#self._FillSheetHeaderVariables[("Work Order","######"), ("Run Start","00:00:00"), ("Run End","00:00:00"), ("Fill Start","00:00:00"), ("Fill End","00:00:00")]
+		#self._FillSheetWeightsInfo[("Tare Weight(g)","######"), ("Volume(ml)","00:00:00"), ("    Specific Gravity","00:00:00"), ("Weight(g)","00:00:00"), ("Cosmetic","00:00:00")]
+		#self._FillSheetProductInfo[("Product Name","######"), ("Formula Ref#","00:00:00"), ("Packing Code","00:00:00")]
+		#self.CurrentActivityLogger
 
+		self.packOff.SetBackgroundColour((255,0,0)) # set text color
+
+		#FIRST SET
+		self._FillSheetHeaderVariables["Work Order"].SetLabel("######")
+		self._FillSheetHeaderVariables["Run Start"].SetLabel("00:00:00")
+		self._FillSheetHeaderVariables["Run End"].SetLabel("00:00:00")
+		self._FillSheetHeaderVariables["Fill Start"].SetLabel("00:00:00")
+		self._FillSheetHeaderVariables["Fill End"].SetLabel("00:00:00")
+
+		#SECOND SET
+		self._FillSheetWeightsInfo["Tare Weight(g)"].SetLabel("######")
+		self._FillSheetWeightsInfo["Volume(ml)"].SetLabel("00:00:00")
+		self._FillSheetWeightsInfo["    Specific Gravity"].SetLabel("00:00:00")
+		self._FillSheetWeightsInfo["Weight(g)"].SetLabel("00:00:00")
+		self._FillSheetWeightsInfo["Cosmetic"].SetLabel("00:00:00")
+
+		#THIRD SET
+		self._FillSheetProductInfo["Product Name"].SetLabel("######")
+		self._FillSheetProductInfo["Formula Ref#"].SetLabel("00:00:00")
+		self._FillSheetProductInfo["Packing Code"].SetLabel("00:00:00")
+
+		#FOURTH SET
+		self._FillSheetEquipment["Pump#"].SetLabel("######")
+		self._FillSheetEquipment["Simplex#"].SetLabel("######")
 
 	def OnQualityAsurance(self, event=None):
 		dlg = InfoOptionBox("Input QA Info", self.CurrentActivityLogger, option=3)

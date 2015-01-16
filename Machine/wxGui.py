@@ -109,6 +109,9 @@ class MainFrame(wx.Frame):
 			self.mainInfoPannel.SetCursor(wx.StockCursor(wx.CURSOR_BLANK))
 
 
+	def fillSheetRefresh(self):
+		self.fillScreenPannel.ButtonRefresh()
+
 	def RefreshData(self, event=None):
 		if self.mainDispPanel.IsShown():
 			self.mainInfoPannel.RefreshData()

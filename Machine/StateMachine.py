@@ -12,7 +12,7 @@ import time, datetime, string, socket
 import PQMFG_TCPClient
 import Queue
 
-from threading import Thread
+from threading import Thread, Timer
 
 if twil:
 	import TextWriter as tw
@@ -28,7 +28,7 @@ class ActivityLogger:
 
 
 		#I added this variable so i could easily enable and disable the piface digital I/O stuff
-		self.rpi = rpi
+ 		self.rpi = rpi
 
 		#creates class variabls for passed or called constructor Vars
 		if self.rpi:
@@ -118,6 +118,13 @@ class ActivityLogger:
 			# else is happening in the program, the function my_callback2 will be run
 			# 'bouncetime=300' includes the bounce control written into interrupts2a.py
 			#GPIO.add_event_detect(23, GPIO.RISING, callback=self.modBoxCount, bouncetime=self.CurrentDbounceTime)
+
+	def Recurring_TimedEmail(self):
+		if self.current_WO is not None:
+			Timer(1.0, printit).start()
+
+	def SendEMail(self):
+		pass
 
 	def get_Dbounce(self):
 		return self.CurrentDbounceTime

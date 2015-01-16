@@ -39,7 +39,7 @@ class emailClient(object):
 
 
 y = emailClient("pfffffffff")
-for x in range(10):
-	y.sendMsg("maxs@pqmfg.com","hey Cyrus... Why is the sky blue? x"+str(x+1))
+for x in range(100):
+	y.sendMsg("CyrusJ@pqmfg.com","hey Cyrus... Why is walle's email???"+str(x+1))
 	time.sleep(1)
 	print "Sent message", x+1

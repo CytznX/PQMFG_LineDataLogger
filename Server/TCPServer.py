@@ -417,8 +417,9 @@ class ThreadedTCPNetworkAgent(Thread):
 				FirstFillSheet.row_dimensions[_counter].height = 40
 				_counter += 1
 
-				_RowLetter = "A"
+
 				for batchInfoItems in unPickledData[4].keys():
+					_RowLetter = "A"
 					if not batchInfoItems == "INIT":
 						for batch2ndHeaders in unPickledData[4][batchInfoItems]:
 							FirstFillSheet[_RowLetter+str(_counter)] = batch2ndHeaders
@@ -435,8 +436,8 @@ class ThreadedTCPNetworkAgent(Thread):
 				FirstFillSheet.row_dimensions[_counter].height = 40
 				_counter+=1
 
-				_RowLetter = "A"
 				for palletInfoItems in unPickledData[5].keys():
+					_RowLetter = "A"
 					if not palletInfoItems == "INIT":
 						for batch2ndHeaders in unPickledData[5][palletInfoItems]:
 							FirstFillSheet[_RowLetter+str(_counter)] = batch2ndHeaders
@@ -453,8 +454,9 @@ class ThreadedTCPNetworkAgent(Thread):
 				FirstFillSheet.row_dimensions[_counter].height = 40
 				_counter+=1
 
-				_RowLetter = "A"
+
 				for QCInfoItems in unPickledData[6].keys():
+					_RowLetter = "A"
 					if not QCInfoItems == "INIT":
 						for batch2ndHeaders in unPickledData[6][QCInfoItems]:
 							FirstFillSheet[_RowLetter+str(_counter)] = batch2ndHeaders

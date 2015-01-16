@@ -483,6 +483,7 @@ class mainScreenButtonPanel(wx.Panel):
 				if result == wx.ID_YES:
 					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S>')+" Deleted WO:"+current_WO+"\n")
 					self.CurrentActivityLogger.changeCurrentWO(None, False)
+					self.curFrame.fillSheetRefresh()
 
 			else:
 				dlg = wx.MessageDialog(self, "No Work Order Currently Running", "Error", wx.OK)
@@ -523,6 +524,7 @@ class mainScreenButtonPanel(wx.Panel):
 				if result == wx.ID_OK:
 					self.WriteToTextPannel(datetime.datetime.now().strftime('<%H:%M:%S>')+" Completed Work Order: "+status[0]+"\n")
 					self.CurrentActivityLogger.finishCurrentWO()
+					self.curFrame.fillSheetRefresh()
 
 		def AdjustCountButtonEvent(self, event=None):
 			if self.CurrentActivityLogger.getCurrentState()[0] is not None:
