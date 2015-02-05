@@ -67,7 +67,7 @@ class fillScreenInfoPanel(wx.Panel):
 		colPos = 130+returnLoc[0]
 
 		self._FillSheetProductInfo, returnLoc = self.CreateDspColumn(
-			startingKeys = [("Product Name","######"), ("Formula Ref#","######"), ("Packing Code","######")],
+			startingKeys = [("Item Number","######"),("Desired Qty","######"), ("Formula Ref#","######"), ("Packing Code","######")],
 			startingLoc = (colPos, mainHeader.GetBestSize()[1]+(10*self.LocalBorder)),
 			Button = True,
 			Size=24,
@@ -95,19 +95,19 @@ class fillScreenInfoPanel(wx.Panel):
 
 		# 1 Create Button for returning view to mainSheet
 		BackButton = wx.Button(self, label="Back",
-			pos=(size[0]-200-(10*self.LocalBorder), size[1]-266-(10*self.LocalBorder)), size=(200, 220))
+			pos=(size[0]-200-(10*self.LocalBorder), size[1]-236-(10*self.LocalBorder)), size=(200, 220))
 
 		# 2 Create Button for checking individual batch info per work order
 		BatchInfo = wx.Button(self, label="Batch Info",
-			pos=(size[0]-575-(10*self.LocalBorder), size[1]-266-(10*self.LocalBorder)), size=(370, 70))
+			pos=(size[0]-575-(10*self.LocalBorder), size[1]-236-(10*self.LocalBorder)), size=(370, 70))
 
 		# 3 Create Button for checking on current WO pallet info
 		PalletInfo = wx.Button(self, label="Pallet Info",
-			pos=(size[0]-575-(10*self.LocalBorder), size[1]-191-(10*self.LocalBorder)), size=(370, 70))
+			pos=(size[0]-575-(10*self.LocalBorder), size[1]-161-(10*self.LocalBorder)), size=(370, 70))
 
 		# 4 Create Button for checking on Quality Asurance
 		QualityAsurance = wx.Button(self, label="Quality Asurance",
-			pos=(size[0]-575-(10*self.LocalBorder), size[1]-116-(10*self.LocalBorder)), size=(370, 70))
+			pos=(size[0]-575-(10*self.LocalBorder), size[1]-86-(10*self.LocalBorder)), size=(370, 70))
 
 		#Bind All the Buttons To specific events
 		BackButton.Bind(wx.EVT_BUTTON, self.OnBack, )
@@ -246,7 +246,7 @@ class fillScreenInfoPanel(wx.Panel):
 				theKey = key
 
 		if theKey is not None:
-			if not(theKey == "Product Name" or theKey == "Formula Ref#" or theKey == "Packing Code"):
+			if not(theKey == "Item Number" or theKey == "Formula Ref#" or theKey == "Packing Code"):
 
 				dlg = NumberInputBox("Input Value", Buttons=["1","2","3","4","5","6","7","8","9","0",".","DEL",])
 
@@ -268,7 +268,7 @@ class fillScreenInfoPanel(wx.Panel):
 						self._FillSheetWeightsInfo["Volume(ml)"].SetLabel("######")
 			else:
 
-				dlg = QWERTYBox("Input Work Order Number")
+				dlg = QWERTYBox("Input Data")
 
 				if dlg.ShowModal() == wx.ID_OK:
 					value = dlg.getDialog()
@@ -296,15 +296,15 @@ class fillScreenInfoPanel(wx.Panel):
 
 		#SECOND SET
 		self._FillSheetWeightsInfo["Tare Weight(g)"].SetLabel("######")
-		self._FillSheetWeightsInfo["Volume(ml)"].SetLabel("00:00:00")
-		self._FillSheetWeightsInfo["    Specific Gravity"].SetLabel("00:00:00")
-		self._FillSheetWeightsInfo["Weight(g)"].SetLabel("00:00:00")
-		self._FillSheetWeightsInfo["Cosmetic"].SetLabel("00:00:00")
+		self._FillSheetWeightsInfo["Volume(ml)"].SetLabel("######")
+		self._FillSheetWeightsInfo["    Specific Gravity"].SetLabel("######")
+		self._FillSheetWeightsInfo["Weight(g)"].SetLabel("######")
+		self._FillSheetWeightsInfo["Cosmetic"].SetLabel("######")
 
 		#THIRD SET
-		self._FillSheetProductInfo["Product Name"].SetLabel("######")
-		self._FillSheetProductInfo["Formula Ref#"].SetLabel("00:00:00")
-		self._FillSheetProductInfo["Packing Code"].SetLabel("00:00:00")
+		self._FillSheetProductInfo["Item Number"].SetLabel("######")
+		self._FillSheetProductInfo["Formula Ref#"].SetLabel("######")
+		self._FillSheetProductInfo["Packing Code"].SetLabel("######")
 
 		#FOURTH SET
 		self._FillSheetEquipment["Pump#"].SetLabel("######")

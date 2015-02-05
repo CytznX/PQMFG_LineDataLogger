@@ -4,6 +4,8 @@ import socket, os
 import datetime, time
 import pickle
 
+import MySQLdb
+
 from threading import Thread
 from openpyxl import *
 from openpyxl.styles import Alignment
@@ -99,14 +101,12 @@ class ThreadedTCPNetworkAgent(Thread):
 			safety += data
 
 		if can_continue:
-			print "Processing Connection"
+			print "Processing Connection", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 			try:
 
-				#(_machineVars, unPickledData[1], self._BatchInfo, self._PalletInfo, self._QCInfo, self.fillSheet)
 				unPickledData = pickle.loads(safety)
 
 				w0 = unPickledData[0]["WO"]
-
 				if not os.path.isfile(self.WO_LogFolder+w0 +".xlsx"):
 
 					#Create a new
@@ -477,10 +477,196 @@ class ThreadedTCPNetworkAgent(Thread):
 				wb.save(self.WO_LogFolder+w0+".xlsx")#<<<<<<<<<<<<<<<<<<<<-------------------------------------------- Save the file
 				print "Saved new Log: ", self.WO_LogFolder+w0+".xlsx", " Run: ", (len(wb.get_sheet_names())-1)/2
 
+				self.writeToSQL(str((len(wb.get_sheet_names())-1)/2), unPickledData)
+
 			except IndexError, e:
 				print "index error??????\n", e
 		#except KeyError,e:
 		#	print "fucking key error\n", e
+
+
+	def writeToSQL(self, RunNum, MachineLog, databaseConectionVars=("192.168.20.31","cyrus","cyrus2sql","pqmfg_daq")):
+		runNum = RunNum
+		sql = []
+		NOW = datetime.datetime.now()
+
+		#-------------------------------------------------------------------------------
+		#--------------------------WORKORDER_RUNS---------------------------------------
+		#-------------------------------------------------------------------------------
+
+		woRunSQLVars = ["WORKORDER_NUM", "RUN_NUM","MACHINE_NUM", "RUN_START", "RUN_END", "FILL_START", "FILL_END",
+									"TOTAL_COUNT", "TOTAL_BOXED", "TOTAL_SCRAPPED", "TARE_WEIGHT", "VOLUME", "SPECIFIC_GRAVITY",
+									"WEIGHT", "Cosmetic",	"ITEM_NUMBER", "DESIRED_QTY", "FORMULA_REF_NUM","PACKING_CODE", "PACK_OFF",
+									"PUMP_NUM", "SIMPLEX_NUM"]
+
+		#---------------------------------ZIP---------------------------------------
+
+		machineQuery = ["WORKORDER_NUM", "MACHINE_NUM", "RUN_START",
+										"RUN_END", "FILL_START", "FILL_END", "TOTAL_COUNT",
+										"TOTAL_BOXED", "TOTAL_SCRAPPED"]
+
+		machineDictKeys= ["WO","Machine ID", "WO StartTime", "Time Log Created",
+											"Fill Start", "Fill End", "TOTAL_COUNT", "Box Count",
+											"Fail Count"]
+
+		#---------------------------------ZIP2--------------------------------------
+
+		fillSheetQuery = ["TARE_WEIGHT", "VOLUME", "SPECIFIC_GRAVITY", "WEIGHT",
+											"Cosmetic",	"ITEM_NUMBER", "DESIRED_QTY", "FORMULA_REF_NUM",
+											"PACKING_CODE", "PACK_OFF", "PUMP_NUM", "SIMPLEX_NUM"]
+
+		fillSheetDictKeys = ["Tare Weight(g)", "Volume(ml)", "    Specific Gravity",
+												"Weight(g)", "Cosmetic", "Item Number", "Desired Qty",
+												"Formula Ref#", "Packing Code", "Pack Off", "Pump#",
+												"Simplex#"]
+
+		VarHeaders = ""
+		EndingString = ""
+
+		for MV_DicKey, MV_SQLKey in zip (machineDictKeys,machineQuery):
+
+			if MV_DicKey in MachineLog[0].keys():
+				VarHeaders += MV_SQLKey+", "
+				if MachineLog[0][MV_DicKey] == None:
+					EndingString += "'NULL', "
+				else:
+					if MV_SQLKey.endswith("_END") or MV_SQLKey.endswith("_START"):
+
+						if MachineLog[0][MV_DicKey] is not None:
+							EndingString += "'"+MachineLog[0][MV_DicKey].strftime('%Y-%m-%d %H:%M:%S')+ "', "
+
+						else:
+							EndingString += "'"+str(MachineLog[0][MV_DicKey])+"', "
+
+					elif MV_SQLKey == "RUN_NUM":
+						EndingString += "'"+str(runNum)+"', "
+
+					elif MV_SQLKey == "TOTAL_BOXED" or MV_SQLKey == "TOTAL_COUNT":
+						EndingString += "'"+str(sum(MachineLog[0][MV_DicKey]))+"', "
+
+					else:
+						EndingString += "'"+str(MachineLog[0][MV_DicKey])+"', "
+
+		for FS_DicKey, FS_SQLKey in zip(fillSheetDictKeys, fillSheetQuery):
+			if FS_DicKey in MachineLog[3].keys():
+				VarHeaders += FS_SQLKey+", "
+				if MachineLog[3][FS_DicKey] == None:
+					EndingString += "'NULL', "
+				else:
+					EndingString += "'"+str(MachineLog[3][FS_DicKey])+"', "
+
+
+		sql.append("INSERT INTO WORKORDER_RUNS ("+VarHeaders[:-2]+") VALUES ("+EndingString[:-2]+");")
+
+		#-------------------------------------------------------------------------------
+		#--------------------------DOWNTIMES--------------------------------------------
+		#-------------------------------------------------------------------------------
+
+		#1) Maitenance, 2) Inventory, 3) Quality_Control 4) Break 5) ChangeOver
+		# 'ChangeOver','Maitenance','Inventory','Quality_Control','Break'
+		# WORKORDER_NUM, RUN_NUM, TYPE, START, END, EMP_BD, EMP_BU
+		VarHeaders = "WORKORDER_NUM, MACHINE_NUM, RUN_NUM, TYPE, START, END, EMP_BD, EMP_BU"
+		EndingString = ""
+
+		ChangeDwnTime = ("ChangeOver", MachineLog[0]["ChangeOver Time"])
+		MainDwnTime = ("Maitenance", MachineLog[0]["Maintanance Down Times"])
+		InvDwnTime = ("Inventory", MachineLog[0]["Inventory Down Time"])
+		QualDwnTime = ("Quality_Control", MachineLog[0]["Quality Control Down Time"])
+		BreakDwnTime = ("Break", MachineLog[0]["Break Down Time"])
+
+		for reason, DWN_Tmes in [ChangeDwnTime, MainDwnTime, InvDwnTime, QualDwnTime, BreakDwnTime]:
+
+			for DWN_Tme in DWN_Tmes:
+				sql.append("INSERT INTO DOWNTIMES ("+VarHeaders+") VALUES ( '%s','%s','%s','%s','%s','%s','%s','%s');" % (MachineLog[0]["WO"],MachineLog[0]["Machine ID"], str(runNum), reason, DWN_Tme[0][0].strftime('%Y-%m-%d %H:%M:%S'), DWN_Tme[1][0].strftime('%Y-%m-%d %H:%M:%S'), DWN_Tme[0][1], DWN_Tme[1][1]))
+
+		#-------------------------------------------------------------------------------
+		#--------------------------EMPLOYEE_BADGE_SWIPES--------------------------------
+		#-------------------------------------------------------------------------------
+
+		VarHeaders = "EMPLOYEE_BADGE_NUM, EMP_TYPE, MACHINE_NUM, WORKORDER_NUM, RUN_NUM, TIME_IN, TIME_OUT"
+
+		for key in MachineLog[1].keys():
+			for times in MachineLog[1][key][1]:
+
+				starttime = times[0].strftime('%Y-%m-%d %H:%M:%S')
+				endtime = times[1]
+
+				if endtime is not None:
+					endtime = endtime.strftime('%Y-%m-%d %H:%M:%S')
+				else:
+					endtime = NOW.strftime('%Y-%m-%d %H:%M:%S')
+
+				sql.append("INSERT INTO EMPLOYEE_BADGE_SWIPES ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s','%s');" % (key, MachineLog[1][key][0], MachineLog[0]["Machine ID"], MachineLog[0]["WO"], str(runNum), starttime, endtime))
+
+
+		#-------------------------------------------------------------------------------
+		#-----------------------------------PALLETS-------------------------------------
+		#-------------------------------------------------------------------------------
+
+		VarHeaders = "PALLET_NUM, BATCH_NUM, WORKORDER_NUM, RUN_NUM, BOXES, PEACES_PER_BOX"
+
+		for key in MachineLog[5].keys():
+			if key is not "INIT":
+				print key, MachineLog[5][key]
+
+				sql.append("INSERT INTO PALLETS ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s');" % (MachineLog[4][key][0],MachineLog[5][key][4], MachineLog[0]["WO"], str(runNum), MachineLog[5][key][1], MachineLog[5][key][2]))
+
+
+
+		#-------------------------------------------------------------------------------
+		#-----------------------------------BATCHES-------------------------------------
+		#-------------------------------------------------------------------------------
+
+		VarHeaders = "BATCH_NUM, WORKORDER_NUM, MACHINE_NUM, RUN_NUM, FILL_WEIGHT, TOTAL_WEIGHT, TOTAL_WEIGHT_RANGE"
+
+		for key in MachineLog[4].keys():
+			if key is not "INIT":
+				print key, MachineLog[4][key]
+
+				sql.append("INSERT INTO BATCHES ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s','%s');" % (MachineLog[4][key][0], MachineLog[0]["WO"], MachineLog[0]["Machine ID"], str(runNum), MachineLog[4][key][1], MachineLog[4][key][2], MachineLog[4][key][3]))
+
+
+		#-------------------------------------------------------------------------------
+		#------------------------------------QC-----------------------------------------
+		#-------------------------------------------------------------------------------
+
+		VarHeaders = "MACHINE_NUM, WORKORDER_NUM, RUN_NUM, BATCH_NUM, STABILITY, BEGINS, MIDDLE, ENDS, RESAMPLE, INITIALS"
+
+		for key in MachineLog[6].keys():
+			if key is not "INIT":
+
+				sql.append("INSERT INTO QC ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');" % (MachineLog[0]["Machine ID"], MachineLog[0]["WO"], str(runNum), MachineLog[6][key][0], MachineLog[6][key][1], MachineLog[6][key][2], MachineLog[6][key][3], MachineLog[6][key][4], MachineLog[6][key][5], MachineLog[6][key][6]))
+
+
+		#-------------------------------------------------------------------------------
+		#----------------------------------FINALLY--------------------------------------
+		#-------------------------------------------------------------------------------
+
+		# Open database connection
+		db = MySQLdb.connect(databaseConectionVars)
+
+		# prepare a cursor object using cursor() method
+		cursor = db.cursor()
+
+		for SQL_Statment in sql:
+			try:
+				# Execute the SQL command
+				print "SQL: ", SQL_Statment
+				cursor.execute(SQL_Statment)
+				# Commit your changes in the database
+				db.commit()
+
+			except _mysql.Error, e:
+				db.rollback()
+				print "SQL Error %d: %s" % (e.args[0], e.args[1])
+
+			except:
+				# Rollback in case there is any error
+				db.rollback()
+
+		# disconnect from server
+		db.close()
+
 
 
 
