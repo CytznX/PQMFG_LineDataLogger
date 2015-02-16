@@ -781,10 +781,10 @@ class Test(wx.Frame):
 		self.CurrentActivityLogger._setPallet(newDic)
 
 
-		dlg = SliderBox("Input Work Order Number")#, self.CurrentActivityLogger
+		dlg = InfoOptionBox("Input Work Order Number", self.CurrentActivityLogger)#, self.CurrentActivityLogger
 
 		result = dlg.ShowModal()
-		val = dlg.GetValue()
+		#val = dlg.GetValue()
 		dlg.Destroy()
 
 		if result == wx.ID_OK:

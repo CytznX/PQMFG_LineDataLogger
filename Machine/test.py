@@ -4,9 +4,10 @@ import random
 
 import re
 import MySQLdb
+import _mysql
 import datetime
 
-import _mysql
+
 import sys
 """
 result = None
@@ -127,7 +128,7 @@ CurrentActivityLogger.release()
 #START__________________________________________________________________________
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-runNum = "1"
+RunNum = "1"
 sql = []
 NOW = datetime.datetime.now()
 
@@ -180,7 +181,7 @@ for MV_DicKey, MV_SQLKey in zip (machineDictKeys,machineQuery):
 					EndingString += "'"+str(MachineLog[0][MV_DicKey])+"', "
 
 			elif MV_SQLKey == "RUN_NUM":
-				EndingString += "'"+str(runNum)+"', "
+				EndingString += "'"+str(RunNum)+"', "
 
 			elif MV_SQLKey == "TOTAL_BOXED" or MV_SQLKey == "TOTAL_COUNT":
 				EndingString += "'"+str(sum(MachineLog[0][MV_DicKey]))+"', "
@@ -218,7 +219,7 @@ BreakDwnTime = ("Break", MachineLog[0]["Break Down Time"])
 for reason, DWN_Tmes in [ChangeDwnTime, MainDwnTime, InvDwnTime, QualDwnTime, BreakDwnTime]:
 
 	for DWN_Tme in DWN_Tmes:
-		sql.append("INSERT INTO DOWNTIMES ("+VarHeaders+") VALUES ( '%s','%s','%s','%s','%s','%s','%s','%s');" % (MachineLog[0]["WO"],MachineLog[0]["Machine ID"], str(runNum), reason, DWN_Tme[0][0].strftime('%Y-%m-%d %H:%M:%S'), DWN_Tme[1][0].strftime('%Y-%m-%d %H:%M:%S'), DWN_Tme[0][1], DWN_Tme[1][1]))
+		sql.append("INSERT INTO DOWNTIMES ("+VarHeaders+") VALUES ( '%s','%s','%s','%s','%s','%s','%s','%s');" % (MachineLog[0]["WO"],MachineLog[0]["Machine ID"], str(RunNum), reason, DWN_Tme[0][0].strftime('%Y-%m-%d %H:%M:%S'), DWN_Tme[1][0].strftime('%Y-%m-%d %H:%M:%S'), DWN_Tme[0][1], DWN_Tme[1][1]))
 
 #-------------------------------------------------------------------------------
 #--------------------------EMPLOYEE_BADGE_SWIPES--------------------------------
@@ -237,52 +238,49 @@ for key in MachineLog[1].keys():
 		else:
 			endtime = NOW.strftime('%Y-%m-%d %H:%M:%S')
 
-		sql.append("INSERT INTO EMPLOYEE_BADGE_SWIPES ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s','%s');" % (key, MachineLog[1][key][0], MachineLog[0]["Machine ID"], MachineLog[0]["WO"], str(runNum), starttime, endtime))
+		sql.append("INSERT INTO EMPLOYEE_BADGE_SWIPES ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s','%s');" % (key, MachineLog[1][key][0], MachineLog[0]["Machine ID"], MachineLog[0]["WO"], str(RunNum), starttime, endtime))
 
 
 #-------------------------------------------------------------------------------
 #-----------------------------------PALLETS-------------------------------------
 #-------------------------------------------------------------------------------
+if len(MachineLog[6].keys()) > 1:
+	VarHeaders = "PALLET_NUM, BATCH_NUM, WORKORDER_NUM, RUN_NUM, BOXES, PEACES_PER_BOX"
 
-VarHeaders = "PALLET_NUM, BATCH_NUM, WORKORDER_NUM, RUN_NUM, BOXES, PEACES_PER_BOX"
-
-for key in MachineLog[5].keys():
-	if key is not "INIT":
-		print key, MachineLog[5][key]
-
-		sql.append("INSERT INTO PALLETS ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s');" % (MachineLog[4][key][0],MachineLog[5][key][4], MachineLog[0]["WO"], str(runNum), MachineLog[5][key][1], MachineLog[5][key][2]))
-
-
+	for key in MachineLog[5].keys():
+		print key, type(key), key is not "INIT"
+		if key is not "INIT":
+			print "IN"
+			sql.append("INSERT INTO PALLETS ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s');" % (MachineLog[5][key][0], MachineLog[5][key][4], MachineLog[0]["WO"], str(RunNum), MachineLog[5][key][1], MachineLog[5][key][2]))
 
 #-------------------------------------------------------------------------------
 #-----------------------------------BATCHES-------------------------------------
 #-------------------------------------------------------------------------------
+if len(MachineLog[4].keys()) > 1:
+	VarHeaders = "BATCH_NUM, WORKORDER_NUM, MACHINE_NUM, RUN_NUM, FILL_WEIGHT, TOTAL_WEIGHT, TOTAL_WEIGHT_RANGE"
 
-VarHeaders = "BATCH_NUM, WORKORDER_NUM, MACHINE_NUM, RUN_NUM, FILL_WEIGHT, TOTAL_WEIGHT, TOTAL_WEIGHT_RANGE"
-
-for key in MachineLog[4].keys():
-	if key is not "INIT":
-		print key, MachineLog[4][key]
-
-		sql.append("INSERT INTO BATCHES ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s','%s');" % (MachineLog[4][key][0], MachineLog[0]["WO"], MachineLog[0]["Machine ID"], str(runNum), MachineLog[4][key][1], MachineLog[4][key][2], MachineLog[4][key][3]))
-
+	for key in MachineLog[4].keys():
+		print key, type(key), key is not "INIT"
+		if key is not "INIT":
+			print "In"
+			sql.append("INSERT INTO BATCHES ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s','%s');" % (MachineLog[4][key][0], MachineLog[0]["WO"], MachineLog[0]["Machine ID"], str(RunNum), MachineLog[4][key][1], MachineLog[4][key][2], MachineLog[4][key][3]))
 
 #-------------------------------------------------------------------------------
 #------------------------------------QC-----------------------------------------
 #-------------------------------------------------------------------------------
+if len(MachineLog[6].keys()) > 1:
+	VarHeaders = "MACHINE_NUM, WORKORDER_NUM, RUN_NUM, BATCH_NUM, STABILITY, BEGINS, MIDDLE, ENDS, RESAMPLE, INITIALS"
 
-VarHeaders = "MACHINE_NUM, WORKORDER_NUM, RUN_NUM, BATCH_NUM, STABILITY, BEGINS, MIDDLE, ENDS, RESAMPLE, INITIALS"
-
-for key in MachineLog[6].keys():
-	if key is not "INIT":
-
-		sql.append("INSERT INTO QC ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');" % (MachineLog[0]["Machine ID"], MachineLog[0]["WO"], str(runNum), MachineLog[6][key][0], MachineLog[6][key][1], MachineLog[6][key][2], MachineLog[6][key][3], MachineLog[6][key][4], MachineLog[6][key][5], MachineLog[6][key][6]))
-
+	for key in MachineLog[6].keys():
+		print key, type(key), key is not "INIT"
+		if key is not "INIT":
+			print "In"
+			sql.append("INSERT INTO QC ("+VarHeaders+") VALUES ('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s');" % (MachineLog[0]["Machine ID"], MachineLog[0]["WO"], str(RunNum), MachineLog[6][key][0], MachineLog[6][key][1], MachineLog[6][key][2], MachineLog[6][key][3], MachineLog[6][key][4], MachineLog[6][key][5], MachineLog[6][key][6]))
 
 #-------------------------------------------------------------------------------
 #----------------------------------FINALLY--------------------------------------
 #-------------------------------------------------------------------------------
-
+"""
 # Open database connection
 db = MySQLdb.connect("192.168.20.31","cyrus","cyrus2sql","pqmfg_daq")
 
@@ -307,3 +305,4 @@ for SQL_Statment in sql:
 
 # disconnect from server
 db.close()
+"""
