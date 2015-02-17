@@ -2,6 +2,7 @@
 
 import wx
 import wx.grid as gridlib
+import  wx.lib.scrolledpanel as scrolled
 import random, math
 from StateMachine import *
 
@@ -413,12 +414,14 @@ class InfoOptionBox(wx.Dialog):
 		else:
 			self.workingDict = self.CurrentActivityLogger.QCInfo.copy()
 
+		self.scrollPnl = scrolled.ScrolledPanel(self, -1, size=(1000,300), style=wx.TAB_TRAVERSAL|wx.SUNKEN_BORDER)
+		self.scrollPnl.SetBackgroundColour((0,0,255))
 
 		################################KEYBOARD#################################
 
 		self._vbox = wx.BoxSizer(wx.VERTICAL)
 		self._currentGridSizer = wx.GridSizer(1, 1, self._Border[0], self._Border[1])
-		self._vbox.Add(self._currentGridSizer, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
+		self._vbox.Add(self.scrollPnl, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
 
 		self.DrawDic()
 
@@ -434,6 +437,7 @@ class InfoOptionBox(wx.Dialog):
 
 		#self._vbox.Add(self._currentGridSizer, proportion=1, flag=wx.EXPAND | wx.ALIGN_CENTER)
 		self.SetSizer(self._vbox)
+		self.scrollPnl.SetSizer(self._currentGridSizer)
 
 		self._vbox.Fit(self)
 		#self.SetSizer(self._vbox)
@@ -463,11 +467,11 @@ class InfoOptionBox(wx.Dialog):
 		#print self.CurrentActivityLogger
 
 		#Add Blanck top left corner
-		self._currentGridSizer.Add(wx.StaticText(self), 0, wx.EXPAND)
+		self._currentGridSizer.Add(wx.StaticText(self.scrollPnl), 0, wx.EXPAND)
 
 		#Adds the top header row
 		for header in self.workingDict[sorted(_dicKeys)[-1]]:
-			head = wx.StaticText(self, label=header, style=wx.ALIGN_CENTRE)
+			head = wx.StaticText(self.scrollPnl, label=header, style=wx.ALIGN_CENTRE)
 			head.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD, underline=True,))
 
 			self._currentGridSizer.Add(head, 0, wx.EXPAND)
@@ -483,7 +487,7 @@ class InfoOptionBox(wx.Dialog):
 				key = count1+1
 
 			#Create The Key(Red) Button
-			button = wx.Button(self, label=str(key))
+			button = wx.Button(self.scrollPnl, label=str(key))
 
 			#Formats the button to look pretty
 			button.Bind(wx.EVT_BUTTON, self.OnKeyPress, )
@@ -501,13 +505,13 @@ class InfoOptionBox(wx.Dialog):
 					if not count2 == 3:
 
 						#Create Data Button
-						button = wx.Button(self, label=str(item))
+						button = wx.Button(self.scrollPnl, label=str(item))
 
 						#Formats the button to look pretty
 						button.Bind(wx.EVT_BUTTON, self.OnButtonPress, )
 
 					else:
-						button = wx.StaticText(self, label=str(item))
+						button = wx.StaticText(self.scrollPnl, label=str(item))
 
 					button.SetFont(wx.Font(18, wx.SWISS, wx.NORMAL, wx.BOLD, underline=False,))
 
@@ -521,7 +525,7 @@ class InfoOptionBox(wx.Dialog):
 				else:
 
 					#Create Data Button
-					button = wx.Button(self, label=str(item))
+					button = wx.Button(self.scrollPnl, label=str(item))
 
 					#Formats the button to look pretty
 					button.Bind(wx.EVT_BUTTON, self.OnButtonPress, )
@@ -536,7 +540,7 @@ class InfoOptionBox(wx.Dialog):
 					self._currentGridSizer.Add(button, 0, wx.EXPAND)
 
 		#Creates the green add button
-		self.theAddButton = wx.Button(self, label="+")
+		self.theAddButton = wx.Button(self.scrollPnl, label="+")
 
 		#Button Formating
 		self.theAddButton.Bind(wx.EVT_BUTTON, self.OnNewLine, )
@@ -548,6 +552,8 @@ class InfoOptionBox(wx.Dialog):
 
 		#Fits the GridSizer to itself
 		self._vbox.Fit(self)
+		self.scrollPnl.SetAutoLayout(1)
+		self.scrollPnl.SetupScrolling()
 
 
 	def OnNewLine(self, event):

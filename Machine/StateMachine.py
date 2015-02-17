@@ -17,7 +17,7 @@ from threading import Thread, Timer
 if twil:
 	import TextWriter as tw
 
-if False:
+if True:
 	import RPi.GPIO as GPIO
 
 class ActivityLogger:
