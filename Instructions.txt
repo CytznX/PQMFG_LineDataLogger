@@ -1,0 +1,25 @@
+
+
+Instructions For Operating PMFG Data aquisition system
+
+Step#1: If Machine Is off turn on (Green Switch on side)
+
+Step #2: Once machine has completely booted up and is in Standby(No Workorder Loaded) Add Employees that will be at the given Machine
+
+Step#3: Load in Desired Work Order
+
+Step#4: Navigate to fillsheet and Fill out Necisary Machine Cars (Product Name, FIll Weight, Desired Quantity, etc)
+
+Step #5: Initialy the Work Order is "down for change over"
+      - if no "change over" is needed bring line up imidiatly,
+      - else wait for mechanic aproval
+
+Step #6: Once Machine is Running, verify that "Peaces logger" is counting properly (adjust configuration via settings as necisary)
+
+Step #7: Add Batches, Paletts, QC as Needed
+
+Step #8: Log All downtime by selecting option via machine Down Button
+
+Step #9: After order has finished on Line, Verify all recorded information is valed. (Make Adjustments as need)
+
+Step #10: Press Complete WO

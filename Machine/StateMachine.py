@@ -4,21 +4,21 @@ This is Version 2.0 of the PQMFG state machine feature improved as well as simpl
 Created By: Maxwell Seifert
 Biarritz
 '''
-
-twil = False
-
 #Import the needed moduals
-import time, datetime, string, socket
+import time
+import datetime
 import PQMFG_TCPClient
 import Queue
 
 from threading import Thread, Timer
 
-if twil:
+if False:
 	import TextWriter as tw
 
-if True:
+if False:
 	import RPi.GPIO as GPIO
+
+twil = False
 
 class ActivityLogger:
 	'''
@@ -121,7 +121,8 @@ class ActivityLogger:
 
 	def Recurring_TimedEmail(self):
 		if self.current_WO is not None:
-			Timer(1.0, printit).start()
+			pass
+			# Timer(1.0, print).start()
 
 	def SendEMail(self):
 		pass
@@ -745,11 +746,13 @@ class ActivityLogger:
 			tmpSum = 0
 			for key in self.PalletInfo.keys():
 				if key is not "INIT":
-					tmpSum += int(self.PalletInfo[key][3])
+					try:
+						tmpSum += int(self.PalletInfo[key][3])
+					except ValueError:
+						tmpSum += 0
 
 			#print "Refreshed Box count: ", tmpSum
 			self.boxCount = [tmpSum]
-
 
 	def inc_CurBoxCount(self,  event = None, amount =1, force = False, ID = None):
 
@@ -857,7 +860,7 @@ class ActivityLogger:
 
 	def getFormatedLog(self, stillRunning = False):
 
-		#Initializes the log array as None (will be used in return later)
+		# Initializes the log array as None (will be used in return later)
 		log = None
 
 		if not self.current_WO == None:
