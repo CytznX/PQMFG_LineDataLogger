@@ -109,7 +109,7 @@ class ThreadedTCPNetworkAgent(Thread):
 			print "Processing Connection", datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 			try:
-				unPickledData = pickle.load(safety)
+				unPickledData = pickle.loads(safety)
 				Thread(target=self.writeToExel, args=(unPickledData, self.WO_LogFolder)).start()
 				Thread(target=self.writeToSQL, args=(unPickledData)).start()
 
