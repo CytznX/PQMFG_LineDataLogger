@@ -11,10 +11,12 @@ import MySQLdb
 import _mysql
 
 from threading import Thread
-from openpyxl import styles
 from openpyxl import *
+from openpyxl import styles
 from openpyxl.styles import Alignment
 from openpyxl.styles import Font
+from openpyxl.styles import Border, Side
+
 class ThreadedTCPNetworkAgent(Thread):
 
 	'''Default constructor... Much Love'''
@@ -110,25 +112,24 @@ class ThreadedTCPNetworkAgent(Thread):
 
 			try:
 				unPickledData = pickle.loads(safety)
-				Thread(target=self.writeToExel, args=(unPickledData, self.WO_LogFolder)).start()
-				Thread(target=self.writeToSQL, args=(unPickledData)).start()
-
-				print"------------------------END-OF_LOG("+self.WO_LogFolder+w0+".xlsx)"+"------------------------\n"
+				#print type(unPickledData), len(unPickledData)
+				self.writeToSQL(MachineLog=unPickledData)
+				self.writeToExel(unPickledData, self.WO_LogFolder)
 
 			except IndexError, e:
 				print "index error??????\n", e
 		# except KeyError,e:
 		# 	print "fucking key error\n", e
 
-	def writeToExel(unPickledData, WO_LogFolder):
+	def writeToExel(self, unPickledData, WO_LogFolder):
+
+		now = datetime.datetime.now()
 
 		if not os.path.exists(WO_LogFolder):
 			os.makedirs(WO_LogFolder)
 
 		w0 = unPickledData[0]["WO"]
 		if not os.path.isfile(WO_LogFolder + str(w0) + ".xlsx"):
-
-			now = datetime.datetime.now()
 
 			# Create a new
 			wb = Workbook()
@@ -213,7 +214,11 @@ class ThreadedTCPNetworkAgent(Thread):
 			peacesSums = 0
 			palletSums = len(sorted(unPickledData[5], key=unPickledData[4].get)[:-1])
 			for palletInfoItems in sorted(unPickledData[5], key=unPickledData[4].get)[:-1]:
-				peacesSums += int(unPickledData[5][palletInfoItems][3])
+				try:
+					peacesSums += int(unPickledData[5][palletInfoItems][3])
+				except ValueError:
+					pass
+
 
 			headerSheet['B14'] = palletSums
 			headerSheet['B14'].style = styles.Style(alignment=Alignment(horizontal="center"))
@@ -315,7 +320,7 @@ class ThreadedTCPNetworkAgent(Thread):
 
 			curNumRuns = len(wb.get_sheet_names()) - 1
 
-			headerSheet['B6'] = unPickledData[0]["Time Log Created"].strftime('%H:%M:%S (%D)')
+			headerSheet['B6'].value = unPickledData[0]["Time Log Created"].strftime('%H:%M:%S (%D)')
 			headerSheet['B6'].style = styles.Style(alignment=Alignment(horizontal="center"))
 
 			FormerVal = headerSheet['B7'].value.split(":")
@@ -508,9 +513,10 @@ class ThreadedTCPNetworkAgent(Thread):
 
 			_LastColumb += 1
 		_LastColumb += 1
-		for _row in FirstSheet.iter_rows("A"+str(_LastColumb)+":C"+str(_LastColumb)):
-			for _cell in _row:
-				_cell.style = styles.Style(border=Border(top=Side(style='thick')))
+
+		FirstSheet['A' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['B' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['C' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
 
 		_LastColumb += 1
 
@@ -535,9 +541,9 @@ class ThreadedTCPNetworkAgent(Thread):
 			_LastColumb += 1
 		_LastColumb += 1
 
-		for _row in FirstSheet.iter_rows("A"+str(_LastColumb)+":C"+str(_LastColumb)):
-			for _cell in _row:
-				_cell.style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['A' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['B' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['C' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
 
 		_LastColumb += 1
 
@@ -561,9 +567,9 @@ class ThreadedTCPNetworkAgent(Thread):
 			FirstSheet['A'+str(_LastColumb)].style = styles.Style(font=Font(bold=False), alignment=Alignment(horizontal="center"))
 			_LastColumb += 2
 
-		for _row in FirstSheet.iter_rows("A"+str(_LastColumb)+":C"+str(_LastColumb)):
-			for _cell in _row:
-				_cell.style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['A' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['B' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['C' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
 
 		_LastColumb += 1
 
@@ -616,9 +622,9 @@ class ThreadedTCPNetworkAgent(Thread):
 							_LastColumb += 1
 			_LastColumb += 1
 
-		for _row in FirstSheet.iter_rows("A" + str(_LastColumb) + ":C" + str(_LastColumb)):
-			for _cell in _row:
-				_cell.style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['A' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['B' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['C' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
 
 		_LastColumb += 1
 
@@ -638,6 +644,9 @@ class ThreadedTCPNetworkAgent(Thread):
 
 			for (counter, (start,end)) in enumerate(unPickledData[0][DwnTime_2Key]):
 
+				if end is None:
+					end = (now, "000")
+
 				FirstSheet["A"+str(_LastColumb)] = DwnTime_Header[0] + str(counter+1)+"("+str(end[0]-start[0]).split(".")[0]+"):"
 				FirstSheet["A"+str(_LastColumb)].style = styles.Style(font=Font(bold=False), alignment=Alignment(horizontal="center"))
 
@@ -656,9 +665,9 @@ class ThreadedTCPNetworkAgent(Thread):
 		FirstSheet['A'+str(_LastColumb)].style = styles.Style(font=Font(bold=True), alignment=Alignment(horizontal="center"))
 		_LastColumb += 1
 
-		for _row in FirstSheet.iter_rows("A"+str(_LastColumb)+":C"+str(_LastColumb)):
-			for _cell in _row:
-				_cell.style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['A' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['B' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
+		FirstSheet['C' + str(_LastColumb)].style = styles.Style(border=Border(top=Side(style='thick')))
 
 		_LastColumb += 2
 
@@ -771,11 +780,11 @@ class ThreadedTCPNetworkAgent(Thread):
 
 		# ---------------------------------ZIP---------------------------------------
 
-		machineQuery = ["WORKORDER_NUM", "MACHINE_NUM", "RUN_START",
+		machineQuery = ["WORKORDER_NUM", "MACHINE_NUM", "RUN_NUM", "RUN_START",
 										"RUN_END", "FILL_START", "FILL_END", "TOTAL_COUNT",
 										"TOTAL_BOXED", "TOTAL_SCRAPPED"]
 
-		machineDictKeys = ["WO", "Machine ID", "WO StartTime", "Time Log Created",
+		machineDictKeys = ["WO", "Machine ID", "run_num", "WO StartTime", "Time Log Created",
 											"Fill Start", "Fill End", "Total Count", "Box Count",
 											"Fail Count"]
 
@@ -795,9 +804,9 @@ class ThreadedTCPNetworkAgent(Thread):
 
 		for MV_DicKey, MV_SQLKey in zip(machineDictKeys, machineQuery):
 
-			if MV_DicKey in MachineLog[0].keys():
+			if MV_DicKey in MachineLog[0].keys() or MV_SQLKey == "RUN_NUM":
 				VarHeaders += MV_SQLKey + ", "
-				if MachineLog[0][MV_DicKey] == None:
+				if not MV_SQLKey == "RUN_NUM" and MachineLog[0][MV_DicKey] == None:
 					EndingString += "'NULL', "
 				else:
 					if MV_SQLKey.endswith("_END") or MV_SQLKey.endswith("_START"):

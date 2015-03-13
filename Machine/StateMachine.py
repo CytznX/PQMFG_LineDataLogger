@@ -15,7 +15,7 @@ from threading import Thread, Timer
 if False:
 	import TextWriter as tw
 
-if False:
+if True:
 	import RPi.GPIO as GPIO
 
 twil = False
@@ -468,7 +468,10 @@ class ActivityLogger:
 		finishSuccsess = False
 
 		#checks first to see if machine has been initialized...
-		if not self.currentState == None:
+		if not self.currentState is None:
+
+			if self.currentState is False:
+				self.changeState("000")
 
 			'''Create TCP Client and make it send shit '''
 
